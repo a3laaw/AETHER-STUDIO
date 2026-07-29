@@ -562,6 +562,18 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="page" id="p-gallery">
       <h1 class="pt">Gallery Manager · إدارة المعارض</h1>
       <div class="ps">معارض صور لكل مرحلة — تحويل WebP ومصغرات وتحميل كسول تلقائيًا</div>
+
+      <div class="panel" style="background:var(--panel2); border-color:rgba(60,130,246,0.35); margin-bottom:20px;">
+        <h3><span>AI Image Prompt Library (11 Sections · 55 Images) · برومبت توليد الصور الشامل</span> <span class="badge" style="background:var(--blue); color:#fff;">APPLE LIQUID GLASS UI</span></h3>
+        <p style="font-size:12.5px; color:var(--tx2); line-height:1.6; margin-bottom:14px;">
+          برومبت متوافق مع <b>Midjourney v6 / DALL-E 3 / Stable Diffusion XL / Adobe Firefly / Octane</b> لتوليد 55 صورة متسقة معمارياً للأقسام الـ 11 (الواجهة، جناح الماستر، غرف النوم، الحمامات، المطبخ، المعيشة، الحديقة والمسبح، وصالة السطح Rooftop Lounge).
+        </p>
+        <div class="btnrow">
+          <button class="btn" onclick="copyAIImagePromptAdmin(false)">📋 Copy Full Image Library (EN)</button>
+          <button class="btn ghost" onclick="copyAIImagePromptAdmin(true)">📋 Copy Arabic Image Library</button>
+          <button class="btn ghost" onclick="window.open('image-prompt.md', '_blank')">📖 View 11 Sections Specs · فتح الدليل الكامل ↗</button>
+        </div>
+      </div>
       <div class="gal-tabs" id="galTabs"></div>
       <div class="dropzone" style="padding:22px">⬆ &nbsp;اسحب الصور لإضافتها لهذا المعرض · Drop images here</div>
       <div class="gal-grid" id="galGrid"></div>
@@ -892,6 +904,74 @@ const AR_PROMPT_TEXT = `منزل عصري فاخر جداً يطفو في وسط
 
 الأسلوب البصري:
 CGI فائق الواقعية، إخراج معماري 8K، واجهة زجاج سائل Apple Liquid Glass، بيئة بيضاء نقية، إضاءة سينمائية، تتبع الأشعة (Ray Tracing)، بدون أي تقطيع أو اهتزاز. جودة Unreal Engine 5 وOctane Render.`;
+
+
+const AI_IMAGE_PROMPT_EN = `Interactive Luxury Floating House Experience — 360° Architectural Visualization
+
+Create a complete collection of ultra-realistic architectural visualization images for an interactive futuristic luxury house website.
+The project is a surreal floating ultra-luxury modern villa suspended above a pure white minimalist background.
+
+All generated images must represent the SAME HOUSE DESIGN with perfect visual consistency:
+- Same architecture, materials, furniture style, lighting system, environment, camera language
+
+Each image should include subtle Apple-inspired Liquid Glass UI overlays:
+- Floating glass panels, architectural information cards, room labels, material specifications, smart home indicators, thin glowing connection lines.
+
+Visual style:
+Ultra realistic CGI, Architectural visualization, Apple Liquid Glass design language, Unreal Engine 5 realism, Octane Render quality, 8K resolution, HDR lighting, Ray tracing, Photoreal materials, Luxury modern architecture, Clean white background, Soft global illumination, Premium cinematic composition.
+
+PROJECT IMAGE COLLECTION (11 SECTIONS × 5 IMAGES = 55 IMAGES):
+1. MASTER EXTERIOR HOUSE (5 IMAGES): Hero shot, 360 left side, 360 rear view, Top aerial view, Night luxury view.
+2. MASTER BEDROOM SUITE (5 IMAGES): Wide entrance, Bed cinematic angle, Window panoramic, Luxury details close-up, 360 panoramic view.
+3. SECONDARY BEDROOM (5 IMAGES): Full room, Bed & wall design, Storage/wardrobe, Window view, 360 panorama.
+4. BOYS BEDROOM (5 IMAGES): Full room, Bed area, Study zone, Technology details, 360 panoramic view.
+5. GIRLS BEDROOM (5 IMAGES): Full room, Bed design, Storage area, Decor details, 360 panorama.
+6. MASTER BATHROOM (5 IMAGES): Wide bathroom view, Bathtub cinematic shot, Shower area, Material details, 360 bathroom panorama.
+7. SMALL GUEST BATHROOM (5 IMAGES): Complete view, Sink and mirror, Shower details, Lighting details, 360 panorama.
+8. LUXURY KITCHEN (5 IMAGES): Wide kitchen view, Island cinematic shot, Cooking area, Material close-up, 360 kitchen panorama.
+9. LIVING AREA (5 IMAGES): Main living view, Seating area, Window panoramic view, Luxury details, 360 panorama.
+10. GARDEN + SWIMMING POOL (5 IMAGES): Garden overview, Pool cinematic view, Outdoor seating, Night landscape lighting, 360 outdoor panorama.
+11. ROOFTOP LOUNGE (5 IMAGES): Complete rooftop view, Seating area, Night rooftop, Details and materials, 360 rooftop panorama.
+
+NEGATIVE PROMPT:
+No people, No text distortion, No different house designs, No changing furniture style, No unrealistic architecture, No cartoon style, No low quality, No blurry details, No random objects, No inconsistent lighting.`;
+
+const AI_IMAGE_PROMPT_AR = `تجربة المنزل الطافي الفاخر التفاعلي — إخراج معماري بانورامي 360°
+
+إنشاء مجموعة صور إخراج معماري فائقة الواقعية لموقع منزل فاخر مستقبلي تفاعلي.
+المشروع عبارة عن فيلا عصرية سريالية فائقة الفخامة تطفو معلقة فوق خلفية بيضاء نقية وبسيطة (White Minimalist Void).
+
+يجب أن تمثل جميع الصور المولدة نفس تصميم المنزل مع اتساق بصري كامل:
+- نفس العمارة، نفس المواد، نفس أسلوب الأثاث، نفس نظام الإضاءة، نفس البيئة، نفس لغة الكاميرا.
+
+يجب أن تتضمن كل صورة لوحات واجهة مستخدم زجاجية بأسلوب Apple Liquid Glass:
+- لوحات زجاجية طافية، بطاقات معلومات معمارية، مسميات الغرف، مواصفات المواد، مؤشرات المنزل الذكي، خطوط اتصال مضيئة.
+
+قائمة أقسام الصور (11 قسم × 5 صور = 55 صورة):
+1. الواجهة الخارجية الرئيسية (5 صور): المشهد الرئيسي، 360 الجانب الأيسر، 360 زاوية خلفية، إطلالة علوية جوية، المشهد الليلي الفاخر.
+2. جناح النوم الرئيسي (5 صور): مدخل الجناح، زاوية السرير، إطلالة زجاجية بانورامية، تفاصيل فاخرة، بانوراما 360.
+3. غرفة النوم الثانوية (5 صور): الغرفة كاملة، السرير والجدار، خزانة الملابس، نافذة الإطلالة، بانوراما 360.
+4. غرفة نوم الأولاد (5 صور): الغرفة كاملة، منطقة السرير، منطقة الدراسة والألعاب، تفاصيل التكنولوجيا، بانوراما 360.
+5. غرفة نوم البنات (5 صور): الغرفة كاملة، تصميم السرير، مساحة التخزين، تفاصيل الديكور، بانوراما 360.
+6. الحمام الرئيسي (5 صور): الحمام كامل، حوض الاستحمام، منطقة الدش الزجاجية، تفاصيل الرخام والبرونز، بانوراما 360.
+7. حمام الضيوف الصغير (5 صور): الحمام كامل، المغسلة والمرآة الذكية، الدش، الإضاءة المخفية، بانوراما 360.
+8. المطبخ الفاخر (5 صور): المطبخ كامل، جزيرة الترافرتين، منطقة الطهي، تفاصيل الخامات، بانوراما 360.
+9. منطقة المعيشة (5 صور): المشهد الرئيسي، الجلوس والموقد، النافذة البانورامية، الأعمال الفنية والتفاصيل، بانوراما 360.
+10. الحديقة والمسبح (5 صور): الحديقة، مسبح الـ Infinity، الجلسة الخارجية، الإضاءة الليلية، بانوراما 360.
+11. صالة السطح Rooftop Lounge (5 صور): السطح كامل، منطقة الجلوس والبيرغولا، المشهد الليلي، الخامات، بانوراما 360.
+
+الأسلوب البصري: CGI فائق الواقعية، إخراج معماري 8K، واجهة Apple Liquid Glass، جودة Unreal Engine 5 وOctane Render، بدون أشخاص.`;
+
+function copyAIImagePromptAdmin(isAr){
+  const txt = isAr ? AI_IMAGE_PROMPT_AR : AI_IMAGE_PROMPT_EN;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => {
+      toast(isAr ? 'تم نسخ برومبت الصور العربي بنجاح · Arabic Image Prompt Copied' : 'AI Image Prompt Library copied to clipboard');
+    });
+  } else {
+    toast('Prompt ready — paste from image-prompt.md');
+  }
+}
 
 function copyAIVideoPrompt(isAr){
   const txt = isAr ? AR_PROMPT_TEXT : EN_PROMPT_TEXT;

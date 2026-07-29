@@ -964,34 +964,48 @@ footer p .ar{font-family:var(--font-ar)}
 </footer>
 
 
-<!-- AI VIDEO PROMPT MODAL (360° CONTINUOUS BUILD) -->
+
 <div id="aiPromptModal" class="modal-backdrop">
-  <div class="modal-box glass" style="max-width: 780px;">
+  <div class="modal-box glass" style="max-width: 820px;">
     <button class="modal-close" onclick="closeAIPromptModal()">✕</button>
     <div class="modal-header">
-      <span class="modal-project-badge">AI VIDEO GENERATION SPECS</span>
-      <h3>360° Full House Continuous Build <span class="ar">برومبت الفيلم المعماري (00:00–00:12)</span></h3>
+      <span class="modal-project-badge">AI ARCHITECTURAL GENERATION SPECS</span>
+      <h3>360° AI Prompts & Sample Library <span class="ar">برومبت وتوثيق الذكاء الاصطناعي للمشروع</span></h3>
     </div>
     <div class="modal-body">
-      <div class="wm-desc" style="margin-bottom:8px;">
-        <p>This is the official AI video generation prompt designed for <b>Runway Gen-4 / Sora / Luma Dream Machine / Kling 2.x / Unreal Sequencer</b> to generate the continuous 360° procedural build film for AURA Studio projects.</p>
+      <!-- TABS -->
+      <div style="display:flex; gap:10px; margin-bottom:14px; border-bottom:1px solid rgba(0,0,0,0.08); padding-bottom:12px; flex-wrap:wrap;">
+        <button class="wm-btn submit" id="aiTabBtnVideo" onclick="switchAIPromptTab('video')" style="font-size:12px; padding:8px 16px;">🎬 AI Video Prompt (360° 12s)</button>
+        <button class="wm-btn" id="aiTabBtnImage" onclick="switchAIPromptTab('image')" style="font-size:12px; padding:8px 16px; background:rgba(60,130,246,0.1); color:var(--blue);">🖼️ AI Image Library (11 Sections · 55 Images)</button>
       </div>
-      <div class="wm-contact glass" style="margin-bottom: 14px;">
-        <h4 style="margin:0 0 10px 0;">GENERATED AI SAMPLE FRAMES · عينات صور مولدة بالذكاء الاصطناعي من البرومبت</h4>
+
+      <!-- SAMPLE FRAMES (8 IMAGES - VISIBLE IN BOTH TABS) -->
+      <div class="wm-contact glass" style="margin-bottom: 16px;">
+        <h4 style="margin:0 0 10px 0;">GENERATED AI SAMPLE FRAMES (8 IMAGES) · عينات صور مولدة بالذكاء الاصطناعي</h4>
         <div class="wm-gallery" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
-          <div class="wm-thumb" data-full="assets/gallery/ai-house-complete.jpg" onclick="openLightboxImage('assets/gallery/ai-house-complete.jpg')"><img src="assets/gallery/ai-house-complete.jpg" alt="Hero Complete House"></div>
-          <div class="wm-thumb" data-full="assets/gallery/ai-master-suite.jpg" onclick="openLightboxImage('assets/gallery/ai-master-suite.jpg')"><img src="assets/gallery/ai-master-suite.jpg" alt="Master Bedroom Suite"></div>
-          <div class="wm-thumb" data-full="assets/gallery/ai-living-kitchen.jpg" onclick="openLightboxImage('assets/gallery/ai-living-kitchen.jpg')"><img src="assets/gallery/ai-living-kitchen.jpg" alt="Living Area & Kitchen"></div>
-          <div class="wm-thumb" data-full="assets/gallery/ai-house-wireframe.jpg" onclick="openLightboxImage('assets/gallery/ai-house-wireframe.jpg')"><img src="assets/gallery/ai-house-wireframe.jpg" alt="Procedural Wireframe Build"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-house-complete.jpg" onclick="openLightboxImage('assets/gallery/ai-house-complete.jpg')"><img src="assets/gallery/ai-house-complete.jpg" alt="01. Hero Complete House"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-house-wireframe.jpg" onclick="openLightboxImage('assets/gallery/ai-house-wireframe.jpg')"><img src="assets/gallery/ai-house-wireframe.jpg" alt="02. Procedural Wireframe"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-master-suite.jpg" onclick="openLightboxImage('assets/gallery/ai-master-suite.jpg')"><img src="assets/gallery/ai-master-suite.jpg" alt="03. Master Suite"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-living-kitchen.jpg" onclick="openLightboxImage('assets/gallery/ai-living-kitchen.jpg')"><img src="assets/gallery/ai-living-kitchen.jpg" alt="04. Living & Kitchen"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-rooftop-lounge.jpg" onclick="openLightboxImage('assets/gallery/ai-rooftop-lounge.jpg')"><img src="assets/gallery/ai-rooftop-lounge.jpg" alt="05. Rooftop Lounge"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-garden-pool.jpg" onclick="openLightboxImage('assets/gallery/ai-garden-pool.jpg')"><img src="assets/gallery/ai-garden-pool.jpg" alt="06. Garden & Pool"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-boys-bedroom.jpg" onclick="openLightboxImage('assets/gallery/ai-boys-bedroom.jpg')"><img src="assets/gallery/ai-boys-bedroom.jpg" alt="07. Boys Bedroom"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-master-bath.jpg" onclick="openLightboxImage('assets/gallery/ai-master-bath.jpg')"><img src="assets/gallery/ai-master-bath.jpg" alt="08. Master Bath Spa"></div>
         </div>
         <div style="font-size: 11px; color: var(--ink-3); margin-top: 8px;">Click any sample to enlarge in full-screen Lightbox · اضغط على أي صورة لتكبيرها</div>
       </div>
-      <div class="wm-contact glass" style="margin-bottom: 14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <h4 style="margin:0;">ENGLISH PROMPT TEXT · النص الإنجليزي للمولدات</h4>
-          <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(false)">📋 Copy English Prompt</button>
+
+      <!-- VIDEO PROMPT TAB VIEW -->
+      <div id="aiTabVideoView">
+        <div class="wm-desc" style="margin-bottom:8px;">
+          <p>Official AI video generation prompt designed for <b>Runway Gen-4 / Sora / Luma Dream Machine / Kling 2.x / Unreal Sequencer</b> to generate the continuous 360° procedural build film for AURA Studio projects.</p>
         </div>
-        <textarea id="aiPromptTextEn" readonly rows="7" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.5; font-family:monospace; resize:vertical;">A surreal floating ultra-luxury modern house is suspended in the center of a pure white minimalist environment. The entire experience unfolds in a single continuous cinematic sequence with seamless transitions and no cuts. The camera moves smoothly with elegant motion while every part of the house builds itself procedurally in real-time.
+        <div class="wm-contact glass" style="margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0;">ENGLISH VIDEO PROMPT TEXT · برومبت الفيلم الإنجليزي</h4>
+            <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(false)">📋 Copy English Prompt</button>
+          </div>
+          <textarea id="aiPromptTextEn" readonly rows="6" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.5; font-family:monospace; resize:vertical;">A surreal floating ultra-luxury modern house is suspended in the center of a pure white minimalist environment. The entire experience unfolds in a single continuous cinematic sequence with seamless transitions and no cuts. The camera moves smoothly with elegant motion while every part of the house builds itself procedurally in real-time.
 
 Premium Apple-inspired Liquid Glass UI panels float around the structure, displaying real-time construction data, room labeling, material analytics, smart home systems, and spatial mapping. Ultra-thin glowing lines connect each UI panel to the exact part of the house being constructed.
 
@@ -1029,14 +1043,14 @@ Render quality: Unreal Engine 5 realism, Octane Render quality, 8K resolution, H
 
 EXTRA KEYWORDS:
 360° camera, Panoramic view, Seamless transitions, Cinematic orbit, Interior flythrough, Holographic UI, Futuristic architecture, Procedural build animation, Luxury house visualization.</textarea>
-      </div>
-
-      <div class="wm-contact glass">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          <h4 style="margin:0;">ARABIC PROMPT TEXT · النص العربي للبرومبت</h4>
-          <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(true)">📋 Copy Arabic Prompt · نسخ بالعربية</button>
         </div>
-        <textarea id="aiPromptTextAr" readonly rows="5" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.6; font-family:var(--font-ar); resize:vertical;">منزل عصري فاخر جداً يطفو في وسط بيئة بيضاء نقية وبسيطة (Minimalist White Void). التجربة الكاملة تتكشف في مشهد سينمائي واحد متواصل بحركة كاميرا سلسة وبدون أي قطع (No Cuts)، حيث يتم بناء كل جزء من المنزل برمجياً وتلقائياً في الوقت الفعلي (Procedural Build).
+
+        <div class="wm-contact glass">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0;">ARABIC VIDEO PROMPT TEXT · برومبت الفيلم بالعربية</h4>
+            <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(true)">📋 Copy Arabic Prompt · نسخ بالعربية</button>
+          </div>
+          <textarea id="aiPromptTextAr" readonly rows="5" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.6; font-family:var(--font-ar); resize:vertical;">منزل عصري فاخر جداً يطفو في وسط بيئة بيضاء نقية وبسيطة (Minimalist White Void). التجربة الكاملة تتكشف في مشهد سينمائي واحد متواصل بحركة كاميرا سلسة وبدون أي قطع (No Cuts)، حيث يتم بناء كل جزء من المنزل برمجياً وتلقائياً في الوقت الفعلي (Procedural Build).
 
 تطفو حول الهيكل لوحات واجهة مستخدم زجاجية فاخرة بأسلوب Apple Liquid Glass، تعرض بيانات البناء الحية، مسميات الغرف، تحليل المواد، أنظمة المنزل الذكي، والخرائط المكانية، مع خطوط مضيئة فائقة الدقة تربط كل لوحة بالجزء المخصص في المشروع.
 
@@ -1061,12 +1075,85 @@ EXTRA KEYWORDS:
 - 00:10–00:12 | المشهد الختامي (Final Reveal): تلاشي لوحات الـ UI، واكتمال المنزل بدوران 360° سينمائي لينتهي بلقطة Hero Shot فاخرة.
 
 الأسلوب البصري: CGI فائق الواقعية، إخراج معماري 8K، واجهة Apple Liquid Glass، جودة Unreal Engine 5 وOctane Render.</textarea>
+        </div>
+      </div>
+
+      <!-- IMAGE PROMPT LIBRARY TAB VIEW -->
+      <div id="aiTabImageView" style="display:none;">
+        <div class="wm-desc" style="margin-bottom:8px;">
+          <p>Complete 11-section architectural image library prompt for <b>Midjourney v6, DALL-E 3, Stable Diffusion XL & Adobe Firefly</b> with Apple Liquid Glass UI overlays and 360° panoramic support (55 total images specification).</p>
+        </div>
+        <div class="wm-contact glass" style="margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0;">SYSTEM & FULL 11-SECTION PROMPT (EN) · برومبت الصور الشامل (55 صورة)</h4>
+            <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIImagePromptText(false)">📋 Copy Full Image Library (EN)</button>
+          </div>
+          <textarea id="aiImagePromptTextEn" readonly rows="7" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.5; font-family:monospace; resize:vertical;">Interactive Luxury Floating House Experience — 360° Architectural Visualization
+
+Create a complete collection of ultra-realistic architectural visualization images for an interactive futuristic luxury house website.
+The project is a surreal floating ultra-luxury modern villa suspended above a pure white minimalist background.
+
+All generated images must represent the SAME HOUSE DESIGN with perfect visual consistency:
+- Same architecture, materials, furniture style, lighting system, environment, camera language
+
+Each image should include subtle Apple-inspired Liquid Glass UI overlays:
+- Floating glass panels, architectural information cards, room labels, material specifications, smart home indicators, thin glowing connection lines.
+
+Visual style:
+Ultra realistic CGI, Architectural visualization, Apple Liquid Glass design language, Unreal Engine 5 realism, Octane Render quality, 8K resolution, HDR lighting, Ray tracing, Photoreal materials, Luxury modern architecture, Clean white background, Soft global illumination, Premium cinematic composition.
+
+PROJECT IMAGE COLLECTION (11 SECTIONS × 5 IMAGES = 55 IMAGES):
+1. MASTER EXTERIOR HOUSE (5 IMAGES): Hero shot, 360 left side, 360 rear view, Top aerial view, Night luxury view.
+2. MASTER BEDROOM SUITE (5 IMAGES): Wide entrance, Bed cinematic angle, Window panoramic, Luxury details close-up, 360 panoramic view.
+3. SECONDARY BEDROOM (5 IMAGES): Full room, Bed & wall design, Storage/wardrobe, Window view, 360 panorama.
+4. BOYS BEDROOM (5 IMAGES): Full room, Bed area, Study zone, Technology details, 360 panoramic view.
+5. GIRLS BEDROOM (5 IMAGES): Full room, Bed design, Storage area, Decor details, 360 panorama.
+6. MASTER BATHROOM (5 IMAGES): Wide bathroom view, Bathtub cinematic shot, Shower area, Material details, 360 bathroom panorama.
+7. SMALL GUEST BATHROOM (5 IMAGES): Complete view, Sink and mirror, Shower details, Lighting details, 360 panorama.
+8. LUXURY KITCHEN (5 IMAGES): Wide kitchen view, Island cinematic shot, Cooking area, Material close-up, 360 kitchen panorama.
+9. LIVING AREA (5 IMAGES): Main living view, Seating area, Window panoramic view, Luxury details, 360 panorama.
+10. GARDEN + SWIMMING POOL (5 IMAGES): Garden overview, Pool cinematic view, Outdoor seating, Night landscape lighting, 360 outdoor panorama.
+11. ROOFTOP LOUNGE (5 IMAGES): Complete rooftop view, Seating area, Night rooftop, Details and materials, 360 rooftop panorama.
+
+NEGATIVE PROMPT:
+No people, No text distortion, No different house designs, No changing furniture style, No unrealistic architecture, No cartoon style, No low quality, No blurry details, No random objects, No inconsistent lighting.</textarea>
+        </div>
+        <div class="wm-contact glass">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0;">ARABIC IMAGE PROMPT LIBRARY (AR) · برومبت الصور بالعربية</h4>
+            <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIImagePromptText(true)">📋 Copy Arabic Image Library</button>
+          </div>
+          <textarea id="aiImagePromptTextAr" readonly rows="5" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.6; font-family:var(--font-ar); resize:vertical;">تجربة المنزل الطافي الفاخر التفاعلي — إخراج معماري بانورامي 360°
+
+إنشاء مجموعة صور إخراج معماري فائقة الواقعية لموقع منزل فاخر مستقبلي تفاعلي.
+المشروع عبارة عن فيلا عصرية سريالية فائقة الفخامة تطفو معلقة فوق خلفية بيضاء نقية وبسيطة (White Minimalist Void).
+
+يجب أن تمثل جميع الصور المولدة نفس تصميم المنزل مع اتساق بصري كامل:
+- نفس العمارة، نفس المواد، نفس أسلوب الأثاث، نفس نظام الإضاءة، نفس البيئة، نفس لغة الكاميرا.
+
+يجب أن تتضمن كل صورة لوحات واجهة مستخدم زجاجية بأسلوب Apple Liquid Glass:
+- لوحات زجاجية طافية، بطاقات معلومات معمارية، مسميات الغرف، مواصفات المواد، مؤشرات المنزل الذكي، خطوط اتصال مضيئة.
+
+قائمة أقسام الصور (11 قسم × 5 صور = 55 صورة):
+1. الواجهة الخارجية الرئيسية (5 صور): المشهد الرئيسي، 360 الجانب الأيسر، 360 زاوية خلفية، إطلالة علوية جوية، المشهد الليلي الفاخر.
+2. جناح النوم الرئيسي (5 صور): مدخل الجناح، زاوية السرير، إطلالة زجاجية بانورامية، تفاصيل فاخرة، بانوراما 360.
+3. غرفة النوم الثانوية (5 صور): الغرفة كاملة، السرير والجدار، خزانة الملابس، نافذة الإطلالة، بانوراما 360.
+4. غرفة نوم الأولاد (5 صور): الغرفة كاملة، منطقة السرير، منطقة الدراسة والألعاب، تفاصيل التكنولوجيا، بانوراما 360.
+5. غرفة نوم البنات (5 صور): الغرفة كاملة، تصميم السرير، مساحة التخزين، تفاصيل الديكور، بانوراما 360.
+6. الحمام الرئيسي (5 صور): الحمام كامل، حوض الاستحمام، منطقة الدش الزجاجية، تفاصيل الرخام والبرونز، بانوراما 360.
+7. حمام الضيوف الصغير (5 صور): الحمام كامل، المغسلة والمرآة الذكية، الدش، الإضاءة المخفية، بانوراما 360.
+8. المطبخ الفاخر (5 صور): المطبخ كامل، جزيرة الترافرتين، منطقة الطهي، تفاصيل الخامات، بانوراما 360.
+9. منطقة المعيشة (5 صور): المشهد الرئيسي، الجلوس والموقد، النافذة البانورامية، الأعمال الفنية والتفاصيل، بانوراما 360.
+10. الحديقة والمسبح (5 صور): الحديقة، مسبح الـ Infinity، الجلسة الخارجية، الإضاءة الليلية، بانوراما 360.
+11. صالة السطح Rooftop Lounge (5 صور): السطح كامل، منطقة الجلوس والبيرغولا، المشهد الليلي، الخامات، بانوراما 360.
+
+الأسلوب البصري: CGI فائق الواقعية، إخراج معماري 8K، واجهة Apple Liquid Glass، جودة Unreal Engine 5 وOctane Render، بدون أشخاص.</textarea>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- WIDGET DETAIL MODAL -->
 <div id="widgetModal" class="modal-backdrop">
   <div class="modal-box glass">
     <button class="modal-close" id="widgetModalClose">✕</button>

@@ -73,7 +73,7 @@ const DEFAULT_WIDGETS = {
     titleAr: "02 التنفيذ",
     desc: "Robotic surveying, laser-guided structural framework, and millimeter-precision tolerances monitored live on site. Every column and slab is verified against the digital twin.",
     descAr: "مساحة روبوتية وهيكل موجّه بالليزر بدقة مليمترية — بمراقبة حية في الموقع. يتم التحقق من كل عمود وبلاطة ومطابقتها مع التوأم الرقمي للمشروع.",
-    images: ["assets/stages/s2-foundation.png", "assets/stages/s3-structure.png", "assets/stages/s4-shell.png"],
+    images: ["assets/gallery/ai-house-wireframe.jpg", "assets/gallery/ai-house-complete.jpg", "assets/stages/s3-structure.png"],
     contact: { whatsapp: "https://wa.me/96500000000?text=Inquiry+about+Execution+Phase", email: "info@aura.studio", formTitle: "Inquire about Site Execution · استفسر عن تنفيذ الموقع" }
   },
   "03": {
@@ -81,7 +81,7 @@ const DEFAULT_WIDGETS = {
     titleAr: "03 التشطيبات",
     desc: "Book-matched Italian travertine, low-E architectural glazing, and custom bronze detailing. Every material batch is traced from quarry to installation.",
     descAr: "ترافرتين إيطالي متطابق الألواح وزجاج عازل للحرارة وتفاصيل برونزية مخصصة. كل خامة موثقة ومتبعة من المحجر حتى التركيب النهائي.",
-    images: ["assets/stages/s5-facade.png", "assets/villa.png", "assets/rooms/living-complete.png"],
+    images: ["assets/gallery/ai-master-suite.jpg", "assets/gallery/ai-living-kitchen.jpg", "assets/gallery/ai-master-bath.jpg"],
     contact: { whatsapp: "https://wa.me/96500000000?text=Inquiry+about+Finishing+Phase", email: "info@aura.studio", formTitle: "Inquire about Materials & Finishes · استفسر عن المواد والتشطيبات" }
   },
   "04": {
@@ -89,7 +89,7 @@ const DEFAULT_WIDGETS = {
     titleAr: "04 إدارة المشاريع",
     desc: "One live dashboard for cost, schedule, and quality assurance. AI algorithms flag risks and schedule deviations early, ensuring delivery on time and within budget.",
     descAr: "لوحة واحدة حية للتكلفة والجدول والرقابة على الجودة — والذكاء الاصطناعي ينذر بالمخاطر مبكرًا لضمان التسليم في الوقت والميزانية المحددة.",
-    images: ["assets/villa.png", "assets/stages/s7-night.png", "assets/rooms/master-complete.png"],
+    images: ["assets/gallery/ai-house-complete.jpg", "assets/gallery/ai-rooftop-lounge.jpg", "assets/gallery/ai-garden-pool.jpg"],
     contact: { whatsapp: "https://wa.me/96500000000?text=Inquiry+about+Project+Management", email: "info@aura.studio", formTitle: "Inquire about Project Management · استفسر عن إدارة المشاريع" }
   },
   "progress": {
@@ -137,7 +137,7 @@ const DEFAULT_WIDGETS = {
     titleAr: "تقدم إنجاز الغرف",
     desc: "AI-monitored interior completion stages tracking shell, rough-in MEP, plastering, flooring, and final joinery installation per room.",
     descAr: "مراقبة ذكية لمراحل إنجاز الغرف الداخلية تتتبع البناء الخام، التمديدات، اللياسة، الأرضيات وتركيب الأعمال الخشبية لكل غرفة على حدة.",
-    images: ["assets/rooms/living-shell.png", "assets/rooms/living-finish.png", "assets/rooms/living-complete.png"],
+    images: ["assets/gallery/ai-master-suite.jpg", "assets/gallery/ai-boys-bedroom.jpg", "assets/gallery/ai-master-bath.jpg"],
     contact: { whatsapp: "https://wa.me/96500000000?text=Inquiry+about+Room+Progress", email: "info@aura.studio", formTitle: "Inquire about Interior Execution · استفسر عن تنفيذ الديكور الداخلي" }
   },
   "room_data": {
@@ -145,7 +145,7 @@ const DEFAULT_WIDGETS = {
     titleAr: "البيانات المعمارية للغرف",
     desc: "Detailed spatial metrics including ceiling heights, acoustic insulation properties, lighting design calculations, and HVAC air changes per hour.",
     descAr: "بيانات تفصيلية للمساحات تشمل ارتفاعات الأسقف، العزل الصوتي، حسابات تصميم الإضاءة ومعدلات تجديد هواء التكييف في الساعة.",
-    images: ["assets/rooms/plan.png", "assets/rooms/living-complete.png"],
+    images: ["assets/rooms/plan.png", "assets/gallery/ai-living-kitchen.jpg", "assets/gallery/ai-rooftop-lounge.jpg", "assets/gallery/ai-garden-pool.jpg"],
     contact: { whatsapp: "https://wa.me/96500000000?text=Inquiry+about+Room+Data", email: "info@aura.studio", formTitle: "Inquire about Architectural Specifications · استفسر عن المواصفات المعمارية" }
   },
   "smart_systems": {
