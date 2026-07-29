@@ -245,7 +245,7 @@ window.AURA_DEFAULTS = {
       year: "2026",
       status: "In Progress",
       statusAr: "قيد الإنشاء",
-      cover: "assets/gallery/ai-house-complete.jpg",
+      cover: "assets/gallery/house-hero-front.jpg",
       isDefault: false,
       order: 1,
       project: {
@@ -282,10 +282,10 @@ window.AURA_DEFAULTS = {
       interior: JSON.parse(JSON.stringify(DEFAULT_INTERIOR)),
       widgets: JSON.parse(JSON.stringify(DEFAULT_WIDGETS)),
       beforeAfter: [
-        { id:"01", name:"Design", nameAr:"التصميم", beforeImg:"assets/villa-blueprint.png", afterImg:"assets/gallery/ai-house-wireframe.jpg", beforeLabel:"Blueprint", beforeLabelAr:"مخطط هندسي", afterLabel:"AI Wireframe", afterLabelAr:"هيكل إنشائي (AI)" },
-        { id:"02", name:"Execution", nameAr:"التنفيذ", beforeImg:"assets/gallery/ai-house-wireframe.jpg", afterImg:"assets/gallery/ai-house-complete.jpg", beforeLabel:"AI Wireframe", beforeLabelAr:"هيكل إنشائي (AI)", afterLabel:"AI Exterior", afterLabelAr:"الواجهة الخارجية (AI)" },
-        { id:"03", name:"Finishing", nameAr:"التشطيبات", beforeImg:"assets/gallery/ai-house-complete.jpg", afterImg:"assets/gallery/ai-master-suite.jpg", beforeLabel:"AI Exterior", beforeLabelAr:"الواجهة الخارجية (AI)", afterLabel:"AI Master Suite", afterLabelAr:"جناح النوم الرئيسي (AI)" },
-        { id:"04", name:"Project Management", nameAr:"إدارة المشاريع", beforeImg:"assets/gallery/ai-house-complete.jpg", afterImg:"assets/gallery/ai-living-kitchen.jpg", beforeLabel:"AI Exterior", beforeLabelAr:"الواجهة الخارجية (AI)", afterLabel:"AI Living & Kitchen", afterLabelAr:"منطقة المعيشة والمطبخ (AI)" }
+        { id:"01", name:"Design", nameAr:"التصميم", beforeImg:"assets/villa-blueprint.png", afterImg:"assets/gallery/house-detail-close.jpg", beforeLabel:"Blueprint", beforeLabelAr:"مخطط هندسي", afterLabel:"Material Details", afterLabelAr:"تفاصيل الخامات والمواد" },
+        { id:"02", name:"Execution", nameAr:"التنفيذ", beforeImg:"assets/gallery/house-360-left.jpg", afterImg:"assets/gallery/house-rear-view.jpg", beforeLabel:"360 Left Facade", beforeLabelAr:"الواجهة اليسرى 360", afterLabel:"Rear Structure", afterLabelAr:"الهيكل والخلفية" },
+        { id:"03", name:"Finishing", nameAr:"التشطيبات", beforeImg:"assets/gallery/house-hero-front.jpg", afterImg:"assets/gallery/house-garden-pool.jpg", beforeLabel:"Hero Front Villa", beforeLabelAr:"واجهة الفيلا الرئيسية", afterLabel:"Garden & Infinity Pool", afterLabelAr:"الحديقة ومسبح Infinity" },
+        { id:"04", name:"Project Management", nameAr:"إدارة المشاريع", beforeImg:"assets/gallery/house-aerial-top.jpg", afterImg:"assets/gallery/house-night-hero.jpg", beforeLabel:"Aerial Top View", beforeLabelAr:"الإطلالة العلوية الجوية", afterLabel:"Night Hero Shot", afterLabelAr:"المشهد الليلي الختامي" }
       ]
     },
     {
