@@ -22,7 +22,7 @@ img{user-select:none;-webkit-user-drag:none}
 #projBar{position:fixed;top:0;left:0;right:0;z-index:101;display:flex;align-items:center;gap:14px;
   padding:8px 16px;background:rgba(255,255,255,.78);backdrop-filter:blur(22px) saturate(180%);
   -webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid rgba(0,0,0,.05);
-  overflow-x:auto;scrollbar-width:none}
+  overflow-x:auto;scrollbar-width:none;max-height:54px}
 #projBar::-webkit-scrollbar{display:none}
 #projBar .pb-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);
   flex:none;padding-right:8px;border-right:1px solid rgba(0,0,0,.08);margin-right:4px}
@@ -42,7 +42,7 @@ img{user-select:none;-webkit-user-drag:none}
 .pcard .pdot.concept{background:var(--ink-3)}
 
 /* ================= NAV ================= */
-.nav{position:fixed;top:46px;inset:0 0 auto 0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:13px 40px;transition:.4s}
+.nav{position:fixed;top:54px;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:13px 40px;transition:.4s}
 .nav.scrolled{background:rgba(255,255,255,.65);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid rgba(0,0,0,.05)}
 .nav .logo{font-weight:700;letter-spacing:.28em;font-size:14px;cursor:pointer}
 .nav .logo b{color:var(--blue)}
@@ -72,7 +72,7 @@ html[lang=ar] .lang-btn{font-family:var(--font)}
 /* ================================================================
    THE CINEMA — one continuous sequence (exterior → rooms)
 ================================================================ */
-#cinema{position:relative;height:100vh;overflow:hidden;background:#fff}
+#cinema{position:relative;height:calc(100vh - 0px);overflow:hidden;background:#fff;margin-top:114px}
 #cine{position:absolute;inset:0;width:100%;height:100%;display:block}
 #cinFade{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .45s;z-index:7}
 
@@ -165,37 +165,59 @@ html[lang=ar] .lang-btn{font-family:var(--font)}
 
 /* ================= WIDGET MODAL ================= */
 #wModal{position:fixed;inset:0;z-index:330;display:none;align-items:center;justify-content:center;
-  background:rgba(10,10,12,.78);backdrop-filter:blur(14px);padding:40px 20px}
+  background:rgba(10,10,12,.82);backdrop-filter:blur(14px);padding:40px 20px}
 #wModal.on{display:flex;animation:wIn .4s ease}
 @keyframes wIn{from{opacity:0}to{opacity:1}}
-#wCard{background:#fff;border-radius:24px;max-width:1080px;width:100%;max-height:88vh;overflow:hidden;
-  display:grid;grid-template-columns:1.1fr .9fr;box-shadow:0 30px 100px -20px rgba(0,0,0,.5)}
-#wCard .wGal{background:#0a0a0c;position:relative;min-height:380px;overflow:hidden}
-#wCard .wGal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+#wCard{background:#fff;border-radius:22px;max-width:1120px;width:100%;max-height:90vh;overflow:hidden;
+  display:grid;grid-template-columns:1.05fr .95fr;box-shadow:0 30px 100px -20px rgba(0,0,0,.5);position:relative}
+/* gallery (left side) — auto-play */
+#wCard .wGal{background:#0a0a0c;position:relative;min-height:420px;overflow:hidden}
+#wCard .wGal img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
 #wCard .wGal img.on{opacity:1}
 #wCard .wGal .wThumbs{position:absolute;left:14px;bottom:14px;display:flex;gap:6px;z-index:3}
 #wCard .wGal .wThumbs span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:.3s}
 #wCard .wGal .wThumbs span.on{background:#fff;width:24px;border-radius:4px}
-#wCard .wBody{padding:30px 32px;overflow-y:auto;display:flex;flex-direction:column}
+#wCard .wGal .wGalKicker{position:absolute;top:14px;left:14px;z-index:3;font-size:10px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.55);padding:6px 14px;
+  border-radius:100px;backdrop-filter:blur(8px)}
+#wCard .wGal .wGalNum{position:absolute;top:14px;right:14px;z-index:3;font-size:11px;font-weight:600;
+  color:#fff;background:rgba(0,0,0,.55);padding:6px 12px;border-radius:100px;backdrop-filter:blur(8px);
+  font-variant-numeric:tabular-nums}
+/* body (right side) */
+#wCard .wBody{padding:28px 32px;overflow-y:auto;display:flex;flex-direction:column}
 #wCard .wBody .wk{font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--blue);text-transform:uppercase}
-#wCard .wBody h3{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:10px}
-#wCard .wBody h3 .ar{font-family:var(--font-ar);font-size:17px;color:var(--ink-2);font-weight:500}
+#wCard .wBody h3{font-size:24px;font-weight:700;margin-top:6px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#wCard .wBody h3 .ar{font-family:var(--font-ar);font-size:16px;color:var(--ink-2);font-weight:500}
 #wCard .wBody .wdesc{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-top:10px}
-#wCard .wBullets{margin-top:18px;display:flex;flex-direction:column;gap:10px}
-#wCard .wBullets .wbul{display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:#f6f7f9;border-radius:12px}
-#wCard .wBullets .wbul b{font-size:13px;font-weight:650;color:var(--ink);display:block}
-#wCard .wBullets .wbul b .ar{font-family:var(--font-ar);font-size:11px;color:var(--ink-3);font-weight:500;margin-inline-start:6px}
-#wCard .wBullets .wbul span{font-size:12px;color:var(--ink-2);margin-top:2px;display:block}
-#wCard .wContact{margin-top:auto;padding-top:20px;border-top:1px solid rgba(0,0,0,.08)}
-#wCard .wContact h5{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px}
-#wCard .wContact .wrows{display:flex;flex-wrap:wrap;gap:8px}
-#wCard .wContact a,.wContact button{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
-  padding:9px 14px;border-radius:100px;cursor:pointer;border:1px solid rgba(0,0,0,.1);background:#fff;color:var(--ink);
-  text-decoration:none;transition:.3s;font-family:inherit}
-#wCard .wContact a:hover,.wContact button:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
-#wCard .wContact a.wa{background:#25d366;color:#fff;border-color:#25d366}
-#wCard .wContact .wClose{position:absolute;top:14px;right:18px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;
-  border-radius:50%;font-size:16px;cursor:pointer;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:10}
+#wCard .wBullets{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+#wCard .wBullets .wbul{display:flex;gap:14px;align-items:flex-start;padding:11px 13px;background:#f6f7f9;border-radius:11px}
+#wCard .wBullets .wbul b{font-size:12.5px;font-weight:650;color:var(--ink);display:block}
+#wCard .wBullets .wbul b .ar{font-family:var(--font-ar);font-size:10.5px;color:var(--ink-3);font-weight:500;margin-inline-start:6px}
+#wCard .wBullets .wbul span{font-size:11.5px;color:var(--ink-2);margin-top:2px;display:block}
+/* inquiry form */
+#wCard .wForm{margin-top:auto;padding-top:18px;border-top:1px solid rgba(0,0,0,.08)}
+#wCard .wForm h5{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px}
+#wCard .wForm h5 .ar{font-family:var(--font-ar);font-weight:500;color:var(--ink-3);margin-inline-start:6px}
+#wCard .wForm .fline{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+#wCard .wForm input,#wCard .wForm textarea{width:100%;background:#f6f7f9;border:1px solid rgba(0,0,0,.06);border-radius:10px;
+  padding:10px 12px;font-size:12.5px;color:var(--ink);outline:none;transition:.25s;font-family:inherit}
+#wCard .wForm textarea{resize:vertical;min-height:60px}
+#wCard .wForm input:focus,#wCard .wForm textarea:focus{border-color:var(--blue);background:#fff}
+#wCard .wForm input::placeholder,#wCard .wForm textarea::placeholder{color:var(--ink-3)}
+#wCard .wForm .frow2{display:flex;gap:8px;align-items:center;margin-top:8px}
+#wCard .wForm .submit{flex:1;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:11px;
+  font-size:13px;font-weight:600;cursor:pointer;transition:.25s;font-family:inherit}
+#wCard .wForm .submit:hover{background:#000}
+#wCard .wForm .quick{background:#f6f7f9;border:1px solid rgba(0,0,0,.06);color:var(--ink-2);border-radius:10px;
+  padding:11px 14px;font-size:11.5px;font-weight:600;cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap}
+#wCard .wForm .quick:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+#wCard .wForm .fmsg{font-size:11.5px;color:var(--green);font-weight:600;margin-top:6px;display:none}
+#wCard .wForm .fmsg.show{display:block}
+/* small close button (top-right) */
+#wCard .wClose{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.92);border:none;width:28px;height:28px;
+  border-radius:50%;font-size:13px;cursor:pointer;color:var(--ink);box-shadow:0 4px 12px rgba(0,0,0,.18);
+  z-index:10;display:flex;align-items:center;justify-content:center;transition:.25s}
+#wCard .wClose:hover{background:var(--red);color:#fff;transform:rotate(90deg)}
 
 /* widget click affordance */
 .scard[data-wid]{cursor:pointer;position:relative}
@@ -204,6 +226,13 @@ html[lang=ar] .lang-btn{font-family:var(--font)}
   opacity:0;transition:.3s}
 .scard[data-wid]:hover::after{opacity:.7}
 .scard[data-wid]:hover{border-color:rgba(60,130,246,.3);box-shadow:0 14px 38px -14px rgba(60,130,246,.25)}
+
+/* language button — make it more prominent */
+.lang-btn{display:inline-flex;align-items:center;gap:8px;font-size:12.5px !important;font-weight:700 !important;color:var(--ink) !important;
+  background:rgba(60,130,246,.08) !important;border:1px solid rgba(60,130,246,.25) !important;border-radius:100px !important;padding:8px 16px !important;
+  cursor:pointer;transition:.3s;font-family:inherit !important}
+.lang-btn:hover{background:var(--blue) !important;color:#fff !important;border-color:var(--blue) !important}
+.lang-btn .g{font-size:14px}
 
 /* furniture hotspots + card */
 /* mini info widgets on furniture (instead of + dots) */
@@ -456,16 +485,40 @@ footer p .ar{font-family:var(--font-ar)}
 </div>
 
 <nav class="nav" id="nav">
-  <div class="logo" onclick="scrollTo({top:0})">AU<b>R</b>A</div>
+  <div class="logo" id="navLogo" title="AURA">AU<b>R</b>A</div>
   <div class="links">
     <a data-go="cinema">Experience · التجربة</a>
     <a data-go="baSec">Compare · قبل وبعد</a>
     <a data-go="project-sec">Project · المشروع</a>
     <a data-go="services">Services · الخدمات</a>
-    <button class="lang-btn" onclick="AURA_I18N.toggle()"><span class="g">🌐</span><span class="langLbl">العربية</span></button>
-    <a class="admin-link" href="admin.html">Admin · لوحة التحكم</a>
+    <button class="lang-btn" id="langBtn" onclick="AURA_I18N.toggle()"><span class="g">🌐</span><span class="langLbl">العربية</span></button>
   </div>
 </nav>
+
+<!-- Hidden admin gate: triggered by 3 logo clicks within 2s, or Ctrl+Shift+A -->
+<script>
+(function(){
+  let clicks=0, timer=null;
+  const logo=document.getElementById('navLogo');
+  function openAdmin(){
+    /* the gate itself IS the password — 3 clicks or Ctrl+Shift+A.
+       Once triggered, we pass the actual admin password to admin.html via sessionStorage. */
+    sessionStorage.setItem('aura.gate.pwd','aura2026');
+    location.href='admin.html';
+  }
+  if(logo){
+    logo.addEventListener('click',()=>{
+      clicks++;
+      if(timer)clearTimeout(timer);
+      timer=setTimeout(()=>clicks=0, 2000);
+      if(clicks>=3){clicks=0;openAdmin();}
+    });
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey&&e.shiftKey&&(e.key==='A'||e.key==='a')){e.preventDefault();openAdmin();}
+  });
+})();
+</script>
 
 <!-- ================================================================
      THE CINEMA — one continuous sequence
@@ -683,16 +736,29 @@ footer p .ar{font-family:var(--font-ar)}
 <!-- ================= WIDGET MODAL ================= -->
 <div id="wModal">
   <div id="wCard">
-    <button class="wClose" id="wClose">✕</button>
-    <div class="wGal" id="wGal"><div class="wThumbs" id="wThumbs"></div></div>
+    <button class="wClose" id="wClose" title="Close · إغلاق">✕</button>
+    <div class="wGal" id="wGal">
+      <div class="wGalKicker" id="wGalKicker"></div>
+      <div class="wGalNum" id="wGalNum"></div>
+      <div class="wThumbs" id="wThumbs"></div>
+    </div>
     <div class="wBody" id="wBody">
       <div class="wk" id="wKicker"></div>
       <h3 id="wTitle"></h3>
       <p class="wdesc" id="wDesc"></p>
       <div class="wBullets" id="wBullets"></div>
-      <div class="wContact">
-        <h5>Contact · تواصل مع الشركة</h5>
-        <div class="wrows" id="wRows"></div>
+      <div class="wForm">
+        <h5>Request a quote · أرسل طلبك <span class="ar">سنتواصل معك خلال 24 ساعة</span></h5>
+        <div class="fline">
+          <input type="text" id="inqName" placeholder="الاسم · Name">
+          <input type="tel" id="inqPhone" placeholder="التليفون · Phone">
+        </div>
+        <textarea id="inqMsg" placeholder="طلبك · Your request (optional)"></textarea>
+        <div class="frow2">
+          <button class="submit" id="inqSubmit">Send · إرسال الطلب</button>
+          <button class="quick" id="inqWa">WhatsApp</button>
+        </div>
+        <div class="fmsg" id="inqMsg2"></div>
       </div>
     </div>
   </div>
@@ -771,48 +837,98 @@ addEventListener('scroll',()=>{
 /* ============================================================
    WIDGET MODAL
    ============================================================ */
+let _wTimer=null,_wIdx=0,_wImgs=[];
 function openWidgetModal(wid){
   const w=PROJ.widgets?.[wid];
   if(!w){toast('Widget not configured');return;}
+  /* header */
   $('wKicker').textContent=`${w.kicker||''} · ${T(w.title,w.titleAr)}`.toUpperCase();
+  $('wGalKicker').textContent=(w.kicker||wid).toUpperCase();
   $('wTitle').innerHTML=`${T(w.title,w.titleAr)} <span class="ar">${AURA_I18N.lang==='ar'?(w.titleAr||w.title):w.title}</span>`;
   $('wDesc').textContent=AURA_I18N.lang==='ar'?(w.descAr||w.desc):w.desc;
-  /* gallery */
+  /* gallery — auto-play */
   const gal=$('wGal');
-  /* remove old imgs (keep thumbs) */
   [...gal.querySelectorAll('img')].forEach(i=>i.remove());
   const thumbs=$('wThumbs');thumbs.innerHTML='';
-  (w.gallery||[]).forEach((src,i)=>{
+  _wImgs=w.gallery||[];_wIdx=0;
+  if(!_wImgs.length){
+    /* fallback: show project cover */
+    _wImgs=[PROJ.cover||'assets/villa-clean.png'];
+  }
+  $('wGalNum').textContent=`1 / ${_wImgs.length}`;
+  _wImgs.forEach((src,i)=>{
     const im=document.createElement('img');im.src=src;if(i===0)im.classList.add('on');
     gal.insertBefore(im,thumbs);
     const t=document.createElement('span');if(i===0)t.classList.add('on');
-    t.onclick=()=>{gal.querySelectorAll('img').forEach(x=>x.classList.remove('on'));im.classList.add('on');
-      thumbs.querySelectorAll('span').forEach(x=>x.classList.remove('on'));t.classList.add('on');};
+    t.onclick=()=>{stopWAuto();setWIdx(i);startWAuto();};
     thumbs.appendChild(t);
   });
   /* bullets */
   $('wBullets').innerHTML=(w.bullets||[]).map(b=>
     `<div class="wbul"><div><b>${T(b[0],b[1])} <span class="ar">${AURA_I18N.lang==='ar'?(b[1]||b[0]):b[1]||''}</span></b><span>${b[2]||''}</span></div></div>`).join('');
-  /* contact */
-  const c=PROJ.contact||{};
-  const waText=`https://wa.me/${c.whatsapp||''}?text=${encodeURIComponent('Hello, I am interested in '+(PROJ.project.title||'')+' — '+(AURA_I18N.lang==='ar'?(w.titleAr||w.title||''):(w.title||'')))}`;
-  const ig=c.instagram||'';
-  const rows=[
-    `<a class="wa" href="${waText}" target="_blank">WhatsApp · واتساب</a>`,
-    `<a href="mailto:${c.email||''}">Email · إيميل</a>`,
-    `<a href="tel:${c.phone||''}">Call · اتصال</a>`,
-    `<button data-ig="${ig}">Instagram</button>`
-  ].join('');
-  $('wRows').innerHTML=rows;
-  /* wire instagram button */
-  $('wRows').querySelector('button[data-ig]')?.addEventListener('click',()=>toast(ig||'Instagram'));
+  /* pre-fill inquiry widget context */
+  $('inqMsg').placeholder=AURA_I18N.lang==='ar'?'طلبك بخصوص: '+(w.titleAr||w.title):'Your request re: '+(w.title||wid);
+  $('inqMsg2').classList.remove('show');
+  $('inqName').value='';$('inqPhone').value='';$('inqMsg').value='';
+  /* wire submit + whatsapp */
+  $('inqSubmit').onclick=submitInquiry;
+  $('inqWa').onclick=()=>{
+    const c=PROJ.contact||{};
+    const name=$('inqName').value||(AURA_I18N.lang==='ar'?'عميل':'Client');
+    const phone=$('inqPhone').value||'';
+    const msg=$('inqMsg').value||'';
+    const txt=`Hello ${c.company||'AURA'},\nName: ${name}\nPhone: ${phone}\nProject: ${PROJ.project.title}\nService: ${T(w.title,w.titleAr)}\n\n${msg}`;
+    window.open(`https://wa.me/${c.whatsapp||''}?text=${encodeURIComponent(txt)}`,'_blank');
+  };
   $('wModal').classList.add('on');
   document.body.style.overflow='hidden';
+  startWAuto();
 }
-function closeWidgetModal(){$('wModal').classList.remove('on');document.body.style.overflow='';}
+function setWIdx(i){
+  _wIdx=(i+_wImgs.length)%_wImgs.length;
+  const gal=$('wGal');
+  gal.querySelectorAll('img').forEach((im,k)=>im.classList.toggle('on',k===_wIdx));
+  $('wThumbs').querySelectorAll('span').forEach((t,k)=>t.classList.toggle('on',k===_wIdx));
+  $('wGalNum').textContent=`${_wIdx+1} / ${_wImgs.length}`;
+}
+function startWAuto(){
+  stopWAuto();
+  if(_wImgs.length>1)_wTimer=setInterval(()=>setWIdx(_wIdx+1),3500);
+}
+function stopWAuto(){if(_wTimer){clearInterval(_wTimer);_wTimer=null;}}
+function closeWidgetModal(){stopWAuto();$('wModal').classList.remove('on');document.body.style.overflow='';}
 $('wClose').onclick=closeWidgetModal;
 $('wModal').addEventListener('click',e=>{if(e.target.id==='wModal')closeWidgetModal();});
 addEventListener('keydown',e=>{if(e.key==='Escape')closeWidgetModal();});
+
+/* inquiry submission → localStorage + toast */
+function submitInquiry(){
+  const name=$('inqName').value.trim();
+  const phone=$('inqPhone').value.trim();
+  const msg=$('inqMsg').value.trim();
+  if(!name||!phone){
+    $('inqMsg2').textContent=AURA_I18N.lang==='ar'?'اكتب اسمك وتليفونك من فضلك':'Please enter your name and phone';
+    $('inqMsg2').style.color='var(--red)';
+    $('inqMsg2').classList.add('show');return;
+  }
+  const inq={
+    id:'inq-'+Date.now(),
+    date:new Date().toISOString(),
+    project:PROJ.project?.title||PROJ.id,
+    projectId:PROJ.id,
+    widget:$('wGalKicker').textContent,
+    name,phone,msg,
+    status:'new'
+  };
+  const all=JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
+  all.unshift(inq);
+  localStorage.setItem('aura.inquiries',JSON.stringify(all));
+  $('inqMsg2').textContent=AURA_I18N.lang==='ar'?'تم إرسال طلبك! سنتواصل معك قريبًا ✓':'Request sent! We will contact you soon ✓';
+  $('inqMsg2').style.color='var(--green)';
+  $('inqMsg2').classList.add('show');
+  $('inqName').value='';$('inqPhone').value='';$('inqMsg').value='';
+  setTimeout(closeWidgetModal,1800);
+}
 /* wire widget clicks (deferred — wired on rebuild) */
 function wireWidgetClicks(){
   document.querySelectorAll('.scard[data-wid]').forEach(s=>{

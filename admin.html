@@ -209,6 +209,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>Hotspots · محرر النقاط</div>
     <div class="mi" data-p="materials"><span class="ic">◨</span>Materials · المواد</div>
     <div class="mi" data-p="contact"><span class="ic">✆</span>Contact · التواصل</div>
+    <div class="mi" data-p="inquiries"><span class="ic">✉</span>Inquiries · الطلبات <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
     <div class="sep">Configuration · الإعدادات</div>
     <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
     <div class="mi" data-p="ui"><span class="ic">◐</span>UI · تخصيص الواجهة</div>
@@ -320,7 +321,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <!-- ========== CONTACT EDITOR ========== -->
     <div class="page" id="p-contact">
       <h1 class="pt">Contact · بيانات التواصل</h1>
-      <div class="ps">تظهر في كل widget modal (أزرار WhatsApp / Email / Call / Instagram)</div>
+      <div class="ps">تظهر في كل widget modal (نموذج العميل + زر WhatsApp)</div>
       <div class="panel">
         <div class="grid2">
           <div class="f"><label>Company · اسم الشركة (EN)</label><input type="text" id="cCompany"></div>
@@ -332,6 +333,27 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <div class="f"><label>Location · الموقع</label><input type="text" id="cLocation"></div>
         </div>
         <div class="btnrow"><button class="btn" onclick="saveContact()">Save & Publish · حفظ ونشر</button></div>
+      </div>
+    </div>
+
+    <!-- ========== INQUIRIES ========== -->
+    <div class="page" id="p-inquiries">
+      <h1 class="pt">Inquiries · طلبات العملاء <span class="badge" id="inqCount" style="margin-inline-start:10px">0</span></h1>
+      <div class="ps">الطلبات الواردة من نموذج العميل في الـ widget modal — مخزنة في المتصفح (localStorage)</div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn sm ghost" onclick="filterInquiries('all')" id="inqFAll">All · الكل</button>
+            <button class="btn sm ghost" onclick="filterInquiries('new')" id="inqFNew">New · جديد</button>
+            <button class="btn sm ghost" onclick="filterInquiries('contacted')" id="inqFCont">Contacted · تم التواصل</button>
+            <button class="btn sm ghost" onclick="filterInquiries('closed')" id="inqFClosed">Closed · مغلق</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn sm ghost" onclick="exportInquiries()">Export CSV · تصدير</button>
+            <button class="btn sm danger" onclick="clearInquiries()">Clear All · حذف الكل</button>
+          </div>
+        </div>
+        <div id="inqList"></div>
       </div>
     </div>
 
@@ -576,6 +598,9 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 <script>
 let CFG = AURA.load();
 let PROJ = AURA.getCurrent(CFG);   /* the project currently being edited */
+let _pmOrder=[];   /* project IDs in display order (top-level to avoid TDZ) */
+let _wCur='design';
+let _inqFilter='all';
 AURA_I18N.init();const T=AURA_I18N.pick;
 
 /* ---------------- auth ---------------- */
@@ -586,6 +611,7 @@ function tryLogin(){
   if(pass==='aura2026'){
     const role = email.startsWith('admin')?'admin':'editor';
     sessionStorage.setItem(SESSION, JSON.stringify({email,role,t:Date.now()}));
+    sessionStorage.removeItem('aura.gate.pwd');
     enter();
   } else document.getElementById('lErr').textContent='Incorrect password. Hint: aura2026';
 }
@@ -601,7 +627,17 @@ function enter(){
   boot();
 }
 document.getElementById('logout').onclick=()=>{sessionStorage.removeItem(SESSION);location.reload()};
-if(sessionStorage.getItem(SESSION))enter();
+/* auto-login if coming from hidden gate (3 logo clicks or Ctrl+Shift+A on index) */
+(function(){
+  const gatePwd=sessionStorage.getItem('aura.gate.pwd');
+  if(gatePwd){
+    sessionStorage.removeItem('aura.gate.pwd');
+    document.getElementById('lPass').value=gatePwd;
+    document.getElementById('lEmail').value='admin@aura.studio';
+    tryLogin();
+  }
+  else if(sessionStorage.getItem(SESSION))enter();
+})();
 
 /* ---------------- nav ---------------- */
 function go(p){
@@ -641,7 +677,7 @@ function boot(){
   uGlass.value=PROJ.ui.glassOpacity;uBlur.value=PROJ.ui.blur;uRadius.value=PROJ.ui.radius;uGlow.value=PROJ.ui.glow;
   updRvUI();
   buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
-  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();
+  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();buildInquiries();
   document.getElementById('dFrames').textContent=PROJ.sequence.count;
 }
 function $(id){return document.getElementById(id);}
@@ -941,7 +977,6 @@ function saveInterior(){AURA.save(CFG);toast('Interior configuration published')
 /* ============================================================
    PROJECTS MANAGER
    ============================================================ */
-let _pmOrder=[];   /* array of project IDs in display order */
 function buildProjectManager(){
   _pmOrder=CFG.projects.map(p=>p.id);
   const list=$('pmList');list.innerHTML='';
@@ -1041,7 +1076,6 @@ function pmSave(){
 /* ============================================================
    WIDGETS EDITOR
    ============================================================ */
-let _wCur='design';
 function buildWidgets(){
   const tabs=$('wTabs');tabs.innerHTML='';
   const wids=Object.keys(PROJ.widgets||{});
@@ -1205,6 +1239,101 @@ function saveContact(){
     location:cLocation.value
   };
   AURA.save(CFG);toast('Contact published · تم نشر بيانات التواصل');
+}
+
+/* ============================================================
+   INQUIRIES (from widget modal form submissions)
+   ============================================================ */
+function loadInquiries(){
+  try{return JSON.parse(localStorage.getItem('aura.inquiries')||'[]');}
+  catch(e){return [];}
+}
+function saveInquiries(arr){localStorage.setItem('aura.inquiries',JSON.stringify(arr));}
+function buildInquiries(){
+  const all=loadInquiries();
+  const filtered=_inqFilter==='all'?all:all.filter(i=>i.status===_inqFilter);
+  /* update count badge */
+  const newCount=all.filter(i=>i.status==='new').length;
+  const badge=$('inqBadge');
+  if(newCount>0){badge.textContent=newCount;badge.style.display='inline-block';}
+  else{badge.style.display='none';}
+  $('inqCount').textContent=all.length;
+  /* highlight active filter */
+  ['All','New','Cont','Closed'].forEach(k=>{
+    const id='inqF'+k;const el=$(id);if(!el)return;
+    const want=_inqFilter===({All:'all',New:'new',Cont:'contacted',Closed:'closed'}[k]);
+    el.classList.toggle('on',want);
+    el.style.background=want?'var(--blue)':'';
+    el.style.color=want?'#fff':'';
+    el.style.borderColor=want?'var(--blue)':'';
+  });
+  /* render rows */
+  const list=$('inqList');list.innerHTML='';
+  if(!filtered.length){
+    list.innerHTML='<div style="color:var(--tx3);font-size:13px;padding:20px 0;text-align:center">No inquiries · لا توجد طلبات</div>';
+    return;
+  }
+  filtered.forEach(inq=>{
+    const d=new Date(inq.date);
+    const dstr=d.toLocaleString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const statusCls=inq.status==='new'?'amber':inq.status==='contacted'?'blue':'green';
+    const statusLbl=inq.status==='new'?'New · جديد':inq.status==='contacted'?'Contacted · تم التواصل':'Closed · مغلق';
+    const row=document.createElement('div');row.className='stage-row';
+    row.style.gridTemplateColumns='130px 1fr 130px 1.2fr auto';
+    row.style.alignItems='start';
+    row.innerHTML=`
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:11px;color:var(--tx3);font-variant-numeric:tabular-nums">${dstr}</span>
+        <span class="tag ${statusCls}" style="justify-self:start;width:fit-content">${statusLbl}</span>
+      </div>
+      <div>
+        <div style="font-weight:650;font-size:13.5px">${escapeHtml(inq.name||'—')}</div>
+        <div style="font-size:11.5px;color:var(--tx2);margin-top:2px">📞 ${escapeHtml(inq.phone||'—')}</div>
+      </div>
+      <div style="font-size:11px;color:var(--tx3)">
+        <div>Project</div>
+        <div style="color:var(--tx2);font-weight:600;margin-top:2px">${escapeHtml(inq.project||'—')}</div>
+        <div style="margin-top:6px">Service</div>
+        <div style="color:var(--tx2);font-weight:600;margin-top:2px">${escapeHtml(inq.widget||'—')}</div>
+      </div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.55">${escapeHtml(inq.msg||'(no message)')}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','contacted')">Mark Contacted</button>
+        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','closed')">Close</button>
+        <a class="btn sm" style="text-decoration:none;text-align:center" href="tel:${escapeHtml(inq.phone||'')}">Call</a>
+        <a class="btn sm" style="text-decoration:none;text-align:center;background:#25d366;color:#fff;border-color:#25d366" href="https://wa.me/${(inq.phone||'').replace(/[^0-9]/g,'')}" target="_blank">WhatsApp</a>
+        <button class="btn sm danger" onclick="inqDelete('${inq.id}')">Delete</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+function escapeHtml(s){return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));}
+function filterInquiries(s){_inqFilter=s;buildInquiries();}
+function inqStatus(id,status){
+  const all=loadInquiries();
+  const i=all.find(x=>x.id===id);if(i){i.status=status;saveInquiries(all);buildInquiries();toast('Status updated · تم تحديث الحالة');}
+}
+function inqDelete(id){
+  if(!confirm('Delete this inquiry?'))return;
+  const all=loadInquiries().filter(x=>x.id!==id);
+  saveInquiries(all);buildInquiries();toast('Inquiry deleted · تم الحذف');
+}
+function clearInquiries(){
+  if(!confirm('Delete ALL inquiries? This cannot be undone.'))return;
+  saveInquiries([]);buildInquiries();toast('All inquiries cleared');
+}
+function exportInquiries(){
+  const all=loadInquiries();
+  if(!all.length){toast('No inquiries to export');return;}
+  const header=['Date','Name','Phone','Project','Service','Message','Status'];
+  const rows=all.map(i=>[i.date,i.name||'',i.phone||'',i.project||'',i.widget||'',(i.msg||'').replace(/"/g,'""'),i.status||'new']);
+  const csv=[header,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='aura-inquiries-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV exported · تم تصدير الملف');
 }
 
 /* elements with IDs are available as globals — no redeclaration needed */
