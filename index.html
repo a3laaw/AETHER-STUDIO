@@ -1083,6 +1083,22 @@ EXTRA KEYWORDS:
         <div class="wm-desc" style="margin-bottom:8px;">
           <p>Complete 11-section architectural image library prompt for <b>Midjourney v6, DALL-E 3, Stable Diffusion XL & Adobe Firefly</b> with Apple Liquid Glass UI overlays and 360° panoramic support (55 total images specification).</p>
         </div>
+        <div class="wm-contact glass" style="margin-bottom: 14px; border-color: rgba(125,92,240,0.35);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <h4 style="margin:0; color:#7d5cf0;">REFERENCE-BASED CONSISTENCY PROMPT (IMAGE-TO-IMAGE) · قالب الاتساق المعماري بالصور المرجعية</h4>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0; background:#7d5cf0;" onclick="copyAIRefPromptModal(false)">📋 Copy Ref Prompt (EN)</button>
+              <button class="wm-btn" style="padding:6px 14px; font-size:11.5px; margin:0; background:rgba(125,92,240,0.12); color:#7d5cf0;" onclick="copyAIRefPromptModal(true)">📋 Copy Ref Prompt (AR)</button>
+            </div>
+          </div>
+          <textarea id="aiRefPromptTextEn" readonly rows="5" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.5; font-family:monospace; resize:vertical;">Create new architectural visualization images using the uploaded reference images as the ONLY design source.
+IMPORTANT: The uploaded images represent the exact same luxury floating house project. Generate new views of this SAME HOUSE.
+Maintain 100% visual consistency: identical building shape, facade design, glass panels, materials, furniture language, colors, lighting, luxury atmosphere. Do not redesign. Do not invent a new house.
+Style: Ultra realistic CGI, Luxury modern floating villa, Apple Liquid Glass interface aesthetic, Unreal Engine 5 realism, 8K HDR, Ray tracing.
+Camera: Same cinematic camera language, lens style, perspective.
+Generate: [PUT ONLY ONE ROOM OR ONE AREA HERE]
+Example: "Create the master bedroom interior from this same house."</textarea>
+        </div>
         <div class="wm-contact glass" style="margin-bottom: 14px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
             <h4 style="margin:0;">SYSTEM & FULL 11-SECTION PROMPT (EN) · برومبت الصور الشامل (55 صورة)</h4>

@@ -569,9 +569,11 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           برومبت متوافق مع <b>Midjourney v6 / DALL-E 3 / Stable Diffusion XL / Adobe Firefly / Octane</b> لتوليد 55 صورة متسقة معمارياً للأقسام الـ 11 (الواجهة، جناح الماستر، غرف النوم، الحمامات، المطبخ، المعيشة، الحديقة والمسبح، وصالة السطح Rooftop Lounge).
         </p>
         <div class="btnrow">
-          <button class="btn" onclick="copyAIImagePromptAdmin(false)">📋 Copy Full Image Library (EN)</button>
-          <button class="btn ghost" onclick="copyAIImagePromptAdmin(true)">📋 Copy Arabic Image Library</button>
-          <button class="btn ghost" onclick="window.open('image-prompt.md', '_blank')">📖 View 11 Sections Specs · فتح الدليل الكامل ↗</button>
+          <button class="btn" onclick="copyAIImagePromptAdmin(false)">📋 Copy 11-Section Library (EN)</button>
+          <button class="btn ghost" onclick="copyAIImagePromptAdmin(true)">📋 Copy Arabic Library</button>
+          <button class="btn" style="background:#7d5cf0;" onclick="copyAIRefConsistencyPromptAdmin(false)">📋 Copy Reference Prompt (EN)</button>
+          <button class="btn ghost" onclick="copyAIRefConsistencyPromptAdmin(true)">📋 Copy Reference Prompt (AR)</button>
+          <button class="btn ghost" onclick="window.open('image-prompt.md', '_blank')">📖 View Complete Guide ↗</button>
         </div>
       </div>
       <div class="gal-tabs" id="galTabs"></div>
@@ -961,6 +963,92 @@ const AI_IMAGE_PROMPT_AR = `تجربة المنزل الطافي الفاخر ا
 11. صالة السطح Rooftop Lounge (5 صور): السطح كامل، منطقة الجلوس والبيرغولا، المشهد الليلي، الخامات، بانوراما 360.
 
 الأسلوب البصري: CGI فائق الواقعية، إخراج معماري 8K، واجهة Apple Liquid Glass، جودة Unreal Engine 5 وOctane Render، بدون أشخاص.`;
+
+
+const AI_REF_PROMPT_EN = `Create new architectural visualization images using the uploaded reference images as the ONLY design source.
+
+IMPORTANT:
+The uploaded images represent the exact same luxury floating house project.
+Generate new views of this SAME HOUSE.
+
+Maintain 100% visual consistency:
+- identical building shape
+- identical facade design
+- identical glass panels
+- identical materials
+- identical furniture language
+- identical colors
+- identical lighting
+- identical luxury atmosphere
+
+Do not redesign.
+Do not invent a new house.
+Do not change architectural elements.
+
+The new images must look like different camera angles from the same architectural project.
+
+Style:
+Ultra realistic architectural CGI.
+Luxury modern floating villa.
+Apple-inspired Liquid Glass interface aesthetic.
+Unreal Engine 5 realism.
+Octane Render quality.
+8K HDR.
+Ray tracing.
+Professional architectural photography.
+
+Camera:
+Same cinematic camera language.
+Same lens style.
+Same perspective.
+Wide angle luxury real estate photography.
+
+Generate:
+[PUT ONLY ONE ROOM OR ONE AREA HERE]
+Example: "Create the master bedroom interior from this same house."`;
+
+const AI_REF_PROMPT_AR = `إنشاء صور إخراج معماري جديدة باستخدام الصور المرجعية المرفقة كمصدر وحيد للتصميم.
+
+هام جداً:
+الصور المرفقة تمثل نفس مشروع المنزل الفاخر الطافي تماماً.
+قم بتوليد زوايا ومشاهد جديدة لهذا المنزل نفسه (SAME HOUSE).
+
+حافظ على اتساق بصري بنسبة 100%:
+- نفس شكل وهيئة المبنى بالضبط
+- نفس تصميم الواجهات
+- نفس الألواح الزجاجية البانورامية
+- نفس المواد والخامات (رخام الترافرتين والخشب الطبيعي)
+- نفس لغة وأسلوب الأثاث المودرن الفاخر
+- نفس لوحة الألوان
+- نفس نظام الإضاءة الدافئة
+- نفس الجو المعماري الفاخر
+
+لا تقم بإعادة التصميم.
+لا تخترع منزلاً جديداً.
+لا تغير العناصر المعمارية.
+
+يجب أن تبدو الصور الجديدة وكأنها زوايا كاميرا مختلفة لنفس المشروع المعماري.
+
+الأسلوب البصري:
+CGI معماري فائق الواقعية، فيلا مودرن فاخرة طافية، واجهة مستخدم زجاجية Apple Liquid Glass، واقعية Unreal Engine 5 وOctane Render بدقة 8K HDR مع تتبع الأشعة (Ray Tracing).
+
+الكاميرا:
+نفس لغة الكاميرا السينمائية، نفس العدسة المعمارية العريضة، نفس المنظور.
+
+قم بتوليد:
+[ضع اسم الغرفة أو المنطقة المطلوبة فقط هنا]
+مثال: "إنشاء التصميم الداخلي لغرفة النوم الرئيسية من هذا المنزل نفسه."`;
+
+function copyAIRefConsistencyPromptAdmin(isAr){
+  const txt = isAr ? AI_REF_PROMPT_AR : AI_REF_PROMPT_EN;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => {
+      toast(isAr ? 'تم نسخ قالب الصور المرجعية بنجاح · Arabic Reference Prompt Copied' : 'Reference Consistency Prompt (EN) copied to clipboard');
+    });
+  } else {
+    toast('Prompt ready — paste from image-prompt.md');
+  }
+}
 
 function copyAIImagePromptAdmin(isAr){
   const txt = isAr ? AI_IMAGE_PROMPT_AR : AI_IMAGE_PROMPT_EN;

@@ -160,5 +160,92 @@ All images must support interactive viewing:
 - Complete 360° equirectangular panoramas for section 05 of each room
 - Consistent perspective and spatial orientation
 
+
+---
+
+## 4 · REFERENCE-BASED CONSISTENCY PROMPT TEMPLATE (IMAGE-TO-IMAGE / IP-ADAPTER / `--sref`)
+> *Use when uploading reference images of an existing house/room to generate new camera angles or new interior rooms with 100% architectural consistency.*
+
+### English Reference Prompt Template:
+```text
+Create new architectural visualization images using the uploaded reference images as the ONLY design source.
+
+IMPORTANT:
+The uploaded images represent the exact same luxury floating house project.
+Generate new views of this SAME HOUSE.
+
+Maintain 100% visual consistency:
+- identical building shape
+- identical facade design
+- identical glass panels
+- identical materials
+- identical furniture language
+- identical colors
+- identical lighting
+- identical luxury atmosphere
+
+Do not redesign.
+Do not invent a new house.
+Do not change architectural elements.
+
+The new images must look like different camera angles from the same architectural project.
+
+Style:
+Ultra realistic architectural CGI.
+Luxury modern floating villa.
+Apple-inspired Liquid Glass interface aesthetic.
+Unreal Engine 5 realism.
+Octane Render quality.
+8K HDR.
+Ray tracing.
+Professional architectural photography.
+
+Camera:
+Same cinematic camera language.
+Same lens style.
+Same perspective.
+Wide angle luxury real estate photography.
+
+Generate:
+[PUT ONLY ONE ROOM OR ONE AREA HERE]
+Example: "Create the master bedroom interior from this same house."
+```
+
+### الترجمة العربية لقالب الاتساق المعماري بالصور المرجعية:
+```text
+إنشاء صور إخراج معماري جديدة باستخدام الصور المرجعية المرفقة كمصدر وحيد للتصميم.
+
+هام جداً:
+الصور المرفقة تمثل نفس مشروع المنزل الفاخر الطافي تماماً.
+قم بتوليد زوايا ومشاهد جديدة لهذا المنزل نفسه (SAME HOUSE).
+
+حافظ على اتساق بصري بنسبة 100%:
+- نفس شكل وهيئة المبنى بالضبط
+- نفس تصميم الواجهات
+- نفس الألواح الزجاجية البانورامية
+- نفس المواد والخامات (رخام الترافرتين والخشب الطبيعي)
+- نفس لغة وأسلوب الأثاث المودرن الفاخر
+- نفس لوحة الألوان
+- نفس نظام الإضاءة الدافئة
+- نفس الجو المعماري الفاخر
+
+لا تقم بإعادة التصميم.
+لا تخترع منزلاً جديداً.
+لا تغير العناصر المعمارية.
+
+يجب أن تبدو الصور الجديدة وكأنها زوايا كاميرا مختلفة لنفس المشروع المعماري.
+
+الأسلوب البصري:
+CGI معماري فائق الواقعية، فيلا مودرن فاخرة طافية، واجهة مستخدم زجاجية Apple Liquid Glass، واقعية Unreal Engine 5 وOctane Render بدقة 8K HDR مع تتبع الأشعة (Ray Tracing).
+
+الكاميرا:
+نفس لغة الكاميرا السينمائية، نفس العدسة المعمارية العريضة، نفس المنظور.
+
+قم بتوليد:
+[ضع اسم الغرفة أو المنطقة المطلوبة فقط هنا]
+مثال: "إنشاء التصميم الداخلي لغرفة النوم الرئيسية من هذا المنزل نفسه."
+```
+
 ---
 *AURA Studio · 2026 · Future Architecture Studio — Kuwait*
+ · Future Architecture Studio — Kuwait*
