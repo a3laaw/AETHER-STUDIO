@@ -199,12 +199,16 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="mi on" data-p="dash"><span class="ic">◧</span>Dashboard · الرئيسية</div>
     <div class="sep">Content · المحتوى</div>
     <div class="mi" data-p="projects"><span class="ic">▤</span>Projects · المشاريع</div>
+    <div class="mi" data-p="project"><span class="ic">◆</span>Project · المشروع الحالي</div>
+    <div class="mi" data-p="widgets"><span class="ic">◫</span>Widgets · الويدجات</div>
+    <div class="mi" data-p="beforeafter"><span class="ic">⇆</span>Before/After · قبل وبعد</div>
     <div class="mi" data-p="sequence"><span class="ic">◫</span>Sequence · تسلسل الصور</div>
     <div class="mi" data-p="stages"><span class="ic">≡</span>Stages · المراحل</div>
     <div class="mi" data-p="gallery"><span class="ic">▦</span>Galleries · المعارض</div>
     <div class="mi" data-p="interior"><span class="ic">⌂</span>Interior · الداخلي</div>
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>Hotspots · محرر النقاط</div>
     <div class="mi" data-p="materials"><span class="ic">◨</span>Materials · المواد</div>
+    <div class="mi" data-p="contact"><span class="ic">✆</span>Contact · التواصل</div>
     <div class="sep">Configuration · الإعدادات</div>
     <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
     <div class="mi" data-p="ui"><span class="ic">◐</span>UI · تخصيص الواجهة</div>
@@ -250,34 +254,84 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       </div>
     </div>
 
-    <!-- ========== PROJECTS ========== -->
+    <!-- ========== PROJECTS MANAGER ========== -->
     <div class="page" id="p-projects">
-      <h1 class="pt">Projects · المشاريع</h1>
-      <div class="ps">إنشاء وتعديل ونشر المشاريع — بدون أي كود</div>
-      <div class="panel"><h3><span>Active Project · المشروع المنشور</span> <span class="badge">PUBLISHED</span></h3>
+      <h1 class="pt">Projects Manager · إدارة المشاريع</h1>
+      <div class="ps">إضافة / حذف / تعديل / ترتيب المشاريع — وتعيين المشروع الافتراضي للموقع</div>
+      <div class="panel">
+        <h3><span>All Projects · كل المشاريع</span> <span class="badge" id="pmCount">0</span></h3>
+        <div id="pmList"></div>
+        <div class="btnrow">
+          <button class="btn" onclick="pmAdd()">+ Add Project · إضافة مشروع</button>
+          <button class="btn ghost" onclick="pmSave()">Save Order · حفظ الترتيب</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CURRENT PROJECT EDITOR ========== -->
+    <div class="page" id="p-project">
+      <h1 class="pt">Project Editor · تعديل المشروع الحالي</h1>
+      <div class="ps" id="projSub">Editing: —</div>
+      <div class="panel">
+        <h3><span>Identity · الهوية</span> <span class="badge" id="pIdBadge">—</span></h3>
         <div class="grid2">
+          <div class="f"><label>Project ID · معرّف المشروع</label><input type="text" id="fId" disabled></div>
+          <div class="f"><label>Cover Image · صورة الغلاف</label><input type="text" id="fCover"></div>
           <div class="f"><label>Title · اسم المشروع</label><input type="text" id="fTitle"></div>
           <div class="f"><label>Location · الموقع</label><input type="text" id="fLoc"></div>
           <div class="f"><label>Area · المساحة</label><input type="text" id="fArea"></div>
           <div class="f"><label>Year · السنة</label><input type="text" id="fYear"></div>
           <div class="f"><label>Status · الحالة</label>
-            <select id="fStatus"><option>Completed</option><option>In Progress</option><option>Design Phase</option><option>Archived</option></select></div>
-          <div class="f"><label>Featured · مميز</label>
-            <div class="frow" style="border:none;padding:4px 0"><div><div class="fl">Show on homepage · يظهر في الواجهة</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div></div>
+            <select id="fStatus"><option value="completed">Completed · مكتمل</option><option value="in-progress">In Progress · قيد التنفيذ</option><option value="concept">Concept · تصور</option></select></div>
+          <div class="f"><label>Progress · النسبة المئوية</label><input type="number" id="fProgress" min="0" max="100"></div>
         </div>
         <div class="btnrow">
-          <button class="btn" onclick="saveProject()">Save & Publish · حفظ ونشر</button>
-          <button class="btn ghost" onclick="toast('Project duplicated as draft')">Duplicate · نسخ</button>
-          <button class="btn ghost" onclick="toast('Project archived')">Archive · أرشفة</button>
-          <button class="btn danger" onclick="toast('Deletion requires admin confirmation')">Delete · حذف</button>
+          <button class="btn" onclick="saveProject()">Save · حفظ</button>
+          <button class="btn ghost" onclick="switchToProject()">Set as Default · تعيين كافتراضي</button>
+          <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
+          <button class="btn danger" onclick="pmDeleteCurrent()">Delete · حذف</button>
         </div>
       </div>
-      <div class="panel"><h3>All Projects · كل المشاريع</h3>
-        <div class="act"><span class="t">●</span><div><b>Villa Solara</b> — Kuwait · 97 frames · 483 images</div><span class="tag green">PUBLISHED</span></div>
-        <div class="act"><span class="t">●</span><div><b>Marina Court</b> — Sharq · 0 frames · 112 images</div><span class="tag amber">DRAFT</span></div>
-        <div class="act"><span class="t">●</span><div><b>Desert Pavilion</b> — Wafra · 0 frames · 64 images</div><span class="tag amber">DRAFT</span></div>
-        <div class="act"><span class="t">●</span><div><b>Coastal House</b> — Khiran · concept</div><span class="tag blue">DESIGN</span></div>
+    </div>
+
+    <!-- ========== WIDGETS EDITOR ========== -->
+    <div class="page" id="p-widgets">
+      <h1 class="pt">Widgets Editor · محرر الويدجات</h1>
+      <div class="ps">لكل ويدجت: عنوان، وصف، معرض صور، نقاط معلومات — الضغط عليها في الموقع بيفتح modal</div>
+      <div class="gal-tabs" id="wTabs"></div>
+      <div class="panel" id="wPanel"></div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveWidgets()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="addWidget()">+ Add Widget · إضافة ويدجت</button>
+      </div>
+    </div>
+
+    <!-- ========== BEFORE/AFTER EDITOR ========== -->
+    <div class="page" id="p-beforeafter">
+      <h1 class="pt">Before/After Editor · محرر قبل وبعد</h1>
+      <div class="ps">4 بنود، كل بند زوج صور (قبل / بعد) = 8 صور إجمالاً. تظهر في قسم Compare في الموقع</div>
+      <div class="panel" id="baPanel"></div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveBA()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="window.open('index.html#baSec')">Preview · معاينة ↗</button>
+      </div>
+    </div>
+
+    <!-- ========== CONTACT EDITOR ========== -->
+    <div class="page" id="p-contact">
+      <h1 class="pt">Contact · بيانات التواصل</h1>
+      <div class="ps">تظهر في كل widget modal (أزرار WhatsApp / Email / Call / Instagram)</div>
+      <div class="panel">
+        <div class="grid2">
+          <div class="f"><label>Company · اسم الشركة (EN)</label><input type="text" id="cCompany"></div>
+          <div class="f"><label>اسم الشركة (AR)</label><input type="text" id="cCompanyAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>Phone · الهاتف</label><input type="text" id="cPhone"></div>
+          <div class="f"><label>WhatsApp (with country code, no +)</label><input type="text" id="cWhatsapp"></div>
+          <div class="f"><label>Email · البريد</label><input type="text" id="cEmail"></div>
+          <div class="f"><label>Instagram</label><input type="text" id="cInstagram"></div>
+          <div class="f"><label>Location · الموقع</label><input type="text" id="cLocation"></div>
+        </div>
+        <div class="btnrow"><button class="btn" onclick="saveContact()">Save & Publish · حفظ ونشر</button></div>
       </div>
     </div>
 
@@ -521,6 +575,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 <script src="js/cms.js"></script>
 <script>
 let CFG = AURA.load();
+let PROJ = AURA.getCurrent(CFG);   /* the project currently being edited */
 AURA_I18N.init();const T=AURA_I18N.pick;
 
 /* ---------------- auth ---------------- */
@@ -565,22 +620,31 @@ function toast(msg){
 
 /* ---------------- boot: fill forms ---------------- */
 function boot(){
+  // sync PROJ to current default
+  PROJ=AURA.getCurrent(CFG);
   // project
-  fTitle.value=CFG.project.title;fLoc.value=CFG.project.location;
-  fArea.value=CFG.project.area;fYear.value=CFG.project.year;fStatus.value=CFG.project.status;
+  fId.value=PROJ.id||'';
+  fCover.value=PROJ.cover||'';
+  fTitle.value=PROJ.project.title;fLoc.value=PROJ.project.location;
+  fArea.value=PROJ.project.area;fYear.value=PROJ.project.year;fStatus.value=PROJ.status||'completed';
+  fProgress.value=PROJ.project.progress||0;
+  $('pIdBadge').textContent=PROJ.id||'—';
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
   // playback
-  CFG.playback=CFG.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
-  pFpsExt.value=CFG.playback.fpsExt;pFpsInt.value=CFG.playback.fpsInt;
-  pPauseExt.value=CFG.playback.pauseExplore;pPauseRoom.value=CFG.playback.pauseRoom;
-  pAuto.checked=CFG.playback.autoplay!==false;
+  PROJ.playback=PROJ.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
+  pFpsExt.value=PROJ.playback.fpsExt;pFpsInt.value=PROJ.playback.fpsInt;
+  pPauseExt.value=PROJ.playback.pauseExplore;pPauseRoom.value=PROJ.playback.pauseRoom;
+  pAuto.checked=PROJ.playback.autoplay!==false;
   updPb();
   // ui
-  uName.value=CFG.brand.name;uAccent.value=CFG.brand.accent;uTheme.value=CFG.ui.theme;
-  uGlass.value=CFG.ui.glassOpacity;uBlur.value=CFG.ui.blur;uRadius.value=CFG.ui.radius;uGlow.value=CFG.ui.glow;
+  uName.value=PROJ.brand.name;uAccent.value=PROJ.brand.accent;uTheme.value=PROJ.ui.theme;
+  uGlass.value=PROJ.ui.glassOpacity;uBlur.value=PROJ.ui.blur;uRadius.value=PROJ.ui.radius;uGlow.value=PROJ.ui.glow;
   updRvUI();
   buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
-  document.getElementById('dFrames').textContent=CFG.sequence.count;
+  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();
+  document.getElementById('dFrames').textContent=PROJ.sequence.count;
 }
+function $(id){return document.getElementById(id);}
 ['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
 function fmtT(s){const m=Math.floor(s/60),r=Math.round(s%60);return m?`${m}m ${r}s`:`${r}s`;}
 function updPb(){
@@ -598,7 +662,7 @@ function pbPreset(fe,fi,pe,pr){
   toast('Preset applied — اضغط حفظ ونشر لتطبيقه على الموقع');
 }
 function savePlayback(){
-  CFG.playback={fpsExt:+pFpsExt.value,fpsInt:+pFpsInt.value,
+  PROJ.playback={fpsExt:+pFpsExt.value,fpsInt:+pFpsInt.value,
     pauseExplore:+pPauseExt.value,pauseRoom:+pPauseRoom.value,autoplay:pAuto.checked};
   AURA.save(CFG);toast('Playback speed published · تم نشر سرعة العرض — حدّث صفحة الموقع');
 }
@@ -612,21 +676,29 @@ function updRvUI(){
 
 /* ---------------- save actions ---------------- */
 function saveProject(){
-  CFG.project={...CFG.project,title:fTitle.value,location:fLoc.value,area:fArea.value,year:fYear.value,status:fStatus.value};
-  AURA.save(CFG);toast('Project published — live on the site');
+  PROJ.project={...PROJ.project,title:fTitle.value,location:fLoc.value,area:fArea.value,year:fYear.value,progress:+fProgress.value};
+  PROJ.cover=fCover.value;
+  PROJ.status=fStatus.value;
+  AURA.save(CFG);
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
+  toast('Project saved · تم الحفظ');
+}
+function switchToProject(){
+  AURA.setCurrent(CFG,PROJ.id);
+  toast('Set as default · تم تعيينه المشروع الافتراضي');
 }
 function saveUI(){
-  CFG.brand.name=uName.value;CFG.brand.accent=uAccent.value;
-  CFG.ui={...CFG.ui,theme:uTheme.value,glassOpacity:+uGlass.value,blur:+uBlur.value,radius:+uRadius.value,glow:+uGlow.value};
+  PROJ.brand.name=uName.value;PROJ.brand.accent=uAccent.value;
+  PROJ.ui={...PROJ.ui,theme:uTheme.value,glassOpacity:+uGlass.value,blur:+uBlur.value,radius:+uRadius.value,glow:+uGlow.value};
   AURA.save(CFG);toast('UI theme published');
 }
-function resetAll(){AURA.reset();CFG=AURA.load();boot();toast('Reset to defaults')}
+function resetAll(){AURA.reset();CFG=AURA.load();PROJ=AURA.getCurrent(CFG);boot();toast('Reset to defaults')}
 
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){
   const g=document.getElementById('framesGrid');g.innerHTML='';
-  document.getElementById('seqCount').textContent=CFG.sequence.count;
-  for(let n=1;n<=CFG.sequence.count;n++){
+  document.getElementById('seqCount').textContent=PROJ.sequence.count;
+  for(let n=1;n<=PROJ.sequence.count;n++){
     const d=document.createElement('div');d.className='frame';d.draggable=true;d.dataset.n=n;
     d.innerHTML=`<img loading="lazy" src="assets/seq/thumbs/frame${String(n).padStart(3,'0')}.webp">
       <span class="n">${String(n).padStart(3,'0')}</span><span class="q" title="Quality check passed"></span>
@@ -658,13 +730,13 @@ dzInput.addEventListener('change',()=>toast(`${dzInput.files.length} file(s) que
 /* ---------------- stages editor ---------------- */
 function buildStages(){
   const p=document.getElementById('stagesPanel');p.innerHTML='<h3>Stages — drag to reorder</h3>';
-  CFG.stages.forEach((s,i)=>{
+  PROJ.stages.forEach((s,i)=>{
     const r=document.createElement('div');r.className='stage-row';r.draggable=true;
     r.innerHTML=`<span class="drag">⋮⋮</span>
       <input type="text" value="${s.name}" data-i="${i}" data-k="name">
       <span class="range">frames ${s.from}–${s.to}</span>
       <span class="sw-color"><input type="color" value="${s.color}" data-i="${i}" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">${s.icon}</span>
-      <span class="range">${Math.round((s.to-s.from+1)/CFG.sequence.count*100)}%</span>
+      <span class="range">${Math.round((s.to-s.from+1)/PROJ.sequence.count*100)}%</span>
       <button class="btn sm ghost" onclick="toast('${s.name} gallery opened')">Gallery</button>`;
     r.addEventListener('dragstart',()=>r.classList.add('dragging'));
     r.addEventListener('dragend',()=>r.classList.remove('dragging'));
@@ -676,7 +748,7 @@ function buildStages(){
   });
   p.addEventListener('input',e=>{
     const i=e.target.dataset.i,k=e.target.dataset.k;
-    if(i!==undefined&&k)CFG.stages[i][k]=e.target.value;
+    if(i!==undefined&&k)PROJ.stages[i][k]=e.target.value;
   });
 }
 function saveStages(){AURA.save(CFG);toast('Stages published — timeline updated on site')}
@@ -684,12 +756,12 @@ function saveStages(){AURA.save(CFG);toast('Stages published — timeline update
 /* ---------------- gallery manager ---------------- */
 function buildGalleryTabs(){
   const tabs=document.getElementById('galTabs');tabs.innerHTML='';
-  CFG.stages.forEach((s,i)=>{
+  PROJ.stages.forEach((s,i)=>{
     const t=document.createElement('div');t.className='gtab'+(i===0?' on':'');t.textContent=s.name;
     t.onclick=()=>{document.querySelectorAll('.gtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');fillGal(s.id)};
     tabs.appendChild(t);
   });
-  fillGal(CFG.stages[0].id);
+  fillGal(PROJ.stages[0].id);
 }
 function fillGal(id){
   const g=document.getElementById('galGrid');g.innerHTML='';
@@ -730,22 +802,22 @@ function buildHeat(){
 
 /* ---------------- interior management ---------------- */
 function buildInterior(){
-  if(!CFG.interior)return;
+  if(!PROJ.interior)return;
   // theme tabs
   const tt=document.getElementById('themeTabs');tt.innerHTML='';
-  CFG.interior.themes.forEach(th=>{
+  PROJ.interior.themes.forEach(th=>{
     const t=document.createElement('div');
-    t.className='gtab'+(th===CFG.interior.theme?' on':'');
+    t.className='gtab'+(th===PROJ.interior.theme?' on':'');
     t.textContent=th.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
-    t.onclick=()=>{CFG.interior.theme=th;AURA.save(CFG);
+    t.onclick=()=>{PROJ.interior.theme=th;AURA.save(CFG);
       document.querySelectorAll('#themeTabs .gtab').forEach(x=>x.classList.remove('on'));
       t.classList.add('on');toast('Theme published: '+t.textContent);};
     tt.appendChild(t);
   });
   // room rows
   const rr=document.getElementById('roomRows');rr.innerHTML='';
-  document.getElementById('roomCount').textContent=CFG.interior.rooms.length;
-  CFG.interior.rooms.forEach((r,i)=>{
+  document.getElementById('roomCount').textContent=PROJ.interior.rooms.length;
+  PROJ.interior.rooms.forEach((r,i)=>{
     const d=document.createElement('div');d.className='stage-row';
     d.style.gridTemplateColumns='34px 1fr 90px 110px 110px auto';
     d.innerHTML=`<span class="drag">⋮⋮</span>
@@ -758,14 +830,14 @@ function buildInterior(){
   });
   rr.addEventListener('input',e=>{
     const i=e.target.dataset.ri;
-    if(i!==undefined)CFG.interior.rooms[i].name=e.target.value;
+    if(i!==undefined)PROJ.interior.rooms[i].name=e.target.value;
   });
   // furniture rows
   const fr=document.getElementById('furnRows');fr.innerHTML='';
-  Object.entries(CFG.interior.furniture).forEach(([room,items])=>{
+  Object.entries(PROJ.interior.furniture).forEach(([room,items])=>{
     items.forEach(f=>{
       const d=document.createElement('div');d.className='act';
-      d.innerHTML=`<span class="t">${room}</span><div><b>${f.name}</b> — ${f.brand} · ${f.material.split('·')[0]}</div>
+      d.innerHTML=`<span class="t">${room}</span><div><b>${f.name}</b> — ${f.brand} · ${(f.material||'').split('·')[0]}</div>
         <span class="tag blue">${f.price||'—'}</span>`;
       fr.appendChild(d);
     });
@@ -776,11 +848,11 @@ var HS_LAST={living:31,kitchen:31,master:31,bath:16};
 var hsRoom='living', hsSel=-1, hsDrag=-1;
 
 function hsInit(){
-  if(!CFG.interior)return;
+  if(!PROJ.interior)return;
   hsRoom=hsRoom||'living';
   if(typeof HS_LAST==='undefined'||!HS_LAST)window.HS_LAST={living:31,kitchen:31,master:31,bath:16};
   const tabs=document.getElementById('hsTabs');tabs.innerHTML='';
-  CFG.interior.rooms.filter(r=>r.interactive).forEach((r,i)=>{
+  PROJ.interior.rooms.filter(r=>r.interactive).forEach((r,i)=>{
     const t=document.createElement('div');
     t.className='gtab'+(r.id===hsRoom?' on':'');
     t.textContent=r.name+' · '+r.ar;
@@ -791,7 +863,7 @@ function hsInit(){
     `assets/rooms/seq/${hsRoom}/f${String(HS_LAST[hsRoom]).padStart(2,'0')}.webp`;
   hsRender();
 }
-function hsSpots(){CFG.interior.furniture[hsRoom]=CFG.interior.furniture[hsRoom]||[];return CFG.interior.furniture[hsRoom];}
+function hsSpots(){PROJ.interior.furniture[hsRoom]=PROJ.interior.furniture[hsRoom]||[];return PROJ.interior.furniture[hsRoom];}
 function hsRender(){
   const st=document.getElementById('hsStage');
   st.querySelectorAll('.hsdot').forEach(e=>e.remove());
@@ -865,6 +937,275 @@ function hsSave(){AURA.save(CFG);toast('Hotspots published · تم النشر �
 })();
 
 function saveInterior(){AURA.save(CFG);toast('Interior configuration published')}
+
+/* ============================================================
+   PROJECTS MANAGER
+   ============================================================ */
+let _pmOrder=[];   /* array of project IDs in display order */
+function buildProjectManager(){
+  _pmOrder=CFG.projects.map(p=>p.id);
+  const list=$('pmList');list.innerHTML='';
+  $('pmCount').textContent=CFG.projects.length;
+  CFG.projects.forEach(p=>{
+    const isDefault=p.id===CFG.currentProjectId;
+    const stat=p.status||'concept';
+    const statLbl=stat==='completed'?'Completed · مكتمل':stat==='in-progress'?'In Progress · قيد التنفيذ':'Concept · تصور';
+    const statCls=stat==='completed'?'green':stat==='in-progress'?'amber':'blue';
+    const row=document.createElement('div');row.className='stage-row';
+    row.style.gridTemplateColumns='34px 50px 1fr 130px 130px 110px 110px';
+    row.draggable=true;row.dataset.id=p.id;
+    row.innerHTML=`
+      <span class="drag">⋮⋮</span>
+      <img src="${p.cover||'assets/villa-clean.png'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
+      <input type="text" value="${p.project?.title||p.id}" data-id="${p.id}" data-k="title">
+      <span class="range">${p.project?.location||'—'}</span>
+      <span class="range">${p.project?.year||'—'}</span>
+      <span class="tag ${statCls}" style="justify-self:start">${statLbl}</span>
+      ${isDefault?'<span class="tag green" style="justify-self:start">DEFAULT</span>':'<button class="btn sm ghost" onclick="pmSetDefault(\''+p.id+'\')">Set Default</button>'}`;
+    row.addEventListener('dragstart',()=>row.classList.add('dragging'));
+    row.addEventListener('dragend',()=>row.classList.remove('dragging'));
+    row.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const dr=list.querySelector('.dragging');if(!dr||dr===row)return;
+      const rect=row.getBoundingClientRect();
+      list.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?row.nextSibling:row);
+    });
+    /* click on row (not buttons/inputs) → load it for editing */
+    row.addEventListener('click',e=>{
+      if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
+      pmEdit(p.id);
+    });
+    list.appendChild(row);
+  });
+  /* wire title edits */
+  list.addEventListener('input',e=>{
+    const id=e.target.dataset.id,k=e.target.dataset.k;
+    if(id&&k==='title'){
+      const p=CFG.projects.find(x=>x.id===id);
+      if(p)p.project.title=e.target.value;
+    }
+  });
+}
+function pmSetDefault(id){
+  AURA.setCurrent(CFG,id);
+  toast('Default project set · تم تعيين المشروع الافتراضي');
+  buildProjectManager();
+}
+function pmEdit(id){
+  const p=CFG.projects.find(x=>x.id===id);if(!p)return;
+  PROJ=p;
+  /* fill the project editor form */
+  fId.value=PROJ.id||'';fCover.value=PROJ.cover||'';
+  fTitle.value=PROJ.project.title;fLoc.value=PROJ.project.location;
+  fArea.value=PROJ.project.area;fYear.value=PROJ.project.year;
+  fStatus.value=PROJ.status||'completed';fProgress.value=PROJ.project.progress||0;
+  $('pIdBadge').textContent=PROJ.id||'—';
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
+  /* also refresh dependent editors */
+  buildFrames();buildStages();buildGalleryTabs();buildInterior();hsInit();
+  buildWidgets();buildBAEditor();buildContactEditor();
+  go('project');
+  toast('Loaded project for editing: '+(PROJ.project?.title||PROJ.id));
+}
+function pmAdd(){
+  /* create new project with a fresh id */
+  let i=CFG.projects.length+1;
+  while(CFG.projects.find(p=>p.id==='project-'+i))i++;
+  const id='project-'+i;
+  const tmpl=JSON.parse(JSON.stringify(CFG.projects[0]));
+  const np=Object.assign(tmpl,{
+    id,cover:'assets/villa-clean.png',status:'concept',
+    project:{title:'New Project '+i,location:'—',area:'—',year:String(new Date().getFullYear()),status:'Concept',progress:0}
+  });
+  AURA.addProject(CFG,np);
+  buildProjectManager();
+  pmEdit(id);
+  toast('New project created · تم إنشاء مشروع جديد — عدّل بياناته');
+}
+function pmDeleteCurrent(){
+  if(CFG.projects.length<=1){toast('Cannot delete the only remaining project');return;}
+  if(!confirm('Delete "'+(PROJ.project?.title||PROJ.id)+'"? This cannot be undone.'))return;
+  AURA.deleteProject(CFG,PROJ.id);
+  PROJ=AURA.getCurrent(CFG);
+  boot();
+  toast('Project deleted · تم حذف المشروع');
+}
+function pmSave(){
+  /* read the DOM order and reorder CFG.projects */
+  const newOrder=[...document.querySelectorAll('#pmList .stage-row')].map(r=>r.dataset.id);
+  AURA.reorder(CFG,newOrder);
+  toast('Order saved · تم حفظ الترتيب');
+  buildProjectManager();
+}
+
+/* ============================================================
+   WIDGETS EDITOR
+   ============================================================ */
+let _wCur='design';
+function buildWidgets(){
+  const tabs=$('wTabs');tabs.innerHTML='';
+  const wids=Object.keys(PROJ.widgets||{});
+  if(!wids.length){$('wPanel').innerHTML='<div style="color:var(--tx3);font-size:13px">No widgets yet. Click "+ Add Widget".</div>';return;}
+  if(!wids.includes(_wCur))_wCur=wids[0];
+  wids.forEach(id=>{
+    const t=document.createElement('div');
+    t.className='gtab'+(id===_wCur?' on':'');
+    t.textContent=PROJ.widgets[id].title||id;
+    t.onclick=()=>{_wCur=id;buildWidgets();};
+    tabs.appendChild(t);
+  });
+  const w=PROJ.widgets[_wCur];
+  const panel=$('wPanel');
+  panel.innerHTML=`
+    <h3><span>Edit Widget · تحرير الويدجت</span> <span class="badge">${_wCur}</span></h3>
+    <div class="grid2">
+      <div class="f"><label>Widget ID · معرّف</label><input type="text" id="wId" value="${_wCur}" disabled></div>
+      <div class="f"><label>Kicker · النص الصغير</label><input type="text" id="wKicker" value="${w.kicker||''}"></div>
+      <div class="f"><label>Title (EN) · العنوان</label><input type="text" id="wTitle" value="${w.title||''}"></div>
+      <div class="f"><label>العنوان (AR)</label><input type="text" id="wTitleAr" value="${w.titleAr||''}" dir="rtl" style="font-family:var(--font-ar)"></div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="f"><label>Description (EN)</label><textarea id="wDesc" rows="2">${w.desc||''}</textarea></div>
+      <div class="f"><label>الوصف (AR)</label><textarea id="wDescAr" rows="2" dir="rtl" style="font-family:var(--font-ar)">${w.descAr||''}</textarea></div>
+    </div>
+    <h3 style="margin-top:20px">Gallery · معرض الصور <span class="badge">${(w.gallery||[]).length}</span></h3>
+    <div class="gal-grid" id="wGalGrid"></div>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="btn sm ghost" onclick="addWidgetImage()">+ Add Image</button>
+      <button class="btn sm danger" onclick="deleteWidget()">Delete Widget · حذف</button>
+    </div>
+    <h3 style="margin-top:20px">Info Bullets · النقاط المعلوماتية</h3>
+    <div id="wBullets"></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn sm ghost" onclick="addWidgetBullet()">+ Add Bullet</button></div>
+    <div class="btnrow" style="margin-top:20px">
+      <button class="btn" onclick="saveWidgets()">Save & Publish · حفظ ونشر</button>
+    </div>
+  `;
+  /* fill gallery */
+  const gg=$('wGalGrid');
+  (w.gallery||[]).forEach((src,i)=>{
+    const d=document.createElement('div');d.className='gimg';
+    d.innerHTML=`<img src="${src}" alt="" style="object-fit:cover;aspect-ratio:4/3"><button class="del" onclick="removeWidgetImage(${i})">✕</button>`;
+    gg.appendChild(d);
+  });
+  /* fill bullets */
+  const wb=$('wBullets');
+  (w.bullets||[]).forEach((b,i)=>{
+    const d=document.createElement('div');d.className='stage-row';
+    d.style.gridTemplateColumns='1fr 1fr 2fr 90px';
+    d.innerHTML=`
+      <input type="text" value="${b[0]||''}" data-bi="${i}" data-bk="0" placeholder="Label EN">
+      <input type="text" value="${b[1]||''}" data-bi="${i}" data-bk="1" placeholder="Label AR" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${b[2]||''}" data-bi="${i}" data-bk="2" placeholder="Detail">
+      <button class="btn sm danger" onclick="removeWidgetBullet(${i})">✕</button>`;
+    wb.appendChild(d);
+  });
+  /* wire changes */
+  panel.addEventListener('input',e=>{
+    const k=e.target.id;
+    if(k==='wKicker')w.kicker=e.target.value;
+    else if(k==='wTitle')w.title=e.target.value;
+    else if(k==='wTitleAr')w.titleAr=e.target.value;
+    else if(k==='wDesc')w.desc=e.target.value;
+    else if(k==='wDescAr')w.descAr=e.target.value;
+    const bi=e.target.dataset.bi,bk=e.target.dataset.bk;
+    if(bi!==undefined&&bk!==undefined){w.bullets[+bi][+bk]=e.target.value;}
+  });
+}
+function addWidgetImage(){
+  const w=PROJ.widgets[_wCur];if(!w)return;
+  const url=prompt('Image URL/path:','assets/villa-clean.png');
+  if(!url)return;
+  w.gallery=w.gallery||[];w.gallery.push(url);
+  buildWidgets();
+}
+function removeWidgetImage(i){
+  const w=PROJ.widgets[_wCur];if(!w||!w.gallery)return;
+  w.gallery.splice(i,1);buildWidgets();
+}
+function addWidgetBullet(){
+  const w=PROJ.widgets[_wCur];if(!w)return;
+  w.bullets=w.bullets||[];w.bullets.push(['Label','عربي','Detail']);
+  buildWidgets();
+}
+function removeWidgetBullet(i){
+  const w=PROJ.widgets[_wCur];if(!w||!w.bullets)return;
+  w.bullets.splice(i,1);buildWidgets();
+}
+function addWidget(){
+  const id=prompt('New widget ID (e.g. "design", "execution", "custom"):','custom-'+Date.now());
+  if(!id)return;
+  if(PROJ.widgets[id]){toast('Widget ID already exists');return;}
+  PROJ.widgets[id]={title:id,titleAr:id,kicker:'',desc:'',descAr:'',gallery:[],bullets:[]};
+  _wCur=id;buildWidgets();toast('Widget added — save to publish');
+}
+function deleteWidget(){
+  if(!confirm('Delete widget "'+_wCur+'"?'))return;
+  delete PROJ.widgets[_wCur];
+  _wCur=Object.keys(PROJ.widgets)[0]||'';
+  buildWidgets();toast('Widget deleted (save to publish)');
+}
+function saveWidgets(){AURA.save(CFG);toast('Widgets published · تم نشر الويدجات')}
+
+/* ============================================================
+   BEFORE/AFTER EDITOR
+   ============================================================ */
+function buildBAEditor(){
+  const panel=$('baPanel');
+  const items=PROJ.beforeAfter||[];
+  panel.innerHTML='<h3>4 Items × 2 images each = 8 images total</h3>';
+  items.forEach((it,i)=>{
+    const row=document.createElement('div');row.className='stage-row';
+    row.style.gridTemplateColumns='34px 1fr 1fr 1fr 1fr 90px';
+    row.innerHTML=`
+      <span class="drag">⋮⋮</span>
+      <input type="text" value="${it.label||''}" data-bai="${i}" data-k="label" placeholder="Label EN">
+      <input type="text" value="${it.labelAr||''}" data-bai="${i}" data-k="labelAr" placeholder="Label AR" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${it.before||''}" data-bai="${i}" data-k="before" placeholder="Before image">
+      <input type="text" value="${it.after||''}" data-bai="${i}" data-k="after" placeholder="After image">
+      <button class="btn sm ghost" onclick="previewBA(${i})">Preview</button>`;
+    panel.appendChild(row);
+  });
+  panel.addEventListener('input',e=>{
+    const i=e.target.dataset.bai,k=e.target.dataset.k;
+    if(i!==undefined&&k)PROJ.beforeAfter[+i][k]=e.target.value;
+  });
+  /* preview row */
+  const pv=document.createElement('div');pv.style.cssText='margin-top:18px;padding:14px;background:var(--panel2);border-radius:14px;border:1px solid var(--brd)';
+  pv.innerHTML=`<h3 style="margin:0 0 10px">Preview · معاينة</h3>
+    <div id="baPreview" style="position:relative;width:100%;aspect-ratio:1408/768;border-radius:10px;overflow:hidden;background:#000">
+      <img id="baPvBefore" src="${items[0]?.before||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <img id="baPvAfter" src="${items[0]?.after||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 0 0 50%)">
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700">BEFORE ◂ ▸ AFTER</div>
+    </div>`;
+  panel.appendChild(pv);
+}
+function previewBA(i){
+  const it=PROJ.beforeAfter[i];if(!it)return;
+  $('baPvBefore').src=it.before||'';
+  $('baPvAfter').src=it.after||'';
+}
+function saveBA(){AURA.save(CFG);toast('Before/After published · تم نشر قبل وبعد')}
+
+/* ============================================================
+   CONTACT EDITOR
+   ============================================================ */
+function buildContactEditor(){
+  const c=PROJ.contact||{};
+  cCompany.value=c.company||'';cCompanyAr.value=c.companyAr||'';
+  cPhone.value=c.phone||'';cWhatsapp.value=c.whatsapp||'';
+  cEmail.value=c.email||'';cInstagram.value=c.instagram||'';
+  cLocation.value=c.location||'';
+}
+function saveContact(){
+  PROJ.contact={
+    company:cCompany.value,companyAr:cCompanyAr.value,
+    phone:cPhone.value,whatsapp:cWhatsapp.value,
+    email:cEmail.value,instagram:cInstagram.value,
+    location:cLocation.value
+  };
+  AURA.save(CFG);toast('Contact published · تم نشر بيانات التواصل');
+}
 
 /* elements with IDs are available as globals — no redeclaration needed */
 
