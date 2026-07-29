@@ -748,6 +748,28 @@ footer p .ar{font-family:var(--font-ar)}
 .wm-btn.submit:hover {
   filter: brightness(1.1);
 }
+
+.ai-prompt-footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+  background: rgba(60,130,246,0.08);
+  border: 1px solid rgba(60,130,246,0.25);
+  padding: 8px 18px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.ai-prompt-footer-btn:hover {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 6px 18px -8px rgba(60,130,246,0.5);
+  transform: translateY(-1px);
+}
+
 </style>
 
 </head>
@@ -938,8 +960,101 @@ footer p .ar{font-family:var(--font-ar)}
 <footer>
   <div class="logo">AU<b>R</b>A</div>
   <p>© 2026 Aura Architecture Studio — Kuwait · <span class="ar">فيلم واحد متواصل من الفكرة إلى آخر غرفة</span></p>
+  <button class="ai-prompt-footer-btn" onclick="openAIPromptModal()">🎬 AI Video Prompt · برومبت الفيلم 360°</button>
 </footer>
 
+
+<!-- AI VIDEO PROMPT MODAL (360° CONTINUOUS BUILD) -->
+<div id="aiPromptModal" class="modal-backdrop">
+  <div class="modal-box glass" style="max-width: 780px;">
+    <button class="modal-close" onclick="closeAIPromptModal()">✕</button>
+    <div class="modal-header">
+      <span class="modal-project-badge">AI VIDEO GENERATION SPECS</span>
+      <h3>360° Full House Continuous Build <span class="ar">برومبت الفيلم المعماري (00:00–00:12)</span></h3>
+    </div>
+    <div class="modal-body">
+      <div class="wm-desc" style="margin-bottom:8px;">
+        <p>This is the official AI video generation prompt designed for <b>Runway Gen-4 / Sora / Luma Dream Machine / Kling 2.x / Unreal Sequencer</b> to generate the continuous 360° procedural build film for AURA Studio projects.</p>
+      </div>
+      <div class="wm-contact glass" style="margin-bottom: 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <h4 style="margin:0;">ENGLISH PROMPT TEXT · النص الإنجليزي للمولدات</h4>
+          <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(false)">📋 Copy English Prompt</button>
+        </div>
+        <textarea id="aiPromptTextEn" readonly rows="7" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.5; font-family:monospace; resize:vertical;">A surreal floating ultra-luxury modern house is suspended in the center of a pure white minimalist environment. The entire experience unfolds in a single continuous cinematic sequence with seamless transitions and no cuts. The camera moves smoothly with elegant motion while every part of the house builds itself procedurally in real-time.
+
+Premium Apple-inspired Liquid Glass UI panels float around the structure, displaying real-time construction data, room labeling, material analytics, smart home systems, and spatial mapping. Ultra-thin glowing lines connect each UI panel to the exact part of the house being constructed.
+
+The house includes:
+- Master Bedroom (Luxury Suite)
+- Secondary Bedroom
+- Boys Bedroom
+- Girls Bedroom
+- Large Master Bathroom
+- Small Bathroom
+- Kitchen
+- Living Area
+- Outdoor Garden with Swimming Pool
+- Rooftop Lounge (Roof Seating Area)
+- Additional smart spaces (hallways, storage, lighting systems)
+
+The entire experience supports 360° panoramic camera movement, allowing smooth orbital transitions between interior and exterior spaces.
+
+SEQUENCE (CINEMATIC FLOW):
+00:00–00:01 | A floating island appears with raw terrain. Liquid Glass UI panels fade in displaying terrain scan, dimensions, environmental data, and project initialization. Thin glowing lines connect UI to terrain.
+00:01–00:02 | Foundation auto-build begins. Steel reinforcement rises, concrete forms smoothly. Blueprint holograms wrap the structure. Progress: 10–20%.
+00:02–00:03 | Structural skeleton forms rapidly: Columns, Beams, Floor slabs. Wireframes transform into real architecture. UI updates structural integrity.
+00:03–00:04 | Room zoning appears holographically: Master Bedroom, Kids Rooms (Boys & Girls), Kitchen, Bathrooms, Living Area. Walls and divisions grow into place.
+00:04–00:05 | Exterior envelope forms: Walls, Roof, Openings, Panoramic windows. Facade materials assemble. Glass installs automatically.
+00:05–00:06 | Interior systems activate sequentially: Electrical wiring, Plumbing, HVAC, Smart home systems. Camera smoothly enters the house (cinematic fly-through). UI panels follow dynamically.
+00:06–00:07 | Room-by-room construction (360° transitions): Master Bedroom, Secondary Bedroom, Boys Room, Girls Room, Kitchen, Bathrooms. Each room builds itself procedurally with UI labeling.
+00:07–00:08 | Interior finishing: Walls smooth out, Lighting activates (warm LEDs), Furniture appears piece by piece, Materials refine (wood, marble, glass). Camera rotates in full 360° panoramic motion inside rooms.
+00:08–00:09 | Outdoor environment builds: Garden grows organically, Swimming pool forms with water simulation, Trees and plants bloom, Pathways assemble, Outdoor seating appears.
+00:09–00:10 | Rooftop (Roof Lounge) builds: Seating area, Ambient lighting, Modern pergola or shade, Fire pit / relaxation zone.
+00:10–00:12 | Final reveal sequence: All UI panels fade out, Lines dissolve elegantly, Full house complete. Camera performs 360° orbit around house, smooth transition inside → outside → rooftop, ending on a premium HERO SHOT.
+
+VISUAL STYLE:
+Ultra-realistic CGI, Architectural visualization, Apple Liquid Glass UI, Minimal white environment, Cinematic lighting, Soft global illumination, Ray tracing reflections, Photoreal materials, Procedural animation, No cuts, no jitter, no glitches, Perfect spatial consistency, Luxury modern design.
+Render quality: Unreal Engine 5 realism, Octane Render quality, 8K resolution, HDR lighting, Highly detailed.
+
+EXTRA KEYWORDS:
+360° camera, Panoramic view, Seamless transitions, Cinematic orbit, Interior flythrough, Holographic UI, Futuristic architecture, Procedural build animation, Luxury house visualization.</textarea>
+      </div>
+
+      <div class="wm-contact glass">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <h4 style="margin:0;">ARABIC PROMPT TEXT · النص العربي للبرومبت</h4>
+          <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(true)">📋 Copy Arabic Prompt · نسخ بالعربية</button>
+        </div>
+        <textarea id="aiPromptTextAr" readonly rows="5" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:12px; font-size:11.5px; line-height:1.6; font-family:var(--font-ar); resize:vertical;">منزل عصري فاخر جداً يطفو في وسط بيئة بيضاء نقية وبسيطة (Minimalist White Void). التجربة الكاملة تتكشف في مشهد سينمائي واحد متواصل بحركة كاميرا سلسة وبدون أي قطع (No Cuts)، حيث يتم بناء كل جزء من المنزل برمجياً وتلقائياً في الوقت الفعلي (Procedural Build).
+
+تطفو حول الهيكل لوحات واجهة مستخدم زجاجية فاخرة بأسلوب Apple Liquid Glass، تعرض بيانات البناء الحية، مسميات الغرف، تحليل المواد، أنظمة المنزل الذكي، والخرائط المكانية، مع خطوط مضيئة فائقة الدقة تربط كل لوحة بالجزء المخصص في المشروع.
+
+يتكون المنزل من:
+- غرفة النوم الرئيسية (جناح فاخر Master Suite)
+- غرفة نوم ثانوية / غرفة أولاد / غرفة بنات
+- حمام رئيسي واسع / حمام ثانوي صغير
+- المطبخ / منطقة المعيشة (Living Area)
+- حديقة خارجية مع مسبح / صالة جلوس على السطح (Rooftop Lounge)
+
+التسلسل الزمني للفيلم (00:00 - 00:12):
+- 00:00–00:01 | ظهور الجزيرة الطافية مع التربة الخام، وظهور لوحات Liquid Glass.
+- 00:01–00:02 | بدء بناء الأساسات تلقائيًا، صعود شبك الحديد وصب الخرسانة مع مخططات هولوغرافية.
+- 00:02–00:03 | تشكل الهيكل الإنشائي بسرعة (الأعمدة، الجسور، الأسقف الخرسانية).
+- 00:03–00:04 | ظهور تقسيم الغرف هولوغرافيًا (جناح الماستر، غرف الأطفال، المطبخ، الحمامات، المعيشة).
+- 00:04–00:05 | تشكل الغلاف الخارجي وتركيب الزجاج والترافرتين تلقائيًا.
+- 00:05–00:06 | تفعيل الأنظمة الداخلية بالتسلسل (الكهرباء، السباكة، التكييف، المنزل الذكي) ودخول الكاميرا إلى الداخل.
+- 00:06–00:07 | بناء الغرفة تلو الأخرى بدوران 360° (الماستر، الأولاد، البنات، المطبخ، الحمامات).
+- 00:07–00:08 | التشطيبات الداخلية: نعومة الجدران، إضاءة LED، الأثاث، ودوران الكاميرا 360°.
+- 00:08–00:09 | بناء الحديقة العضوية والمسبح مع محاكاة المياه.
+- 00:09–00:10 | بناء جلسة السطح (Rooftop Lounge) والإضاءة المحيطية.
+- 00:10–00:12 | المشهد الختامي (Final Reveal): تلاشي لوحات الـ UI، واكتمال المنزل بدوران 360° سينمائي لينتهي بلقطة Hero Shot فاخرة.
+
+الأسلوب البصري: CGI فائق الواقعية، إخراج معماري 8K، واجهة Apple Liquid Glass، جودة Unreal Engine 5 وOctane Render.</textarea>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- WIDGET DETAIL MODAL -->
 <div id="widgetModal" class="modal-backdrop">
@@ -1617,6 +1732,30 @@ function renderServicesList(){
       </button>
     </div>`;
   }).join('');
+}
+
+
+/* AI VIDEO PROMPT MODAL HELPER */
+function openAIPromptModal(){
+  const m = $('aiPromptModal');
+  if(m) m.classList.add('open');
+}
+function closeAIPromptModal(){
+  const m = $('aiPromptModal');
+  if(m) m.classList.remove('open');
+}
+function copyAIPromptText(isAr){
+  const el = isAr ? $('aiPromptTextAr') : $('aiPromptTextEn');
+  if(!el) return;
+  const txt = el.value;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => {
+      toast(isAr ? 'تم نسخ البرومبت العربي بنجاح · Arabic Prompt Copied' : 'AI Video Prompt (English) copied to clipboard');
+    });
+  } else {
+    el.select();
+    toast('Prompt selected — press Ctrl+C to copy');
+  }
 }
 
 /* 3. Widget Modal System */
