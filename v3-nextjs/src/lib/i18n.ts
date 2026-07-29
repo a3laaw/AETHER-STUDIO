@@ -11,9 +11,8 @@ export const t = {
     projects: { ar: "المشاريع", en: "Projects" },
     how: { ar: "كيف يعمل", en: "How it Works" },
     platform: { ar: "المنصة", en: "Platform" },
-    audience: { ar: "لمن", en: "Who it's for" },
-    cta: { ar: "اطلب عرضاً تجريبياً", en: "Request Live Demo" },
-    explore: { ar: "استكشف فيلا سولارا", en: "Explore Villa Solara" },
+    cta: { ar: "اطلب تجربة حية", en: "Request Live Demo" },
+    explore: { ar: "استكشف المشروع التجريبي", en: "Explore Demo Project" },
   },
 
   /* ---------- Hero ---------- */
@@ -26,11 +25,11 @@ export const t = {
       en: "One continuous living record of your project",
     },
     subline: {
-      ar: "منصة واحدة تجمع التوثيق البصري الحي، لوحات التحكم الذكية، والجولات التفاعلية لشركات التطوير والمقاولات والتشطيبات.",
-      en: "One platform combining live visual documentation, smart control dashboards, and interactive walkthroughs for developers, contractors, and finishing teams.",
+      ar: "منصة واحدة تجمع التوثيق البصري الحي، تقدّم المشروع لحظة بلحظة، وتأخذ عميلك في جولة تفاعلية.",
+      en: "One platform for live visual documentation, real-time progress, and interactive walkthroughs that bring your client inside the project.",
     },
     primaryCta: { ar: "اطلب تجربة حية", en: "Request Live Demo" },
-    secondaryCta: { ar: "استكشف فيلا سولارا", en: "Explore Villa Solara" },
+    secondaryCta: { ar: "استكشف المشروع التجريبي", en: "Explore Demo Project" },
     trust: { ar: "يستخدمها مطورون في الخليج", en: "Trusted by Gulf developers" },
   },
 
@@ -39,7 +38,7 @@ export const t = {
     eyebrow: { ar: "مشروع حي", en: "Live Project" },
     title: { ar: "فيلا سولارا", en: "Villa Solara" },
     location: { ar: "الكويت — الأحمدي", en: "Kuwait — Al Ahmadi" },
-    badge: { ar: "مشروع تجريبي حي", en: "Live Demo Project" },
+    badge: { ar: "مشروع تجريبي", en: "Demo Project" },
     completion: { ar: "نسبة الإنجاز", en: "Completion" },
     phase: { ar: "المرحلة الحالية", en: "Current phase" },
     lastUpdate: { ar: "آخر تحديث", en: "Last update" },
@@ -85,58 +84,58 @@ export const t = {
       },
       {
         num: "03",
-        title: { ar: "جُل بالعميل", en: "Walk the client through" },
+        title: { ar: "أدخل العميل داخل المشروع", en: "Bring the client inside" },
         desc: {
-          ar: "جولات 360° ومخطط تفاعلي — العميل يدخل المشروع من أي مكان.",
-          en: "360° tours and interactive floor plan — your client walks the project from anywhere.",
+          ar: "جولات 360° ومخطط تفاعلي — العميل يدخل المشروع من أي مكان، في أي وقت.",
+          en: "360° tours and interactive floor plan — the client walks the project from anywhere, anytime.",
         },
       },
       {
         num: "04",
-        title: { ar: "سلّم فيلماً نهائياً", en: "Deliver the final film" },
+        title: { ar: "سلّم فيلماً وتقارير", en: "Deliver film + reports" },
         desc: {
-          ar: "فيلم متواصل للمشروع + تقارير جاهزة للتسليم والمشاركة.",
-          en: "Continuous project film + ready-to-share reports.",
+          ar: "فيلم متواصل للمشروع + تقارير جاهزة للتسليم والمشاركة بضغطة زر.",
+          en: "Continuous project film + ready-to-share reports, delivered with one click.",
         },
       },
     ],
   },
 
-  /* ---------- Platform Capabilities ---------- */
+  /* ---------- Platform Features (tightened — was Capabilities) ---------- */
   capabilities: {
     eyebrow: { ar: "المنصة", en: "Platform" },
-    title: { ar: "أربع قدرات. مصدر واحد للحقيقة.", en: "Four capabilities. One source of truth." },
+    title: { ar: "أربع قدرات. مصدر واحد للحقيقة.", en: "Four features. One source of truth." },
     items: [
       {
         icon: "Camera",
         title: { ar: "توثيق بصري متواصل", en: "Continuous Visual Documentation" },
         desc: {
-          ar: "كل صورة ومقطع فيديو يُحفظ تلقائياً في سياقه الصحيح — مرحلة، غرفة، تاريخ.",
-          en: "Every photo and clip auto-saved in its correct context — stage, room, date.",
+          ar: "كل صورة ومقطع فيديو يُحفظ تلقائياً في سياقه — مرحلة، غرفة، تاريخ.",
+          en: "Every photo and clip auto-saved in context — stage, room, date.",
         },
       },
       {
         icon: "Gauge",
-        title: { ar: "لوحة ذكاء المشروع", en: "Live Project Intelligence" },
+        title: { ar: "لوحة تقدّم حية", en: "Live Progress Dashboard" },
         desc: {
-          ar: "تقدّم، جودة، تكلفة، جدول — كلها في لوحة واحدة حية بدلاً من ملفات متناثرة.",
-          en: "Progress, quality, cost, schedule — one live dashboard instead of scattered files.",
+          ar: "تقدّم، مرحلة، تاريخ آخر تحديث — في لوحة واحدة واضحة بدلاً من ملفات متناثرة.",
+          en: "Progress, phase, last update — one clear dashboard instead of scattered files.",
         },
       },
       {
         icon: "Compass",
-        title: { ar: "تجربة عميل غامرة", en: "Immersive Client Experience" },
+        title: { ar: "جولة 360° ومخطط تفاعلي", en: "Interactive 360° & Floor Plan" },
         desc: {
-          ar: "جولات 360° + مخطط تفاعلي + مقارنة قبل/بعد — يفهم العميل ما يحدث دون زيارة الموقع.",
-          en: "360° tours + interactive floor plan + before/after — clients understand without site visits.",
+          ar: "يفتح العميل المشروع من تليفونه، يدخل أي غرفة، ويرى التقدّم بنفسه.",
+          en: "Your client opens the project from their phone, enters any room, sees the progress themselves.",
         },
       },
       {
         icon: "ShieldCheck",
-        title: { ar: "تحكم التكلفة والجودة والمخاطر", en: "Cost, Quality & Risk Control" },
+        title: { ar: "تكلفة وجودة وتقارير", en: "Cost, Quality & Reports" },
         desc: {
-          ar: "تنبيهات مبكرة لأي انحراف، تقارير جاهزة للجهات الرقابية والمستثمرين.",
-          en: "Early alerts on any deviation, ready reports for regulators and investors.",
+          ar: "تنبيهات مبكرة لأي انحراف + تقارير جاهزة للعميل والجهة الرقابية.",
+          en: "Early alerts on any deviation + ready reports for client and regulators.",
         },
       },
     ],
@@ -380,7 +379,7 @@ export const t = {
   /* ---------- Final CTA ---------- */
   finalCta: {
     eyebrow: { ar: "ابدأ الآن", en: "Get started" },
-    title: { ar: "حوّل مشروعك القادم إلى فيلم متواصل", en: "Turn your next project into one continuous film" },
+    title: { ar: "ابدأ بمشروع تجريبي خلال أسبوعين", en: "Start with a pilot project in two weeks" },
     subtitle: {
       ar: "اكتب بياناتك وسنتواصل معك خلال 24 ساعة لتحديد موعد العرض التجريبي.",
       en: "Leave your details and we'll reach out within 24 hours to schedule your live demo.",

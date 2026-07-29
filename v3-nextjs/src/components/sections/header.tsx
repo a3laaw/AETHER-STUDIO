@@ -21,7 +21,6 @@ export function Header() {
     { id: "projects", label: t.nav.projects },
     { id: "how", label: t.nav.how },
     { id: "platform", label: t.nav.platform },
-    { id: "audience", label: t.nav.audience },
   ];
 
   return (
