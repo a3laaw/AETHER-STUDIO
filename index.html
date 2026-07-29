@@ -977,6 +977,16 @@ footer p .ar{font-family:var(--font-ar)}
         <p>This is the official AI video generation prompt designed for <b>Runway Gen-4 / Sora / Luma Dream Machine / Kling 2.x / Unreal Sequencer</b> to generate the continuous 360° procedural build film for AURA Studio projects.</p>
       </div>
       <div class="wm-contact glass" style="margin-bottom: 14px;">
+        <h4 style="margin:0 0 10px 0;">GENERATED AI SAMPLE FRAMES · عينات صور مولدة بالذكاء الاصطناعي من البرومبت</h4>
+        <div class="wm-gallery" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <div class="wm-thumb" data-full="assets/gallery/ai-house-complete.jpg" onclick="openLightboxImage('assets/gallery/ai-house-complete.jpg')"><img src="assets/gallery/ai-house-complete.jpg" alt="Hero Complete House"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-master-suite.jpg" onclick="openLightboxImage('assets/gallery/ai-master-suite.jpg')"><img src="assets/gallery/ai-master-suite.jpg" alt="Master Bedroom Suite"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-living-kitchen.jpg" onclick="openLightboxImage('assets/gallery/ai-living-kitchen.jpg')"><img src="assets/gallery/ai-living-kitchen.jpg" alt="Living Area & Kitchen"></div>
+          <div class="wm-thumb" data-full="assets/gallery/ai-house-wireframe.jpg" onclick="openLightboxImage('assets/gallery/ai-house-wireframe.jpg')"><img src="assets/gallery/ai-house-wireframe.jpg" alt="Procedural Wireframe Build"></div>
+        </div>
+        <div style="font-size: 11px; color: var(--ink-3); margin-top: 8px;">Click any sample to enlarge in full-screen Lightbox · اضغط على أي صورة لتكبيرها</div>
+      </div>
+      <div class="wm-contact glass" style="margin-bottom: 14px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
           <h4 style="margin:0;">ENGLISH PROMPT TEXT · النص الإنجليزي للمولدات</h4>
           <button class="wm-btn submit" style="padding:6px 14px; font-size:11.5px; margin:0;" onclick="copyAIPromptText(false)">📋 Copy English Prompt</button>
@@ -1736,6 +1746,12 @@ function renderServicesList(){
 
 
 /* AI VIDEO PROMPT MODAL HELPER */
+function openLightboxImage(url){
+  if($('lbImg') && $('lb')) {
+    $('lbImg').src = url;
+    $('lb').classList.add('open');
+  }
+}
 function openAIPromptModal(){
   const m = $('aiPromptModal');
   if(m) m.classList.add('open');

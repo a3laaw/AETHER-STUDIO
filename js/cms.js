@@ -245,7 +245,7 @@ window.AURA_DEFAULTS = {
       year: "2026",
       status: "In Progress",
       statusAr: "قيد الإنشاء",
-      cover: "assets/stages/s5-facade.png",
+      cover: "assets/gallery/ai-house-complete.jpg",
       isDefault: false,
       order: 1,
       project: {
@@ -282,10 +282,10 @@ window.AURA_DEFAULTS = {
       interior: JSON.parse(JSON.stringify(DEFAULT_INTERIOR)),
       widgets: JSON.parse(JSON.stringify(DEFAULT_WIDGETS)),
       beforeAfter: [
-        { id:"01", name:"Design", nameAr:"التصميم", beforeImg:"assets/villa-blueprint.png", afterImg:"assets/villa-wireframe.png", beforeLabel:"Blueprint", beforeLabelAr:"مخطط هندسي", afterLabel:"Wireframe", afterLabelAr:"هيكل إنشائي" },
-        { id:"02", name:"Execution", nameAr:"التنفيذ", beforeImg:"assets/villa-wireframe.png", afterImg:"assets/stages/s3-structure.png", beforeLabel:"Raw Structure", beforeLabelAr:"هيكل إنشائي خام", afterLabel:"Superstructure", afterLabelAr:"الهيكل الخرساني" },
-        { id:"03", name:"Finishing", nameAr:"التشطيبات", beforeImg:"assets/stages/s3-structure.png", afterImg:"assets/stages/s5-facade.png", beforeLabel:"Structural Frame", beforeLabelAr:"الهيكل الإنشائي", afterLabel:"Facade Progress", afterLabelAr:"أعمال الواجهات" },
-        { id:"04", name:"Project Management", nameAr:"إدارة المشاريع", beforeImg:"assets/stages/s5-facade.png", afterImg:"assets/villa.png", beforeLabel:"Current Progress", beforeLabelAr:"الإنجاز الحالي", afterLabel:"Target Outcome", afterLabelAr:"النتيجة المستهدفة" }
+        { id:"01", name:"Design", nameAr:"التصميم", beforeImg:"assets/villa-blueprint.png", afterImg:"assets/gallery/ai-house-wireframe.jpg", beforeLabel:"Blueprint", beforeLabelAr:"مخطط هندسي", afterLabel:"AI Wireframe", afterLabelAr:"هيكل إنشائي (AI)" },
+        { id:"02", name:"Execution", nameAr:"التنفيذ", beforeImg:"assets/gallery/ai-house-wireframe.jpg", afterImg:"assets/gallery/ai-house-complete.jpg", beforeLabel:"AI Wireframe", beforeLabelAr:"هيكل إنشائي (AI)", afterLabel:"AI Exterior", afterLabelAr:"الواجهة الخارجية (AI)" },
+        { id:"03", name:"Finishing", nameAr:"التشطيبات", beforeImg:"assets/gallery/ai-house-complete.jpg", afterImg:"assets/gallery/ai-master-suite.jpg", beforeLabel:"AI Exterior", beforeLabelAr:"الواجهة الخارجية (AI)", afterLabel:"AI Master Suite", afterLabelAr:"جناح النوم الرئيسي (AI)" },
+        { id:"04", name:"Project Management", nameAr:"إدارة المشاريع", beforeImg:"assets/gallery/ai-house-complete.jpg", afterImg:"assets/gallery/ai-living-kitchen.jpg", beforeLabel:"AI Exterior", beforeLabelAr:"الواجهة الخارجية (AI)", afterLabel:"AI Living & Kitchen", afterLabelAr:"منطقة المعيشة والمطبخ (AI)" }
       ]
     },
     {
