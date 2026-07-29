@@ -171,7 +171,155 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .heat i{aspect-ratio:1;border-radius:3px;background:var(--blue)}
 
 @media(max-width:900px){#app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}aside .sep,aside .role{display:none}main{padding:22px}}
-</style>
+
+/* ================= NEW ADMIN CSS ================= */
+.admin-proj-switcher {
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--brd);
+}
+.admin-proj-switcher label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 8px;
+}
+.admin-proj-switcher select {
+  width: 100%;
+  background: var(--panel);
+  color: var(--tx);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.admin-proj-switcher select:focus {
+  border-color: var(--blue);
+}
+.proj-admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--panel2);
+  border: 1px solid var(--brd);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  transition: all 0.25s;
+}
+.proj-admin-row:hover {
+  border-color: rgba(60,130,246,0.3);
+}
+.proj-admin-row.active-edit {
+  border-color: var(--blue);
+  background: rgba(60,130,246,0.08);
+}
+.proj-admin-row .pa-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.proj-admin-row img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex: none;
+  background: #101013;
+  border: 1px solid var(--brd);
+}
+.proj-admin-row .pa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.proj-admin-row .pa-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--tx);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.proj-admin-row .pa-title .ar {
+  font-family: var(--font-ar);
+  font-size: 13px;
+  color: var(--tx2);
+  font-weight: 500;
+}
+.proj-admin-row .pa-meta {
+  font-size: 12px;
+  color: var(--tx3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.proj-admin-row .pa-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ba-edit-card {
+  background: var(--panel);
+  border: 1px solid var(--brd);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.ba-edit-card h4 {
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ba-edit-row {
+  display: grid;
+  grid-template-columns: 90px 1.2fr 1fr 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 14px;
+  background: var(--panel2);
+  border-radius: 14px;
+  border: 1px solid var(--brd);
+}
+@media(max-width:950px){
+  .ba-edit-row { grid-template-columns: 1fr; }
+}
+.ba-edit-row img {
+  width: 80px;
+  height: 54px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #101013;
+  border: 1px solid var(--brd);
+}
+.w-thumb-box {
+  position: relative;
+  width: 100px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--brd);
+  background: #101013;
+}
+.w-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 </head>
 <body>
 
@@ -195,10 +343,17 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
   <aside>
     <div class="logo">AU<b>R</b>A</div>
     <div class="role" id="roleTag">Signed in as Admin</div>
+    <div class="admin-proj-switcher">
+      <label>Editing Project · المشروع الحالي</label>
+      <select id="adminActiveProjectSelect" onchange="switchAdminProject(this.value)">
+      </select>
+    </div>
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
     <div class="mi on" data-p="dash"><span class="ic">◧</span>Dashboard · الرئيسية</div>
     <div class="sep">Content · المحتوى</div>
     <div class="mi" data-p="projects"><span class="ic">▤</span>Projects · المشاريع</div>
+    <div class="mi" data-p="widgets"><span class="ic">❐</span>Widgets · الويدجات</div>
+    <div class="mi" data-p="beforeafter"><span class="ic">⟷</span>Before/After · قبل وبعد</div>
     <div class="mi" data-p="sequence"><span class="ic">◫</span>Sequence · تسلسل الصور</div>
     <div class="mi" data-p="stages"><span class="ic">≡</span>Stages · المراحل</div>
     <div class="mi" data-p="gallery"><span class="ic">▦</span>Galleries · المعارض</div>
@@ -252,32 +407,117 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== PROJECTS ========== -->
     <div class="page" id="p-projects">
-      <h1 class="pt">Projects · المشاريع</h1>
-      <div class="ps">إنشاء وتعديل ونشر المشاريع — بدون أي كود</div>
-      <div class="panel"><h3><span>Active Project · المشروع المنشور</span> <span class="badge">PUBLISHED</span></h3>
+      <h1 class="pt">Projects Manager · إدارة المشاريع</h1>
+      <div class="ps">إنشاء وحذف وتعديل المشاريع وترتيبها في التوب بار — وتحديد المشروع الرئيسي</div>
+      
+      <div class="panel">
+        <h3><span>Active Project Editor · تعديل بيانات المشروع المختار</span> <span class="badge" id="adminProjEditBadge">PUBLISHED</span></h3>
         <div class="grid2">
-          <div class="f"><label>Title · اسم المشروع</label><input type="text" id="fTitle"></div>
-          <div class="f"><label>Location · الموقع</label><input type="text" id="fLoc"></div>
+          <div class="f"><label>Title (English) · اسم المشروع</label><input type="text" id="fTitle"></div>
+          <div class="f"><label>Title (Arabic) · الاسم بالعربية</label><input type="text" id="fTitleAr"></div>
+          <div class="f"><label>Location (English) · الموقع</label><input type="text" id="fLoc"></div>
+          <div class="f"><label>Location (Arabic) · الموقع بالعربية</label><input type="text" id="fLocAr"></div>
           <div class="f"><label>Area · المساحة</label><input type="text" id="fArea"></div>
           <div class="f"><label>Year · السنة</label><input type="text" id="fYear"></div>
-          <div class="f"><label>Status · الحالة</label>
-            <select id="fStatus"><option>Completed</option><option>In Progress</option><option>Design Phase</option><option>Archived</option></select></div>
-          <div class="f"><label>Featured · مميز</label>
-            <div class="frow" style="border:none;padding:4px 0"><div><div class="fl">Show on homepage · يظهر في الواجهة</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div></div>
+          <div class="f"><label>Status (English) · الحالة</label>
+            <select id="fStatus"><option>Completed</option><option>In Progress</option><option>Design Phase</option><option>Archived</option></select>
+          </div>
+          <div class="f"><label>Status (Arabic) · الحالة بالعربية</label>
+            <input type="text" id="fStatusAr" placeholder="مكتمل / قيد الإنشاء / مرحلة التصميم">
+          </div>
+          <div class="f"><label>Cover Image URL · رابط صورة الغلاف</label>
+            <input type="text" id="fCover" placeholder="assets/villa.png">
+          </div>
+          <div class="f"><label>Build Progress % · نسبة البناء</label>
+            <input type="number" id="fProg" min="0" max="100" placeholder="100">
+          </div>
+          <div class="f"><label>Default Project · المشروع الرئيسي الافتراضي</label>
+            <div class="frow" style="border:none;padding:4px 0"><div><div class="fl">Opens by default on homepage · يفتح افتراضياً في الموقع</div></div>
+            <label class="switch"><input type="checkbox" id="fDefault"><i></i></label></div>
+          </div>
         </div>
         <div class="btnrow">
           <button class="btn" onclick="saveProject()">Save & Publish · حفظ ونشر</button>
           <button class="btn ghost" onclick="toast('Project duplicated as draft')">Duplicate · نسخ</button>
           <button class="btn ghost" onclick="toast('Project archived')">Archive · أرشفة</button>
-          <button class="btn danger" onclick="toast('Deletion requires admin confirmation')">Delete · حذف</button>
+          <button class="btn danger" onclick="deleteCurrentProject()">Delete Project · حذف هذا المشروع</button>
         </div>
       </div>
-      <div class="panel"><h3>All Projects · كل المشاريع</h3>
-        <div class="act"><span class="t">●</span><div><b>Villa Solara</b> — Kuwait · 97 frames · 483 images</div><span class="tag green">PUBLISHED</span></div>
-        <div class="act"><span class="t">●</span><div><b>Marina Court</b> — Sharq · 0 frames · 112 images</div><span class="tag amber">DRAFT</span></div>
-        <div class="act"><span class="t">●</span><div><b>Desert Pavilion</b> — Wafra · 0 frames · 64 images</div><span class="tag amber">DRAFT</span></div>
-        <div class="act"><span class="t">●</span><div><b>Coastal House</b> — Khiran · concept</div><span class="tag blue">DESIGN</span></div>
+
+      <div class="panel">
+        <h3><span>All Projects (Top Bar Order) · كل المشاريع (ترتيب التوب بار)</span> <span class="badge">DRAG / REORDER</span></h3>
+        <div id="adminProjectsList"></div>
+        <div class="btnrow" style="margin-top:20px;">
+          <button class="btn" onclick="createNewProject()">+ Add New Project · إضافة مشروع جديد</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== WIDGETS & MODALS ========== -->
+    <div class="page" id="p-widgets">
+      <h1 class="pt">Widget & Modal Manager · إدارة الويدجات والنوافذ المنبثقة</h1>
+      <div class="ps">تعديل النصوص والصور وبيانات التواصل لكل ويدجت في صفحة المشروع — تنبثق كنافذة عند الضغط عليها في الموقع</div>
+      
+      <div class="panel">
+        <h3><span>Select Widget to Edit · اختر الويدجت للتعديل</span> <span class="badge" id="wEditProjBadge">PROJECT WIDGETS</span></h3>
+        <select id="wSelect" onchange="loadSelectedWidgetIntoForm()" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid var(--brd); border-radius:12px; padding:12px 14px; font-size:14px; outline:none; margin-bottom:18px;">
+          <option value="01">01 Design · التصميم</option>
+          <option value="02">02 Execution · التنفيذ</option>
+          <option value="03">03 Finishing · التشطيبات</option>
+          <option value="04">04 Project Management · إدارة المشاريع</option>
+          <option value="progress">Build & Quality Progress · تقدم البناء والجودة</option>
+          <option value="fea">Structural FEA Engineering · الحسابات الإنشائية (FEA)</option>
+          <option value="materials">Material SCAN & Testing · فحص المواد والجودة</option>
+          <option value="schedule">CPM Timeline & Schedule · الجدول الزمني ومراحل الإنجاز</option>
+          <option value="cost_qa">Budget & QA Inspections · الميزانية وفحوصات الجودة</option>
+          <option value="room_progress">Room Progress Tracking · تقدم إنجاز الغرف</option>
+          <option value="room_data">Room Architectural Data · البيانات المعمارية للغرف</option>
+          <option value="smart_systems">Smart Home & MEP Systems · الأنظمة الذكية والميكانيكية</option>
+        </select>
+
+        <div class="grid2">
+          <div class="f"><label>Widget Title (English) · عنوان الويدجت</label><input type="text" id="wTitleEn"></div>
+          <div class="f"><label>Widget Title (Arabic) · العنوان بالعربية</label><input type="text" id="wTitleAr"></div>
+        </div>
+
+        <div class="f" style="margin-top:12px;"><label>Detailed Description / Specs (English) · وصف التخصص</label>
+          <textarea id="wDescEn" rows="3" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid var(--brd); border-radius:12px; padding:12px; font-size:13px; outline:none;"></textarea>
+        </div>
+
+        <div class="f" style="margin-top:12px;"><label>Detailed Description / Specs (Arabic) · الوصف بالعربية</label>
+          <textarea id="wDescAr" rows="3" style="width:100%; background:var(--panel2); color:var(--tx); border:1px solid var(--brd); border-radius:12px; padding:12px; font-size:13px; outline:none;"></textarea>
+        </div>
+
+        <div class="f" style="margin-top:12px;"><label>Gallery Images (Comma-separated image URLs) · صور المعرض (افصل بينها بفاصلة)</label>
+          <input type="text" id="wImages" placeholder="assets/villa-blueprint.png, assets/villa-wireframe.png, assets/villa-clean.png" oninput="previewWidgetImages()">
+          <div id="wImagesPreview" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;"></div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div class="f"><label>WhatsApp Contact URL / Phone · رابط الواتساب</label><input type="text" id="wWa" placeholder="https://wa.me/96500000000"></div>
+          <div class="f"><label>Contact Email · البريد الإلكتروني للتواصل</label><input type="text" id="wEmail" placeholder="info@aura.studio"></div>
+          <div class="f"><label>Inquiry Form Title · عنوان نموذج التواصل</label><input type="text" id="wFormTitle" placeholder="Inquire about Parametric Design"></div>
+        </div>
+
+        <div class="btnrow" style="margin-top:22px;">
+          <button class="btn" onclick="saveWidgetEditor()">Save Widget Settings · حفظ إعدادات الويدجت</button>
+          <button class="btn ghost" onclick="resetWidgetToDefault()">Reset Widget to Default · إعادة للوضع الافتراضي</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== BEFORE / AFTER MANAGER ========== -->
+    <div class="page" id="p-beforeafter">
+      <h1 class="pt">Before/After Section Manager · إدارة صور قسم قبل وبعد (8 صور)</h1>
+      <div class="ps">لكل مشروع 4 بنود تفاعلية (التصميم / التنفيذ / التشطيبات / إدارة المشاريع) — كل بند يحتاج صورتين (قبل / بعد) بالإضافة إلى أسماء المراحل</div>
+      
+      <div id="baAdminCards"></div>
+
+      <div class="panel" style="margin-top:20px;">
+        <div class="btnrow">
+          <button class="btn" onclick="saveBeforeAfterEditor()">Save All 8 Before/After Images · حفظ صور وإعدادات قسم قبل وبعد</button>
+          <button class="btn ghost" onclick="resetBeforeAfterToDefault()">Reset Before/After to Defaults · استعادة الصور الافتراضية</button>
+        </div>
       </div>
     </div>
 
@@ -565,9 +805,25 @@ function toast(msg){
 
 /* ---------------- boot: fill forms ---------------- */
 function boot(){
+  const proj = AURA.getActiveProject(CFG);
+  renderAdminProjectSelector();
   // project
-  fTitle.value=CFG.project.title;fLoc.value=CFG.project.location;
-  fArea.value=CFG.project.area;fYear.value=CFG.project.year;fStatus.value=CFG.project.status;
+  fTitle.value = proj.title || '';
+  if(document.getElementById('fTitleAr')) document.getElementById('fTitleAr').value = proj.titleAr || '';
+  fLoc.value = proj.location || '';
+  if(document.getElementById('fLocAr')) document.getElementById('fLocAr').value = proj.locationAr || '';
+  fArea.value = proj.area || '';
+  fYear.value = proj.year || '';
+  fStatus.value = proj.status || 'Completed';
+  if(document.getElementById('fStatusAr')) document.getElementById('fStatusAr').value = proj.statusAr || '';
+  if(document.getElementById('fCover')) document.getElementById('fCover').value = proj.cover || 'assets/villa.png';
+  if(document.getElementById('fProg')) document.getElementById('fProg').value = (proj.progressData && proj.progressData.buildPct !== undefined) ? proj.progressData.buildPct : (proj.project.progress || 100);
+  if(document.getElementById('fDefault')) document.getElementById('fDefault').checked = !!proj.isDefault;
+  if(document.getElementById('adminProjEditBadge')) document.getElementById('adminProjEditBadge').textContent = (proj.status || 'PUBLISHED').toUpperCase();
+
+  renderAdminProjectsList();
+  renderWidgetsEditor();
+  renderBeforeAfterEditor();
   // playback
   CFG.playback=CFG.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
   pFpsExt.value=CFG.playback.fpsExt;pFpsInt.value=CFG.playback.fpsInt;
@@ -612,8 +868,40 @@ function updRvUI(){
 
 /* ---------------- save actions ---------------- */
 function saveProject(){
-  CFG.project={...CFG.project,title:fTitle.value,location:fLoc.value,area:fArea.value,year:fYear.value,status:fStatus.value};
-  AURA.save(CFG);toast('Project published — live on the site');
+  const proj = AURA.getActiveProject(CFG);
+  proj.title = fTitle.value;
+  proj.titleAr = fTitleAr.value;
+  proj.location = fLoc.value;
+  proj.locationAr = fLocAr.value;
+  proj.area = fArea.value;
+  proj.year = fYear.value;
+  proj.status = fStatus.value;
+  proj.statusAr = fStatusAr.value;
+  proj.cover = fCover.value;
+  if(fDefault.checked){
+    AURA.setDefaultProject(CFG, proj.id);
+  } else {
+    proj.isDefault = false;
+  }
+  proj.project = {
+    title: proj.title,
+    titleAr: proj.titleAr,
+    location: proj.location,
+    locationAr: proj.locationAr,
+    area: proj.area,
+    year: proj.year,
+    status: proj.status,
+    statusAr: proj.statusAr,
+    progress: Number(fProg.value) || 100
+  };
+  if(!proj.progressData) proj.progressData = {};
+  proj.progressData.buildPct = Number(fProg.value) || 100;
+
+  AURA.save(CFG);
+  CFG = AURA.load();
+  renderAdminProjectSelector();
+  renderAdminProjectsList();
+  toast('Project [' + proj.title + '] published — live on the site');
 }
 function saveUI(){
   CFG.brand.name=uName.value;CFG.brand.accent=uAccent.value;
@@ -621,6 +909,289 @@ function saveUI(){
   AURA.save(CFG);toast('UI theme published');
 }
 function resetAll(){AURA.reset();CFG=AURA.load();boot();toast('Reset to defaults')}
+
+/* ============================================================
+   NEW ADMIN MANAGERS (PROJECTS, WIDGETS, BEFORE/AFTER)
+   ============================================================ */
+function renderAdminProjectSelector(){
+  const sel = document.getElementById('adminActiveProjectSelect');
+  if(!sel) return;
+  const projs = CFG.projects || [];
+  sel.innerHTML = projs.map(p => {
+    return `<option value="${p.id}" ${p.id === CFG.activeProjectId ? 'selected' : ''}>
+      ${p.title} ${p.titleAr ? ('· ' + p.titleAr) : ''} ${p.isDefault ? ' ★' : ''}
+    </option>`;
+  }).join('');
+}
+
+function switchAdminProject(id){
+  CFG = AURA.setActiveProject(id);
+  boot();
+  toast('Switched editing to project: ' + AURA.getActiveProject(CFG).title);
+}
+
+function renderAdminProjectsList(){
+  const wrap = document.getElementById('adminProjectsList');
+  if(!wrap) return;
+  const projs = CFG.projects || [];
+  wrap.innerHTML = projs.map((p, idx) => {
+    const isAct = p.id === CFG.activeProjectId;
+    const coverSrc = p.cover || 'assets/villa.png';
+    const tagColor = p.status === 'Completed' ? 'green' : p.status === 'In Progress' ? 'amber' : 'blue';
+    return `<div class="proj-admin-row ${isAct ? 'active-edit' : ''}">
+      <div class="pa-left">
+        <img src="${coverSrc}" alt="${p.title}">
+        <div class="pa-info">
+          <div class="pa-title">${p.title} <span class="ar">${p.titleAr || ''}</span></div>
+          <div class="pa-meta">
+            <span>${p.location || 'Kuwait'}</span> · 
+            <span>${p.area || ''}</span> · 
+            <span class="tag ${tagColor}">${(p.status || 'PUBLISHED').toUpperCase()}</span>
+            ${p.isDefault ? '<span class="tag blue">DEFAULT PROJECT</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="pa-actions">
+        <button class="btn sm ghost" onclick="switchAdminProject('${p.id}'); go('projects');">✎ Edit Data</button>
+        ${!p.isDefault ? `<button class="btn sm ghost" onclick="setDefaultProject('${p.id}')">★ Make Default</button>` : ''}
+        <button class="btn sm ghost" onclick="moveProjectOrder('${p.id}', -1)" title="Move Left/Up in Top Bar">▲</button>
+        <button class="btn sm ghost" onclick="moveProjectOrder('${p.id}', 1)" title="Move Right/Down in Top Bar">▼</button>
+        <button class="btn sm danger" onclick="deleteProject('${p.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function moveProjectOrder(id, direction){
+  const projs = CFG.projects || [];
+  const idx = projs.findIndex(p => p.id === id);
+  if(idx < 0) return;
+  const newIdx = idx + direction;
+  if(newIdx < 0 || newIdx >= projs.length) return;
+  const orderedIds = [...projs.map(p => p.id)];
+  const tmp = orderedIds[idx];
+  orderedIds[idx] = orderedIds[newIdx];
+  orderedIds[newIdx] = tmp;
+  AURA.reorderProjects(CFG, orderedIds);
+  CFG = AURA.load();
+  renderAdminProjectsList();
+  toast('Projects reordered in Top Bar · تم تغيير ترتيب المشاريع');
+}
+
+function deleteProject(id){
+  if(CFG.projects.length <= 1){
+    toast('Cannot delete the last remaining project · لا يمكن حذف المشروع الوحيد المتبقي');
+    return;
+  }
+  const p = AURA.getProjectById(CFG, id);
+  if(confirm(`Delete project "${p ? p.title : id}"? This cannot be undone.`)){
+    AURA.deleteProject(CFG, id);
+    CFG = AURA.load();
+    boot();
+    toast('Project deleted · تم حذف المشروع');
+  }
+}
+
+function deleteCurrentProject(){
+  deleteProject(CFG.activeProjectId);
+}
+
+function setDefaultProject(id){
+  AURA.setDefaultProject(CFG, id);
+  CFG = AURA.load();
+  boot();
+  toast('Homepage default project updated · تم تحديد المشروع الرئيسي الافتراضي');
+}
+
+function createNewProject(){
+  const title = prompt('Enter New Project Title (English) · اسم المشروع:', 'New Project');
+  if(!title) return;
+  const titleAr = prompt('Enter Project Title (Arabic) · الاسم بالعربية:', 'مشروع جديد') || 'مشروع جديد';
+  const newProj = {
+    id: 'proj_' + Math.random().toString(36).substr(2, 6),
+    title: title,
+    titleAr: titleAr,
+    location: "Kuwait",
+    locationAr: "الكويت",
+    area: "650 m²",
+    year: "2027",
+    status: "In Progress",
+    statusAr: "قيد الإنشاء",
+    cover: "assets/villa.png",
+    isDefault: false,
+    project: { title: title, titleAr: titleAr, location: "Kuwait", locationAr: "الكويت", area: "650 m²", year: "2027", status: "In Progress", statusAr: "قيد الإنشاء", progress: 50 },
+    progressData: { buildPct: 50, qualPct: 90, roomPhase: "Shell", integrity: "99.5%", loadPath: "Verified", deflection: "0.5 mm", foundation: "C40/50", travertine: "500 m²", costUsed: "50%", qaInspections: "12/24" },
+    sequence: { path: "assets/seq/", prefix: "frame", digits: 3, ext: ".webp", count: 97 },
+    stages: JSON.parse(JSON.stringify(AURA.DEFAULT_STAGES || [])),
+    interior: JSON.parse(JSON.stringify(AURA.DEFAULT_INTERIOR || {})),
+    widgets: JSON.parse(JSON.stringify(AURA.DEFAULT_WIDGETS || {})),
+    beforeAfter: JSON.parse(JSON.stringify(AURA.DEFAULT_BEFORE_AFTER || []))
+  };
+  AURA.addProject(CFG, newProj);
+  AURA.setActiveProject(newProj.id);
+  CFG = AURA.load();
+  boot();
+  toast('New project created and selected for editing · تم إنشاء المشروع الجديد');
+}
+
+/* WIDGET EDITOR */
+function renderWidgetsEditor(){
+  const proj = AURA.getActiveProject(CFG);
+  if(document.getElementById('wEditProjBadge')) {
+    document.getElementById('wEditProjBadge').textContent = (proj.title || 'PROJECT') + ' WIDGETS';
+  }
+  loadSelectedWidgetIntoForm();
+}
+
+function loadSelectedWidgetIntoForm(){
+  const sel = document.getElementById('wSelect');
+  if(!sel) return;
+  const widgetId = sel.value;
+  const proj = AURA.getActiveProject(CFG);
+  const widgets = proj.widgets || {};
+  const defW = (window.AURA_DEFAULTS.widgets || {})[widgetId] || {};
+  const w = widgets[widgetId] || defW;
+
+  document.getElementById('wTitleEn').value = w.title || '';
+  document.getElementById('wTitleAr').value = w.titleAr || '';
+  document.getElementById('wDescEn').value = w.desc || '';
+  document.getElementById('wDescAr').value = w.descAr || '';
+  document.getElementById('wImages').value = (w.images || []).join(', ');
+  document.getElementById('wWa').value = w.contact ? (w.contact.whatsapp || '') : '';
+  document.getElementById('wEmail').value = w.contact ? (w.contact.email || '') : '';
+  document.getElementById('wFormTitle').value = w.contact ? (w.contact.formTitle || '') : '';
+  previewWidgetImages();
+}
+
+function previewWidgetImages(){
+  const wrap = document.getElementById('wImagesPreview');
+  const input = document.getElementById('wImages');
+  if(!wrap || !input) return;
+  const urls = input.value.split(',').map(u => u.trim()).filter(Boolean);
+  wrap.innerHTML = urls.map(u => `<div class="w-thumb-box"><img src="${u}" alt=""></div>`).join('');
+}
+
+function saveWidgetEditor(){
+  const sel = document.getElementById('wSelect');
+  if(!sel) return;
+  const widgetId = sel.value;
+  const proj = AURA.getActiveProject(CFG);
+  if(!proj.widgets) proj.widgets = {};
+
+  const images = document.getElementById('wImages').value.split(',').map(u => u.trim()).filter(Boolean);
+  proj.widgets[widgetId] = {
+    title: document.getElementById('wTitleEn').value,
+    titleAr: document.getElementById('wTitleAr').value,
+    desc: document.getElementById('wDescEn').value,
+    descAr: document.getElementById('wDescAr').value,
+    images: images.length ? images : ['assets/villa.png'],
+    contact: {
+      whatsapp: document.getElementById('wWa').value,
+      email: document.getElementById('wEmail').value,
+      formTitle: document.getElementById('wFormTitle').value
+    }
+  };
+
+  AURA.save(CFG);
+  CFG = AURA.load();
+  toast('Widget [' + widgetId + '] published · تم حفظ إعدادات الويدجت');
+}
+
+function resetWidgetToDefault(){
+  const sel = document.getElementById('wSelect');
+  if(!sel) return;
+  const widgetId = sel.value;
+  const proj = AURA.getActiveProject(CFG);
+  const defW = (window.AURA_DEFAULTS.widgets || {})[widgetId];
+  if(defW && proj.widgets) {
+    proj.widgets[widgetId] = JSON.parse(JSON.stringify(defW));
+    AURA.save(CFG);
+    CFG = AURA.load();
+    loadSelectedWidgetIntoForm();
+    toast('Widget reset to default · تم استعادة الافتراضي');
+  }
+}
+
+/* BEFORE/AFTER EDITOR (8 images) */
+function renderBeforeAfterEditor(){
+  const wrap = document.getElementById('baAdminCards');
+  if(!wrap) return;
+  const proj = AURA.getActiveProject(CFG);
+  const baList = proj.beforeAfter || window.AURA_DEFAULTS.beforeAfter || [];
+
+  wrap.innerHTML = baList.map((item, idx) => {
+    return `<div class="ba-edit-card" data-idx="${idx}">
+      <h4>Item ${item.id} — ${item.name} <span class="ar">${item.nameAr || ''}</span></h4>
+      
+      <div class="ba-edit-row">
+        <img src="${item.beforeImg}" id="baPrevBefore_${idx}" alt="Before">
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">BEFORE Image URL (قبل)</label>
+          <input type="text" id="baImgBefore_${idx}" value="${item.beforeImg}" oninput="document.getElementById('baPrevBefore_${idx}').src=this.value" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">Before Label (EN)</label>
+          <input type="text" id="baLblBeforeEn_${idx}" value="${item.beforeLabel || ''}" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">Before Label (AR)</label>
+          <input type="text" id="baLblBeforeAr_${idx}" value="${item.beforeLabelAr || ''}" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+      </div>
+
+      <div class="ba-edit-row">
+        <img src="${item.afterImg}" id="baPrevAfter_${idx}" alt="After">
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">AFTER Image URL (بعد)</label>
+          <input type="text" id="baImgAfter_${idx}" value="${item.afterImg}" oninput="document.getElementById('baPrevAfter_${idx}').src=this.value" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">After Label (EN)</label>
+          <input type="text" id="baLblAfterEn_${idx}" value="${item.afterLabel || ''}" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px; color:var(--tx3); display:block; margin-bottom:4px;">After Label (AR)</label>
+          <input type="text" id="baLblAfterAr_${idx}" value="${item.afterLabelAr || ''}" style="width:100%; background:var(--panel); color:var(--tx); border:1px solid var(--brd); border-radius:8px; padding:8px 10px; font-size:13px;">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveBeforeAfterEditor(){
+  const proj = AURA.getActiveProject(CFG);
+  const baList = proj.beforeAfter || JSON.parse(JSON.stringify(window.AURA_DEFAULTS.beforeAfter || []));
+
+  baList.forEach((item, idx) => {
+    const bImg = document.getElementById(`baImgBefore_${idx}`);
+    const aImg = document.getElementById(`baImgAfter_${idx}`);
+    const bEn = document.getElementById(`baLblBeforeEn_${idx}`);
+    const bAr = document.getElementById(`baLblBeforeAr_${idx}`);
+    const aEn = document.getElementById(`baLblAfterEn_${idx}`);
+    const aAr = document.getElementById(`baLblAfterAr_${idx}`);
+
+    if(bImg) item.beforeImg = bImg.value;
+    if(aImg) item.afterImg = aImg.value;
+    if(bEn) item.beforeLabel = bEn.value;
+    if(bAr) item.beforeLabelAr = bAr.value;
+    if(aEn) item.afterLabel = aEn.value;
+    if(aAr) item.afterLabelAr = aAr.value;
+  });
+
+  proj.beforeAfter = baList;
+  AURA.save(CFG);
+  CFG = AURA.load();
+  toast('Before/After section published (8 images updated) · تم حفظ 8 صور لجميع البنود');
+}
+
+function resetBeforeAfterToDefault(){
+  const proj = AURA.getActiveProject(CFG);
+  proj.beforeAfter = JSON.parse(JSON.stringify(window.AURA_DEFAULTS.beforeAfter || []));
+  AURA.save(CFG);
+  CFG = AURA.load();
+  renderBeforeAfterEditor();
+  toast('Before/After section reset to defaults · تم استعادة الصور الافتراضية');
+}
 
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){

@@ -328,7 +328,428 @@ footer p .ar{font-family:var(--font-ar)}
   .nav .links a:not(.admin-link){display:none}
   .svc-grid{grid-template-columns:1fr;gap:32px}.info-cols{grid-template-columns:1fr}
 }
+
+/* ================= NEW FEATURES CSS ================= */
+.proj-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 100px;
+  padding: 4px 6px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+  max-width: 580px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.proj-switcher::-webkit-scrollbar { display: none; }
+.proj-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px 4px 5px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.3, 0.7, 0.3, 1);
+  border: 1px solid transparent;
+  background: transparent;
+  flex: none;
+}
+.proj-card:hover {
+  background: rgba(0,0,0,0.04);
+}
+.proj-card.active {
+  background: #fff;
+  border-color: rgba(60,130,246,0.3);
+  box-shadow: 0 4px 12px -4px rgba(60,130,246,0.25);
+}
+.proj-card img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+}
+.proj-card .p-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.proj-card .p-title {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink);
+}
+.proj-card .p-status {
+  font-size: 9px;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.proj-card .p-status .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.proj-card .p-status .dot.completed { background: #34c759; }
+.proj-card .p-status .dot.progress { background: #ff9f0a; }
+
+@media (max-width: 900px) {
+  .nav {
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  .proj-switcher {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Before/After Interactive Slider in #services */
+.ba-visual {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -20px rgba(0,0,0,0.15);
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #f8f9fa;
+  user-select: none;
+  touch-action: pan-y;
+}
+.ba-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  cursor: ew-resize;
+  transition: opacity 0.25s ease;
+}
+.ba-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ba-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ba-badge {
+  position: absolute;
+  top: 18px;
+  z-index: 5;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  background: rgba(29,29,31,0.78);
+  color: #fff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+.ba-badge.before { left: 18px; }
+.ba-badge.after { right: 18px; background: rgba(60,130,246,0.85); }
+.ba-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #fff;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+.ba-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  border: 2px solid var(--blue);
+}
+.ba-instructions {
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  background: rgba(255,255,255,0.88);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.svc-card .svc-btn {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--blue);
+  background: rgba(60,130,246,0.08);
+  border: 1px solid rgba(60,130,246,0.2);
+  padding: 7px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.svc-card .svc-btn:hover {
+  background: var(--blue);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Widget Modal Trigger buttons on dashboard cards (.scard) */
+.wm-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(60,130,246,0.12);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  border: 1px solid rgba(60,130,246,0.2);
+  margin-inline-start: auto;
+  flex: none;
+}
+.wm-trigger-btn:hover {
+  background: var(--blue);
+  color: #fff;
+  transform: scale(1.12);
+}
+
+/* Widget Detail Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 450;
+  background: rgba(10,10,14,0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  padding: 20px;
+}
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.35);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 32px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.modal-close {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.08);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s;
+  color: var(--ink);
+}
+.modal-close:hover {
+  background: rgba(0,0,0,0.1);
+}
+.modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-project-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: rgba(60,130,246,0.1);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+.modal-header h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.modal-header h3 .ar {
+  font-family: var(--font-ar);
+  font-size: 18px;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.wm-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.wm-gallery .wm-thumb {
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: #f0f2f5;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.wm-gallery .wm-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.wm-gallery .wm-thumb:hover img {
+  transform: scale(1.06);
+}
+.wm-desc {
+  line-height: 1.65;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.wm-desc h4 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+.wm-contact {
+  background: rgba(246,247,249,0.9);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 18px;
+  padding: 20px 22px;
+}
+.wm-contact h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.wm-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.wm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 100px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.25s;
+  border: none;
+}
+.wm-btn.wa {
+  background: #25d366;
+  color: #fff;
+}
+.wm-btn.wa:hover {
+  background: #20b858;
+}
+.wm-btn.email {
+  background: var(--ink);
+  color: #fff;
+}
+.wm-btn.email:hover {
+  background: #000;
+}
+.wm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding-top: 16px;
+}
+.wm-form input, .wm-form textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+}
+.wm-form input:focus, .wm-form textarea:focus {
+  border-color: var(--blue);
+}
+.wm-btn.submit {
+  background: var(--blue);
+  color: #fff;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.wm-btn.submit:hover {
+  filter: brightness(1.1);
+}
 </style>
+
 </head>
 <body>
 
@@ -336,6 +757,7 @@ footer p .ar{font-family:var(--font-ar)}
 
 <nav class="nav" id="nav">
   <div class="logo" onclick="scrollTo({top:0})">AU<b>R</b>A</div>
+  <div class="proj-switcher" id="projSwitcher"></div>
   <div class="links">
     <a data-go="cinema">Experience · التجربة</a>
     <a data-go="project-sec">Project · المشروع</a>
@@ -362,7 +784,7 @@ footer p .ar{font-family:var(--font-ar)}
   <div class="side left">
     <div class="mode-ext">
       <div class="scard" style="margin-bottom:12px">
-        <h5>Progress <span class="arh">تقدم البناء</span><span class="lv">AI</span></h5>
+        <h5>Progress <span class="arh">تقدم البناء</span><span class="lv">AI</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'progress\', event)" title="View details & contact">↗</span></h5>
         <div class="rings">
           <div class="ringbox"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="bg" cx="22" cy="22" r="18"/><circle class="fg" id="ringBuild" cx="22" cy="22" r="18" stroke-dashoffset="113"/></svg>
             <div><b id="pctBuild">0%</b><span>Build · البناء</span></div></div>
@@ -372,14 +794,14 @@ footer p .ar{font-family:var(--font-ar)}
         <div id="discBars"></div>
       </div>
       <div class="scard" style="margin-bottom:12px">
-        <h5>Structural <span class="arh">الحسابات الإنشائية</span><span class="lv">FEA</span></h5>
+        <h5>Structural <span class="arh">الحسابات الإنشائية</span><span class="lv">FEA</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'fea\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span class="kl">Integrity<span class="ar">السلامة الإنشائية</span></span><b id="scInteg">—</b></div>
         <div class="krow"><span class="kl">Load path<span class="ar">مسار الأحمال</span></span><b id="scLoad">—</b></div>
         <div class="krow"><span class="kl">Deflection<span class="ar">الترخيم</span></span><b id="scDefl">—</b></div>
         <div class="krow"><span class="kl">Foundation<span class="ar">الأساسات</span></span><b id="scFound">—</b></div>
       </div>
       <div class="scard">
-        <h5>Materials <span class="arh">فحص المواد</span><span class="lv">SCAN</span></h5>
+        <h5>Materials <span class="arh">فحص المواد</span><span class="lv">SCAN</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'materials\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span><i class="chip" style="background:#c9b48f"></i>Soil · التربة</span><b style="color:#34c759">OK</b></div>
         <div class="krow"><span><i class="chip" style="background:#6b7076"></i>Rebar · الحديد</span><b style="color:#34c759">OK</b></div>
         <div class="krow"><span><i class="chip" style="background:#9aa0a6"></i>Concrete · الخرسانة</span><b style="color:#34c759">OK</b></div>
@@ -388,7 +810,7 @@ footer p .ar{font-family:var(--font-ar)}
     </div>
     <div class="mode-int">
       <div class="scard" style="margin-bottom:12px">
-        <h5>Room Progress <span class="arh">تقدم الغرفة</span><span class="lv">AI</span></h5>
+        <h5>Room Progress <span class="arh">تقدم الغرفة</span><span class="lv">AI</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'room_progress\', event)" title="View details & contact">↗</span></h5>
         <div class="rings">
           <div class="ringbox"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="bg" cx="22" cy="22" r="18"/><circle class="fg" id="ringRoom" cx="22" cy="22" r="18" stroke-dashoffset="113"/></svg>
             <div><b id="pctRoom">0%</b><span id="roomPhase">Shell</span></div></div>
@@ -396,14 +818,14 @@ footer p .ar{font-family:var(--font-ar)}
         <div id="roomBars"></div>
       </div>
       <div class="scard" style="margin-bottom:12px">
-        <h5>Room Data <span class="arh">بيانات الغرفة</span><span class="lv" id="rdName">LIVING</span></h5>
+        <h5>Room Data <span class="arh">بيانات الغرفة</span><span class="lv" id="rdName">LIVING</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'room_data\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span class="kl">Area<span class="ar">المساحة</span></span><b id="rdArea">—</b></div>
         <div class="krow"><span class="kl">Ceiling<span class="ar">ارتفاع السقف</span></span><b id="rdCeil">—</b></div>
         <div class="krow"><span class="kl">Finishes<span class="ar">التشطيبات</span></span><b id="rdFin" style="max-width:105px;text-align:right">—</b></div>
         <div class="krow"><span class="kl">Lighting<span class="ar">الإضاءة</span></span><b id="rdLight" style="max-width:105px;text-align:right">—</b></div>
       </div>
       <div class="scard">
-        <h5>Smart Systems <span class="arh">الأنظمة الذكية</span><span class="lv">IOT</span></h5>
+        <h5>Smart Systems <span class="arh">الأنظمة الذكية</span><span class="lv">IOT</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'smart_systems\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span class="kl">HVAC<span class="ar">التكييف</span></span><b id="rdHvac" style="max-width:105px;text-align:right">—</b></div>
         <div class="krow"><span class="kl">Acoustic<span class="ar">الصوتيات</span></span><b id="rdAc" style="max-width:105px;text-align:right">—</b></div>
         <div class="krow"><span class="kl">Smart<span class="ar">التحكم الذكي</span></span><b id="rdSmart" style="max-width:105px;text-align:right">—</b></div>
@@ -415,17 +837,17 @@ footer p .ar{font-family:var(--font-ar)}
   <div class="side right">
     <div class="mode-ext">
       <div class="scard" style="margin-bottom:12px">
-        <h5>Schedule <span class="arh">الجدول الزمني</span><span class="lv">CPM</span></h5>
+        <h5>Schedule <span class="arh">الجدول الزمني</span><span class="lv">CPM</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'schedule\', event)" title="View details & contact">↗</span></h5>
         <div id="schedList"></div>
       </div>
       <div class="scard" style="margin-bottom:12px">
-        <h5>Cost <span class="arh">تحليل التكلفة</span><span class="lv">AI</span></h5>
+        <h5>Cost <span class="arh">تحليل التكلفة</span><span class="lv">AI</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'cost_qa\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span class="kl">Budget used<span class="ar">المصروف من الميزانية</span></span><b id="costUsed">0%</b></div>
         <div class="krow"><span class="kl">Variance<span class="ar">الانحراف</span></span><b style="color:#34c759">−1.2%</b></div>
         <div class="krow"><span class="kl">Contingency<span class="ar">الاحتياطي</span></span><b>8.0%</b></div>
       </div>
       <div class="scard">
-        <h5>QA / Safety <span class="arh">الجودة والسلامة</span><span class="lv">QA</span></h5>
+        <h5>QA / Safety <span class="arh">الجودة والسلامة</span><span class="lv">QA</span><span class="wm-trigger-btn" onclick="openWidgetModal(\'cost_qa\', event)" title="View details & contact">↗</span></h5>
         <div class="krow"><span class="kl">Inspections<span class="ar">الفحوصات</span></span><b id="qaIns">0/24</b></div>
         <div class="krow"><span class="kl">Open issues<span class="ar">ملاحظات مفتوحة</span></span><b style="color:#34c759">0</b></div>
       </div>
@@ -492,29 +914,24 @@ footer p .ar{font-family:var(--font-ar)}
 </div>
 <section id="services">
   <div class="svc-grid">
-    <div class="svc-visual" id="svcVisual">
-      <img src="assets/villa-clean.png" alt="Villa">
-      <img class="wire" src="assets/villa-wireframe.png" alt="">
-      <div class="svc-spot" id="svcSpot"></div>
+    <div class="svc-visual ba-visual" id="svcVisual">
+      <div class="ba-slider" id="baSlider">
+        <div class="ba-layer ba-before">
+          <img id="baImgBefore" src="assets/villa-blueprint.png" alt="Before">
+          <div class="ba-badge before" id="baLabelBefore">Blueprint · مخطط هندسي</div>
+        </div>
+        <div class="ba-layer ba-after" id="baAfterLayer" style="clip-path: inset(0 0 0 50%)">
+          <img id="baImgAfter" src="assets/villa-wireframe.png" alt="After">
+          <div class="ba-badge after" id="baLabelAfter">Wireframe · هيكل إنشائي</div>
+        </div>
+        <div class="ba-handle" id="baHandle" style="left: 50%">
+          <div class="ba-line"></div>
+          <div class="ba-knob">↔</div>
+        </div>
+      </div>
+      <div class="ba-instructions"><span>⟷</span> <span class="en">Drag handle horizontally to compare before & after</span><span class="ar">اسحب الشريط أفقيًا للمقارنة بين قبل وبعد</span></div>
     </div>
-    <div class="svc-list">
-      <div class="svc-card active" data-spot="18,12,64,58" data-wire="1">
-        <div class="num">01</div><h3>Design <span class="ar">التصميم</span></h3>
-        <p>Parametric concept design, photoreal visualization and generative optioning.<br><span style="font-family:var(--font-ar)">تصميم بارامتري وإخراج واقعي وخيارات توليدية قبل وضع أول حجر.</span></p>
-      </div>
-      <div class="svc-card" data-spot="30,45,70,55" data-wire="1">
-        <div class="num">02</div><h3>Execution <span class="ar">التنفيذ</span></h3>
-        <p>Robotic surveying, laser-guided structure, millimetre tolerances — monitored live.<br><span style="font-family:var(--font-ar)">مساحة روبوتية وهيكل موجّه بالليزر بدقة مليمترية — بمراقبة حية.</span></p>
-      </div>
-      <div class="svc-card" data-spot="14,18,55,50" data-wire="0">
-        <div class="num">03</div><h3>Finishing <span class="ar">التشطيبات</span></h3>
-        <p>Book-matched travertine, low-E glazing, bronze detailing — every material traced.<br><span style="font-family:var(--font-ar)">ترافرتين متطابق وزجاج عازل وتفاصيل برونزية — كل خامة موثقة.</span></p>
-      </div>
-      <div class="svc-card" data-spot="8,8,86,80" data-wire="1">
-        <div class="num">04</div><h3>Project Management <span class="ar">إدارة المشاريع</span></h3>
-        <p>One live dashboard for cost, schedule and quality. AI flags risk early.<br><span style="font-family:var(--font-ar)">لوحة واحدة حية للتكلفة والجدول والجودة — والذكاء الاصطناعي ينذر مبكرًا.</span></p>
-      </div>
-    </div>
+    <div class="svc-list" id="svcList"></div>
   </div>
 </section>
 
@@ -522,6 +939,38 @@ footer p .ar{font-family:var(--font-ar)}
   <div class="logo">AU<b>R</b>A</div>
   <p>© 2026 Aura Architecture Studio — Kuwait · <span class="ar">فيلم واحد متواصل من الفكرة إلى آخر غرفة</span></p>
 </footer>
+
+
+<!-- WIDGET DETAIL MODAL -->
+<div id="widgetModal" class="modal-backdrop">
+  <div class="modal-box glass">
+    <button class="modal-close" id="widgetModalClose">✕</button>
+    <div class="modal-header">
+      <span class="modal-project-badge" id="wmProjBadge">Villa Solara</span>
+      <h3 id="wmTitle">01 Design <span class="ar">01 التصميم</span></h3>
+    </div>
+    <div class="modal-body">
+      <div class="wm-gallery" id="wmGallery"></div>
+      <div class="wm-desc">
+        <h4>Discipline Overview · نظرة عامة على التخصص</h4>
+        <p id="wmDescText"></p>
+      </div>
+      <div class="wm-contact glass">
+        <h4>Contact Us About This Discipline · تواصل معنا بخصوص هذا القسم</h4>
+        <div class="wm-buttons">
+          <a id="wmWaBtn" href="#" target="_blank" class="wm-btn wa">💬 WhatsApp · محادثة مباشرة</a>
+          <a id="wmEmailBtn" href="#" class="wm-btn email">✉ Email · مراسلة عبر البريد</a>
+        </div>
+        <form class="wm-form" id="wmForm" onsubmit="submitWidgetForm(event)">
+          <input type="text" placeholder="Your Name · الاسم" required id="wmFormName">
+          <input type="text" placeholder="Phone or Email · رقم الهاتف أو البريد" required id="wmFormContact">
+          <textarea placeholder="Your inquiry... · استفسارك..." rows="2" required id="wmFormMsg"></textarea>
+          <button type="submit" class="wm-btn submit">Send Message · أرسل رسالة</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- FIRST PERSON -->
 <div id="fpWrap">
@@ -539,7 +988,7 @@ footer p .ar{font-family:var(--font-ar)}
 
 <script src="js/cms.js"></script>
 <script>
-const CFG=AURA.load();AURA.applyTheme(CFG);
+let CFG=AURA.load();AURA.applyTheme(CFG);
 AURA_I18N.init();const T=AURA_I18N.pick;
 const $=id=>document.getElementById(id);
 const nav=$('nav');
@@ -960,15 +1409,21 @@ const META={
    notes:[['W22','Interior handover — zero snags.'],['W23','Landscape + pool commissioned.']]},
  night:{ba:['complete','night'],mats:[['#f0c98a','LED 2700K','CRI 97'],['#3c82f6','Scene controller','12 presets']],
    notes:[['W24','Lighting scenes calibrated at dusk.'],['W24','Final photography — night set.']]}};
-CFG.stages.forEach((s,i)=>{
-  const c=document.createElement('div');
-  c.className='stage-card'+(i===0?' on':'');c.dataset.id=s.id;
-  c.innerHTML=`<img loading="lazy" src="${G}${s.id}-07.webp" alt="${s.name}">
-    <div class="body"><div class="st-num">STAGE ${String(i+1).padStart(2,'0')}</div>
-    <h3>${s.name}<span class="ar">${s.ar}</span></h3></div>`;
-  c.onclick=()=>{selectStage(s.id);$('stageDetail').scrollIntoView({behavior:'smooth'});};
-  $('stageGrid').appendChild(c);
-});
+function renderStageGrid(){
+  const grid = $('stageGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  CFG.stages.forEach((s,i)=>{
+    const c=document.createElement('div');
+    c.className='stage-card'+(i===0?' on':'');c.dataset.id=s.id;
+    c.innerHTML=`<img loading="lazy" src="${G}${s.id}-07.webp" alt="${s.name}">
+      <div class="body"><div class="st-num">STAGE ${String(i+1).padStart(2,'0')}</div>
+      <h3>${s.name}<span class="ar">${s.ar}</span></h3></div>`;
+    c.onclick=()=>{selectStage(s.id);$('stageDetail').scrollIntoView({behavior:'smooth'});};
+    grid.appendChild(c);
+  });
+}
+renderStageGrid();
 function selectStage(id){
   const s=CFG.stages.find(x=>x.id===id);if(!s)return;
   document.querySelectorAll('.stage-card').forEach(c=>c.classList.toggle('on',c.dataset.id===id));
@@ -1029,18 +1484,227 @@ function wireStageDetail(){
 }
 selectStage('facade');
 
-/* services */
-const cards=[...document.querySelectorAll('.svc-card')];
-function setSpot(card){
-  cards.forEach(c=>c.classList.toggle('active',c===card));
-  const [x,y,w,h]=card.dataset.spot.split(',').map(Number);
-  const spot=$('svcSpot');
-  spot.style.left=x+'%';spot.style.top=y+'%';spot.style.width=w+'%';spot.style.height=h+'%';
-  spot.classList.add('on');
-  $('svcVisual').classList.toggle('lit',card.dataset.wire==='1');
+/* ============================================================
+   AURA PROJECT SWITCHER, BEFORE/AFTER SLIDER & WIDGET MODALS
+   ============================================================ */
+
+/* 1. Project Switcher Top Bar */
+function renderProjectSwitcher(){
+  const wrap = $('projSwitcher');
+  if(!wrap) return;
+  const projs = CFG.projects || [];
+  wrap.innerHTML = projs.map(p => {
+    const isAct = p.id === CFG.activeProjectId;
+    const name = T(p.title, p.titleAr || p.title);
+    const statText = p.status === 'Completed' ? T('Completed', 'مكتمل') : T(p.status || 'In Progress', p.statusAr || 'قيد الإنشاء');
+    const dotClass = p.status === 'Completed' ? 'completed' : 'progress';
+    const coverSrc = p.cover || 'assets/villa.png';
+    return `<div class="proj-card ${isAct ? 'active' : ''}" onclick="switchProject('${p.id}')">
+      <img src="${coverSrc}" alt="${name}">
+      <div class="p-info">
+        <span class="p-title">${name}</span>
+        <span class="p-status"><span class="dot ${dotClass}"></span>${statText}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
-cards.forEach(c=>{c.onmouseenter=()=>setSpot(c);c.onclick=()=>setSpot(c);});
-setSpot(cards[0]);
+
+function updateProgressMetrics(){
+  const pd = CFG.progressData || {};
+  if($('pctBuild')) $('pctBuild').textContent = (pd.buildPct !== undefined ? pd.buildPct : 100) + '%';
+  if($('ringBuild')) $('ringBuild').style.strokeDashoffset = 113 * (1 - (pd.buildPct !== undefined ? pd.buildPct : 100) / 100);
+  if($('pctQual')) $('pctQual').textContent = (pd.qualPct !== undefined ? pd.qualPct : 100) + '%';
+  if($('ringQual')) $('ringQual').style.strokeDashoffset = 113 * (1 - (pd.qualPct !== undefined ? pd.qualPct : 100) / 100);
+  if($('scInteg')) $('scInteg').textContent = pd.integrity || '99.8%';
+  if($('scLoad')) $('scLoad').textContent = pd.loadPath || 'Verified';
+  if($('scDefl')) $('scDefl').textContent = pd.deflection || '0.4 mm';
+  if($('scFound')) $('scFound').textContent = pd.foundation || 'C40/50';
+  if($('matTrav')) $('matTrav').textContent = pd.travertine || 'OK';
+  if($('costUsed')) $('costUsed').textContent = pd.costUsed || '100%';
+  if($('qaIns')) $('qaIns').textContent = pd.qaInspections || '24/24';
+}
+
+function switchProject(id){
+  const cinFade = $('cinFade');
+  if(cinFade) cinFade.style.opacity = '1';
+  setTimeout(() => {
+    CFG = AURA.setActiveProject(id);
+    document.title = `${CFG.brand.name} — ${T(CFG.project.title, CFG.project.titleAr || CFG.project.title)} · One Continuous Build`;
+    if($('projTitle')) $('projTitle').textContent = T(CFG.project.title, CFG.project.titleAr || CFG.project.title);
+    renderProjectSwitcher();
+    updateProgressMetrics();
+    renderStageGrid();
+    if(CFG.stages && CFG.stages.length > 0) {
+      selectStage(CFG.stages[0].id);
+    }
+    renderServicesList();
+    selectBeforeAfterItem('01');
+    if(SEGS && SEGS[0]) SEGS[0].count = CFG.sequence.count;
+    if(cinFade) cinFade.style.opacity = '0';
+    toast(T('Switched to ' + CFG.project.title, 'تم التبديل إلى ' + (CFG.project.titleAr || CFG.project.title)));
+  }, 320);
+}
+
+window.addEventListener('aura-project-change', (e) => {
+  if(e.detail && e.detail.projectId !== CFG.activeProjectId){
+    switchProject(e.detail.projectId);
+  }
+});
+
+/* 2. Before/After Interactive Slider (#services) */
+let baDragging = false;
+function initBeforeAfterSlider(){
+  const slider = $('baSlider');
+  if(!slider) return;
+  function setPos(clientX){
+    const rect = slider.getBoundingClientRect();
+    if(!rect.width) return;
+    let pos = ((clientX - rect.left) / rect.width) * 100;
+    pos = Math.min(Math.max(pos, 2), 98);
+    if($('baHandle')) $('baHandle').style.left = pos + '%';
+    if($('baAfterLayer')) $('baAfterLayer').style.clipPath = `inset(0 0 0 ${pos}%)`;
+  }
+  slider.addEventListener('pointerdown', e => {
+    baDragging = true;
+    slider.setPointerCapture(e.pointerId);
+    setPos(e.clientX);
+  });
+  slider.addEventListener('pointermove', e => {
+    if(baDragging) setPos(e.clientX);
+  });
+  slider.addEventListener('pointerup', () => { baDragging = false; });
+  slider.addEventListener('pointercancel', () => { baDragging = false; });
+}
+
+function selectBeforeAfterItem(itemId){
+  const items = CFG.beforeAfter || window.AURA_DEFAULTS.beforeAfter;
+  const item = items.find(x => x.id === itemId) || items[0];
+  if(!item) return;
+  const cards = [...document.querySelectorAll('#svcList .svc-card')];
+  cards.forEach(c => c.classList.toggle('active', c.dataset.ba === itemId));
+  
+  const slider = $('baSlider');
+  if(slider) {
+    slider.style.opacity = '0';
+    setTimeout(() => {
+      if($('baImgBefore')) $('baImgBefore').src = item.beforeImg;
+      if($('baImgAfter')) $('baImgAfter').src = item.afterImg;
+      if($('baLabelBefore')) $('baLabelBefore').textContent = T(item.beforeLabel, item.beforeLabelAr || item.beforeLabel);
+      if($('baLabelAfter')) $('baLabelAfter').textContent = T(item.afterLabel, item.afterLabelAr || item.afterLabel);
+      if($('baHandle')) $('baHandle').style.left = '50%';
+      if($('baAfterLayer')) $('baAfterLayer').style.clipPath = 'inset(0 0 0 50%)';
+      slider.style.opacity = '1';
+    }, 220);
+  }
+}
+
+function renderServicesList(){
+  const list = $('svcList');
+  if(!list) return;
+  const baList = CFG.beforeAfter || window.AURA_DEFAULTS.beforeAfter;
+  const widgets = CFG.widgets || window.AURA_DEFAULTS.widgets;
+  list.innerHTML = baList.map((item, idx) => {
+    const w = widgets[item.id] || {};
+    const num = item.id;
+    const title = T(w.title || item.name, w.titleAr || item.nameAr || item.name);
+    const desc = T(w.desc || '', w.descAr || w.desc || '');
+    return `<div class="svc-card ${idx === 0 ? 'active' : ''}" data-ba="${item.id}" onclick="selectBeforeAfterItem('${item.id}')">
+      <div class="num">${num}</div>
+      <h3>${w.title || item.name} <span class="ar">${w.titleAr || item.nameAr || ''}</span></h3>
+      <p>${desc}</p>
+      <button class="svc-btn" onclick="openWidgetModal('${item.id}', event)">
+        Explore Discipline & Contact · التفاصيل والتواصل ↗
+      </button>
+    </div>`;
+  }).join('');
+}
+
+/* 3. Widget Modal System */
+function openWidgetModal(widgetId, event){
+  if(event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const widgets = CFG.widgets || window.AURA_DEFAULTS.widgets;
+  const w = widgets[widgetId] || {
+    title: widgetId.toUpperCase(),
+    titleAr: widgetId,
+    desc: "Detailed architectural and engineering documentation for " + widgetId + ".",
+    descAr: "توثيق هندسي ومعماري تفصيلي لقسم " + widgetId + ".",
+    images: ["assets/villa.png", "assets/villa-clean.png"],
+    contact: { whatsapp: "https://wa.me/96500000000", email: "info@aura.studio", formTitle: "Inquire about " + widgetId }
+  };
+  
+  const proj = AURA.getActiveProject(CFG);
+  if($('wmProjBadge')) $('wmProjBadge').textContent = T(proj.title, proj.titleAr || proj.title);
+  if($('wmTitle')) $('wmTitle').innerHTML = `${w.title} <span class="ar">${w.titleAr || ''}</span>`;
+  if($('wmDescText')) $('wmDescText').textContent = T(w.desc, w.descAr || w.desc);
+  
+  const gal = $('wmGallery');
+  if(gal) {
+    const imgs = w.images || ['assets/villa.png'];
+    gal.innerHTML = imgs.map(src => `<div class="wm-thumb" data-full="${src}"><img src="${src}" alt="Gallery"></div>`).join('');
+    gal.querySelectorAll('.wm-thumb').forEach(th => {
+      th.onclick = () => {
+        if($('lbImg') && $('lb')) {
+          $('lbImg').src = th.dataset.full;
+          $('lb').classList.add('open');
+        }
+      };
+    });
+  }
+  
+  if($('wmWaBtn')) {
+    const wa = w.contact ? w.contact.whatsapp : 'https://wa.me/96500000000';
+    $('wmWaBtn').href = wa || '#';
+  }
+  if($('wmEmailBtn')) {
+    const mail = w.contact ? w.contact.email : 'mailto:info@aura.studio';
+    $('wmEmailBtn').href = (mail && mail.startsWith('mailto:')) ? mail : 'mailto:' + (mail || 'info@aura.studio');
+  }
+  
+  const modal = $('widgetModal');
+  if(modal) modal.classList.add('open');
+}
+
+function submitWidgetForm(e){
+  e.preventDefault();
+  const nameInput = $('wmFormName');
+  const name = nameInput ? nameInput.value : '';
+  const titleEl = $('wmTitle');
+  const title = titleEl ? titleEl.textContent : 'this discipline';
+  toast(T(`Thank you ${name}! Your inquiry has been sent.`, `شكراً لك ${name}! تم إرسال استفسارك بنجاح.`));
+  const modal = $('widgetModal');
+  if(modal) modal.classList.remove('open');
+  if(e.target) e.target.reset();
+}
+
+if($('widgetModalClose')) {
+  $('widgetModalClose').onclick = () => {
+    const modal = $('widgetModal');
+    if(modal) modal.classList.remove('open');
+  };
+}
+window.addEventListener('click', e => {
+  const modal = $('widgetModal');
+  if(modal && e.target === modal) {
+    modal.classList.remove('open');
+  }
+});
+window.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    const modal = $('widgetModal');
+    if(modal) modal.classList.remove('open');
+  }
+});
+
+/* Initialize everything */
+renderProjectSwitcher();
+updateProgressMetrics();
+renderServicesList();
+initBeforeAfterSlider();
+selectBeforeAfterItem('01');
+
 
 $('lb').onclick=e=>{if(e.target.id==='lb'||e.target.classList.contains('x'))$('lb').classList.remove('open')};
 addEventListener('keydown',e=>{if(e.key==='Escape')$('lb').classList.remove('open')});
