@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA Admin — CMS</title>
+<style>
+:root{
+  --bg:#101013;--bg2:#17171b;--panel:#1d1d22;--panel2:#26262c;
+  --tx:#f2f2f4;--tx2:#9d9da4;--tx3:#6a6a72;
+  --blue:#3c82f6;--green:#34c759;--amber:#ff9f0a;--red:#ff453a;
+  --brd:rgba(255,255,255,.07);
+  --font-ar:"SF Arabic","Segoe UI",Tahoma,sans-serif;
+  --font:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;min-height:100vh}
+::selection{background:rgba(60,130,246,.3)}
+button{font-family:inherit}
+
+/* ---------- login ---------- */
+#login{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(100% 100% at 50% 0%,#1a1a20,#0d0d10)}
+.login-card{width:360px;background:rgba(255,255,255,.04);border:1px solid var(--brd);border-radius:24px;padding:38px 34px;
+  backdrop-filter:blur(30px);box-shadow:0 40px 100px rgba(0,0,0,.5)}
+.login-card .logo{font-weight:700;letter-spacing:.3em;font-size:18px;text-align:center;margin-bottom:6px}
+.login-card .logo b{color:var(--blue)}
+.login-card .sub{font-size:12px;color:var(--tx3);text-align:center;margin-bottom:28px}
+.login-card label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);display:block;margin:14px 0 7px}
+.login-card input{width:100%;background:var(--panel);border:1px solid var(--brd);border-radius:12px;color:var(--tx);
+  padding:12px 14px;font-size:14px;outline:none;transition:border .3s}
+.login-card input:focus{border-color:var(--blue)}
+.login-card .btn{width:100%;margin-top:24px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px;
+  font-size:14px;font-weight:600;cursor:pointer;transition:.3s}
+.login-card .btn:hover{filter:brightness(1.15)}
+.login-card .hint{font-size:11px;color:var(--tx3);text-align:center;margin-top:16px}
+.login-card .err{color:var(--red);font-size:12px;text-align:center;margin-top:12px;min-height:16px}
+
+/* ---------- shell ---------- */
+#app{display:none;grid-template-columns:230px 1fr;min-height:100vh}
+#app.in{display:grid}
+aside{background:var(--bg2);border-right:1px solid var(--brd);padding:26px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0 12px;margin-bottom:4px}
+aside .logo b{color:var(--blue)}
+aside .role{font-size:10.5px;color:var(--tx3);padding:0 12px;margin-bottom:26px}
+.mi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;font-size:13px;font-weight:500;color:var(--tx2);
+  cursor:pointer;transition:.25s;margin-bottom:2px}
+.mi:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.mi.on{background:rgba(60,130,246,.14);color:var(--blue)}
+.mi .ic{width:18px;text-align:center;font-size:14px}
+aside .sep{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);padding:18px 12px 8px}
+aside .logout{margin-top:20px;color:var(--red)}
+.lang-btn{display:flex;align-items:center;gap:8px;margin:0 12px 14px;padding:9px 14px;border-radius:11px;
+  font-size:12px;font-weight:600;color:var(--tx2);background:var(--panel2);border:1px solid var(--brd);cursor:pointer;transition:.3s;width:calc(100% - 24px)}
+.lang-btn:hover{color:var(--blue);border-color:rgba(60,130,246,.5)}
+html[lang=ar] body{font-family:var(--font-ar)}
+html[lang=ar] input,html[lang=ar] select,html[lang=ar] textarea{font-family:var(--font-ar)}
+
+main{padding:34px 40px;max-width:1180px}
+.page{display:none}
+.page.on{display:block;animation:pin .35s ease}
+@keyframes pin{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.ps{font-size:12.5px;color:var(--tx3);margin-bottom:28px}
+
+/* cards & stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:26px}
+.stat{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:20px 22px}
+.stat .k{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.stat .v{font-size:27px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+.stat .d{font-size:11px;margin-top:4px}
+.stat .d.up{color:var(--green)}.stat .d.dn{color:var(--amber)}
+.panel{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:24px;margin-bottom:20px}
+.panel h3{font-size:14px;font-weight:650;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.panel h3 .badge{font-size:10px;font-weight:600;color:var(--blue);background:rgba(60,130,246,.14);padding:4px 10px;border-radius:100px}
+
+/* activity */
+.act{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--brd);font-size:12.5px;color:var(--tx2)}
+.act:last-child{border:none}
+.act .t{color:var(--tx3);flex:none;width:60px;font-variant-numeric:tabular-nums;font-size:11px;padding-top:1px}
+.act b{color:var(--tx);font-weight:600}
+.act .tag{margin-left:auto;font-size:10px;font-weight:600;padding:3px 9px;border-radius:100px;flex:none;height:fit-content}
+.tag.blue{color:var(--blue);background:rgba(60,130,246,.14)}
+.tag.green{color:var(--green);background:rgba(52,199,89,.14)}
+.tag.amber{color:var(--amber);background:rgba(255,159,10,.14)}
+
+/* forms */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.f label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);display:block;margin-bottom:7px}
+.f input[type=text],.f input[type=number],.f select,.f textarea{width:100%;background:var(--panel2);border:1px solid var(--brd);
+  border-radius:11px;color:var(--tx);padding:11px 13px;font-size:13px;outline:none;transition:border .3s;font-family:inherit}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--blue)}
+.f input[type=color]{width:46px;height:34px;border:none;background:none;cursor:pointer;padding:0}
+.f input[type=range]{width:100%;accent-color:var(--blue)}
+.f .rv{font-size:11px;color:var(--tx3);margin-top:4px;font-variant-numeric:tabular-nums}
+.switch{position:relative;width:44px;height:26px;flex:none;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.switch i{position:absolute;inset:0;background:var(--panel2);border:1px solid var(--brd);border-radius:100px;transition:.3s}
+.switch i::after{content:"";position:absolute;left:3px;top:2.5px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.3s}
+.switch input:checked + i{background:var(--blue);border-color:var(--blue)}
+.switch input:checked + i::after{transform:translateX(17px)}
+.frow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--brd)}
+.frow:last-child{border:none}
+.frow .fl{font-size:13px;font-weight:500}
+.frow .fs{font-size:11px;color:var(--tx3);margin-top:2px}
+
+.btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:.3s}
+.btn:hover{filter:brightness(1.15)}
+.btn.ghost{background:var(--panel2);color:var(--tx2);border:1px solid var(--brd)}
+.btn.ghost:hover{color:var(--tx)}
+.btn.danger{background:rgba(255,69,58,.14);color:var(--red)}
+.btn.sm{padding:7px 14px;font-size:11.5px;border-radius:9px}
+.btnrow{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+
+/* sequence manager */
+.dropzone{border:1.5px dashed rgba(255,255,255,.16);border-radius:16px;padding:34px;text-align:center;color:var(--tx3);
+  font-size:13px;transition:.3s;cursor:pointer;margin-bottom:20px}
+.dropzone.hover{border-color:var(--blue);color:var(--blue);background:rgba(60,130,246,.06)}
+.dropzone b{color:var(--tx2)}
+.frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;max-height:420px;overflow-y:auto;padding-right:6px}
+.frame{position:relative;border-radius:10px;overflow:hidden;background:var(--panel2);border:1px solid var(--brd);cursor:grab;transition:.25s}
+.frame:hover{border-color:var(--blue);transform:translateY(-2px)}
+.frame img{width:100%;aspect-ratio:1408/768;object-fit:cover;display:block}
+.frame .n{position:absolute;left:6px;top:6px;font-size:9px;font-weight:700;background:rgba(0,0,0,.55);color:#fff;
+  padding:2px 7px;border-radius:100px;backdrop-filter:blur(4px)}
+.frame .q{position:absolute;right:6px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.frame .ops{position:absolute;inset:auto 0 0 0;display:flex;justify-content:center;gap:6px;padding:6px;
+  background:linear-gradient(transparent,rgba(0,0,0,.65));opacity:0;transition:.25s}
+.frame:hover .ops{opacity:1}
+.frame .ops button{background:rgba(255,255,255,.16);border:none;color:#fff;border-radius:7px;font-size:10px;padding:4px 8px;cursor:pointer;backdrop-filter:blur(6px)}
+.frame .ops button:hover{background:var(--blue)}
+.frame.dragging{opacity:.4}
+
+/* stages table */
+.stage-row{display:grid;grid-template-columns:34px 1fr 110px 130px 90px auto;gap:12px;align-items:center;
+  padding:12px 14px;background:var(--panel2);border:1px solid var(--brd);border-radius:13px;margin-bottom:9px;font-size:13px}
+.stage-row .drag{cursor:grab;color:var(--tx3);text-align:center}
+.stage-row input[type=text]{background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%}
+.stage-row .range{font-size:11px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.stage-row .sw-color{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--tx3)}
+
+/* gallery manager */
+.gal-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.gtab{font-size:11.5px;font-weight:600;padding:7px 15px;border-radius:100px;cursor:pointer;background:var(--panel2);
+  border:1px solid var(--brd);color:var(--tx2);transition:.3s}
+.gtab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gimg{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--brd)}
+.gimg img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gimg .del{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);border:none;color:#fff;width:22px;height:22px;
+  border-radius:50%;font-size:10px;cursor:pointer;opacity:0;transition:.25s}
+.gimg:hover .del{opacity:1}
+.gimg .del:hover{background:var(--red)}
+
+/* toast */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:600;
+  background:var(--panel);border:1px solid var(--brd);color:var(--tx);font-size:13px;font-weight:500;
+  padding:13px 26px;border-radius:100px;box-shadow:0 20px 60px rgba(0,0,0,.5);transition:.4s;display:flex;gap:10px;align-items:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast .ok{color:var(--green)}
+
+/* analytics bars */
+.abar{display:flex;align-items:center;gap:12px;margin-bottom:11px;font-size:12px}
+.abar .lb{width:110px;color:var(--tx2);flex:none}
+.abar .tr{flex:1;height:8px;background:var(--panel2);border-radius:8px;overflow:hidden}
+.abar .tr i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--blue),#7db2ff)}
+.abar .v{width:44px;text-align:right;color:var(--tx3);font-variant-numeric:tabular-nums;flex:none;font-size:11px}
+
+.heat{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin-top:6px}
+.heat i{aspect-ratio:1;border-radius:3px;background:var(--blue)}
+
+@media(max-width:900px){#app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}aside .sep,aside .role{display:none}main{padding:22px}}
+</style>
+</head>
+<body>
+
+<!-- ================== LOGIN ================== -->
+<div id="login">
+  <div class="login-card">
+    <div class="logo">AU<b>R</b>A</div>
+    <div class="sub">Admin Panel · لوحة التحكم وإدارة المحتوى</div>
+    <label>Email · البريد الإلكتروني</label>
+    <input type="text" id="lEmail" value="admin@aura.studio">
+    <label>Password · كلمة المرور</label>
+    <input type="password" id="lPass" placeholder="••••••••">
+    <button class="btn" id="lBtn">Sign In · تسجيل الدخول</button>
+    <div class="err" id="lErr"></div>
+    <div class="hint">Demo: password is <b>aura2026</b> · role-based (admin / editor)</div>
+  </div>
+</div>
+
+<!-- ================== APP ================== -->
+<div id="app">
+  <aside>
+    <div class="logo">AU<b>R</b>A</div>
+    <div class="role" id="roleTag">Signed in as Admin</div>
+    <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
+    <div class="mi on" data-p="dash"><span class="ic">◧</span>Dashboard · الرئيسية</div>
+    <div class="sep">Content · المحتوى</div>
+    <div class="mi" data-p="projects"><span class="ic">▤</span>Projects · المشاريع</div>
+    <div class="mi" data-p="sequence"><span class="ic">◫</span>Sequence · تسلسل الصور</div>
+    <div class="mi" data-p="stages"><span class="ic">≡</span>Stages · المراحل</div>
+    <div class="mi" data-p="gallery"><span class="ic">▦</span>Galleries · المعارض</div>
+    <div class="mi" data-p="interior"><span class="ic">⌂</span>Interior · الداخلي</div>
+    <div class="mi" data-p="hotspots"><span class="ic">◎</span>Hotspots · محرر النقاط</div>
+    <div class="mi" data-p="materials"><span class="ic">◨</span>Materials · المواد</div>
+    <div class="sep">Configuration · الإعدادات</div>
+    <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
+    <div class="mi" data-p="ui"><span class="ic">◐</span>UI · تخصيص الواجهة</div>
+    <div class="mi" data-p="seo"><span class="ic">⌕</span>SEO</div>
+    <div class="mi" data-p="analytics"><span class="ic">∿</span>Analytics · التحليلات</div>
+    <div class="mi logout" id="logout"><span class="ic">⏻</span>Sign out · خروج</div>
+  </aside>
+
+  <main>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="page on" id="p-dash">
+      <h1 class="pt">Dashboard · الرئيسية</h1>
+      <div class="ps">Overview · نظرة عامة على موقعك التفاعلي</div>
+      <div class="stats">
+        <div class="stat"><div class="k">Projects · المشاريع</div><div class="v">4</div><div class="d up">+1 this month</div></div>
+        <div class="stat"><div class="k">Visitors · الزوار (30ي)</div><div class="v">18,402</div><div class="d up">+22.4%</div></div>
+        <div class="stat"><div class="k">Frames · الإطارات</div><div class="v" id="dFrames">97</div><div class="d">WebP · 4.8 MB total</div></div>
+        <div class="stat"><div class="k">Storage · التخزين</div><div class="v">1.2<span style="font-size:15px;color:var(--tx3)"> GB</span></div><div class="d dn">62% of plan</div></div>
+        <div class="stat"><div class="k">Images · الصور</div><div class="v">483</div><div class="d up">+56 this week</div></div>
+        <div class="stat"><div class="k">View Time · مدة المشاهدة</div><div class="v">3:42</div><div class="d up">+0:31</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><h3><span>Recent Activity · النشاط الأخير</span> <span class="badge">LIVE</span></h3>
+          <div class="act"><span class="t">14:22</span><div><b>Hero frame 097</b> replaced (night view re-render)</div><span class="tag blue">SEQUENCE</span></div>
+          <div class="act"><span class="t">13:05</span><div><b>Villa Solara</b> — facade gallery +12 images</div><span class="tag green">GALLERY</span></div>
+          <div class="act"><span class="t">11:48</span><div>Scroll smoothness changed 0.10 → 0.085</div><span class="tag amber">SETTINGS</span></div>
+          <div class="act"><span class="t">10:31</span><div><b>Blueprint B-204 rev 13</b> uploaded (DWG)</div><span class="tag blue">BLUEPRINT</span></div>
+          <div class="act"><span class="t">09:12</span><div>Editor <b>sara@aura.studio</b> signed in</div><span class="tag green">AUTH</span></div>
+        </div>
+        <div class="panel"><h3>Project Status · حالة المشاريع</h3>
+          <div class="abar"><span class="lb">Villa Solara</span><div class="tr"><i style="width:100%"></i></div><span class="v">100%</span></div>
+          <div class="abar"><span class="lb">Marina Court</span><div class="tr"><i style="width:64%"></i></div><span class="v">64%</span></div>
+          <div class="abar"><span class="lb">Desert Pavilion</span><div class="tr"><i style="width:38%"></i></div><span class="v">38%</span></div>
+          <div class="abar"><span class="lb">Coastal House</span><div class="tr"><i style="width:12%"></i></div><span class="v">12%</span></div>
+          <h3 style="margin-top:22px">Quick Actions · إجراءات سريعة</h3>
+          <div class="btnrow">
+            <button class="btn sm" onclick="go('sequence')">Upload Frames · رفع إطارات</button>
+            <button class="btn sm ghost" onclick="go('scroll')">Speed · السرعة</button>
+            <button class="btn sm ghost" onclick="window.open('index.html')">Preview · معاينة الموقع ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PROJECTS ========== -->
+    <div class="page" id="p-projects">
+      <h1 class="pt">Projects · المشاريع</h1>
+      <div class="ps">إنشاء وتعديل ونشر المشاريع — بدون أي كود</div>
+      <div class="panel"><h3><span>Active Project · المشروع المنشور</span> <span class="badge">PUBLISHED</span></h3>
+        <div class="grid2">
+          <div class="f"><label>Title · اسم المشروع</label><input type="text" id="fTitle"></div>
+          <div class="f"><label>Location · الموقع</label><input type="text" id="fLoc"></div>
+          <div class="f"><label>Area · المساحة</label><input type="text" id="fArea"></div>
+          <div class="f"><label>Year · السنة</label><input type="text" id="fYear"></div>
+          <div class="f"><label>Status · الحالة</label>
+            <select id="fStatus"><option>Completed</option><option>In Progress</option><option>Design Phase</option><option>Archived</option></select></div>
+          <div class="f"><label>Featured · مميز</label>
+            <div class="frow" style="border:none;padding:4px 0"><div><div class="fl">Show on homepage · يظهر في الواجهة</div></div>
+            <label class="switch"><input type="checkbox" checked><i></i></label></div></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn" onclick="saveProject()">Save & Publish · حفظ ونشر</button>
+          <button class="btn ghost" onclick="toast('Project duplicated as draft')">Duplicate · نسخ</button>
+          <button class="btn ghost" onclick="toast('Project archived')">Archive · أرشفة</button>
+          <button class="btn danger" onclick="toast('Deletion requires admin confirmation')">Delete · حذف</button>
+        </div>
+      </div>
+      <div class="panel"><h3>All Projects · كل المشاريع</h3>
+        <div class="act"><span class="t">●</span><div><b>Villa Solara</b> — Kuwait · 97 frames · 483 images</div><span class="tag green">PUBLISHED</span></div>
+        <div class="act"><span class="t">●</span><div><b>Marina Court</b> — Sharq · 0 frames · 112 images</div><span class="tag amber">DRAFT</span></div>
+        <div class="act"><span class="t">●</span><div><b>Desert Pavilion</b> — Wafra · 0 frames · 64 images</div><span class="tag amber">DRAFT</span></div>
+        <div class="act"><span class="t">●</span><div><b>Coastal House</b> — Khiran · concept</div><span class="tag blue">DESIGN</span></div>
+      </div>
+    </div>
+
+    <!-- ========== SEQUENCE ========== -->
+    <div class="page" id="p-sequence">
+      <h1 class="pt">Sequence Manager · إدارة تسلسل الصور</h1>
+      <div class="ps">تسلسل صور الفيلم الرئيسي — اسحب الإطارات لإعادة الترتيب والترقيم يتحدث تلقائيًا</div>
+      <div class="dropzone" id="dz">⬆ &nbsp;اسحب الصور أو ملف ZIP هنا — أو <b>انقر للاختيار · click to browse</b><br>
+        <span style="font-size:11px">Auto-sort by filename · WebP/AVIF conversion · quality check · batch upload</span>
+        <input type="file" id="dzInput" multiple accept="image/*,.zip" style="display:none">
+      </div>
+      <div class="panel">
+        <h3><span>Sequence — <span id="seqCount"></span> frames</span> <span class="badge" id="seqBadge">ALL FRAMES PASS QUALITY CHECK</span></h3>
+        <div class="frames" id="framesGrid"></div>
+      </div>
+    </div>
+
+    <!-- ========== STAGES ========== -->
+    <div class="page" id="p-stages">
+      <h1 class="pt">Stage Manager · إدارة المراحل</h1>
+      <div class="ps">أعد تسمية المراحل وعدّل النطاقات والألوان — التغييرات تُنشر فورًا</div>
+      <div class="panel" id="stagesPanel"></div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveStages()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="toast('New stage added (edit range to activate)')">+ Add Stage · إضافة مرحلة</button>
+      </div>
+    </div>
+
+    <!-- ========== GALLERY ========== -->
+    <div class="page" id="p-gallery">
+      <h1 class="pt">Gallery Manager · إدارة المعارض</h1>
+      <div class="ps">معارض صور لكل مرحلة — تحويل WebP ومصغرات وتحميل كسول تلقائيًا</div>
+      <div class="gal-tabs" id="galTabs"></div>
+      <div class="dropzone" style="padding:22px">⬆ &nbsp;اسحب الصور لإضافتها لهذا المعرض · Drop images here</div>
+      <div class="gal-grid" id="galGrid"></div>
+    </div>
+
+    <!-- ========== INTERIOR ========== -->
+    <div class="page" id="p-interior">
+      <h1 class="pt">Interior · إدارة القسم الداخلي</h1>
+      <div class="ps">Rooms, sequences, panoramas, themes, hotspots and furniture — the interior journey.</div>
+
+      <div class="panel"><h3><span>Theme · الثيم الداخلي</span> <span class="badge">LIVE</span></h3>
+        <div class="gal-tabs" id="themeTabs"></div>
+        <div style="font-size:11.5px;color:var(--tx3);margin-top:4px">Switching themes updates furniture, materials and lighting presets while preserving room layouts.</div>
+      </div>
+
+      <div class="panel"><h3><span>Rooms · الغرف — <span id="roomCount"></span></span></h3>
+        <div id="roomRows"></div>
+        <div class="btnrow">
+          <button class="btn" onclick="saveInterior()">Save & Publish · حفظ ونشر</button>
+          <button class="btn ghost" onclick="toast('New room added — upload a sequence to activate')">+ Add Room · إضافة غرفة</button>
+          <button class="btn ghost" onclick="toast('Floor plan upload dialog (demo)')">Floor Plan · رفع مخطط</button>
+          <button class="btn ghost" onclick="toast('360° panorama upload (demo)')">Panorama · رفع بانوراما</button>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel"><h3>Furniture DB · قاعدة الأثاث</h3>
+          <div id="furnRows"></div>
+          <button class="btn sm ghost" style="margin-top:10px" onclick="toast('Furniture editor (demo)')">+ Add Furniture Item</button>
+        </div>
+        <div class="panel"><h3>Paths · النقاط والمسارات</h3>
+          <div class="frow"><div><div class="fl">Door hotspots between rooms</div><div class="fs">Auto-generated from room adjacency</div></div>
+            <label class="switch"><input type="checkbox" checked><i></i></label></div>
+          <div class="frow"><div><div class="fl">Entrance fly-in transition</div><div class="fs">Zoom through the main door on "Explore"</div></div>
+            <label class="switch"><input type="checkbox" checked><i></i></label></div>
+          <div class="frow"><div><div class="fl">First-person walkthrough</div><div class="fs">Free look + door navigation + build slider</div></div>
+            <label class="switch"><input type="checkbox" checked><i></i></label></div>
+          <div class="frow"><div><div class="fl">Furniture hotspots</div><div class="fs">Appear when room build reaches 82%</div></div>
+            <label class="switch"><input type="checkbox" checked><i></i></label></div>
+          <div class="f" style="margin-top:14px"><label>Room transition fade (ms)</label>
+            <input type="range" min="200" max="900" step="20" value="420"><div class="rv">420 ms crossfade</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== HOTSPOTS EDITOR ========== -->
+    <div class="page" id="p-hotspots">
+      <h1 class="pt">Hotspots Editor · محرر النقاط</h1>
+      <div class="ps">انقر على الصورة لإضافة نقطة جديدة · اسحب النقطة لتغيير مكانها · انقر نقطة لتعديل بياناتها — والموقع يقرأ التغييرات فورًا</div>
+
+      <div class="gal-tabs" id="hsTabs"></div>
+
+      <div class="panel" style="padding:14px">
+        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none">
+          <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
+        </div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:10px">💡 Click empty area = add spot · Drag = move · Click spot = edit</div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel" id="hsForm" style="display:none">
+          <h3><span>Edit Spot · تعديل النقطة</span> <span class="badge" id="hsPos">x: — · y: —</span></h3>
+          <div class="grid2">
+            <div class="f"><label>Name (EN) · الاسم إنجليزي</label><input type="text" id="hsName"></div>
+            <div class="f"><label>الاسم عربي · Name (AR)</label><input type="text" id="hsNameAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Material (EN) · الخامة إنجليزي</label><input type="text" id="hsMat"></div>
+            <div class="f"><label>الخامة عربي · Material (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Brand · الماركة</label><input type="text" id="hsBrand"></div>
+            <div class="f"><label>Color · اللون</label><input type="text" id="hsColor"></div>
+            <div class="f"><label>Dimensions · الأبعاد</label><input type="text" id="hsDims"></div>
+            <div class="f"><label>Supplier · المورد</label><input type="text" id="hsSup"></div>
+            <div class="f"><label>Price · السعر</label><input type="text" id="hsPrice"></div>
+            <div class="f"><label>Finish · التشطيب</label><input type="text" id="hsFin"></div>
+          </div>
+          <div class="btnrow">
+            <button class="btn" onclick="hsApply()">Apply · تطبيق</button>
+            <button class="btn danger" onclick="hsDelete()">Delete · حذف</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Spots in this room · نقاط الغرفة <span class="badge" id="hsCount">0</span></h3>
+          <div id="hsList"></div>
+          <div class="btnrow">
+            <button class="btn" onclick="hsSave()">Save & Publish · حفظ ونشر</button>
+            <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة الموقع ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MATERIALS ========== -->
+    <div class="page" id="p-materials">
+      <h1 class="pt">Materials · مكتبة المواد</h1>
+      <div class="ps">قاعدة مواد مركزية — مواصفات وموردون وتكاليف ومستندات</div>
+      <div class="panel" id="matPanel"></div>
+      <button class="btn" onclick="toast('Material editor opened (demo)')">+ Add Material · إضافة مادة</button>
+    </div>
+
+    <!-- ========== SCROLL / PLAYBACK SETTINGS ========== -->
+    <div class="page" id="p-scroll">
+      <h1 class="pt">Playback & Speed · سرعة الفيديو</h1>
+      <div class="ps">تحكم كامل في سرعة الفيلم ومدد التوقف — يُطبَّق على الموقع فور الحفظ</div>
+
+      <div class="panel">
+        <h3><span>Video Speed · سرعة العرض</span> <span class="badge">LIVE</span></h3>
+        <div class="grid2">
+          <div class="f"><label>Exterior speed · سرعة البناء الخارجي</label>
+            <input type="range" id="pFpsExt" min="2" max="24" step="0.5"><div class="rv" id="pFpsExtV"></div></div>
+          <div class="f"><label>Rooms speed · سرعة بناء الغرف</label>
+            <input type="range" id="pFpsInt" min="2" max="24" step="0.5"><div class="rv" id="pFpsIntV"></div></div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="f"><label>Explore pause · توقف زر الاستكشاف (ثوانٍ)</label>
+            <input type="range" id="pPauseExt" min="0" max="15" step="0.5"><div class="rv" id="pPauseExtV"></div></div>
+          <div class="f"><label>Room-end pause · توقف نهاية كل غرفة (ثوانٍ)</label>
+            <input type="range" id="pPauseRoom" min="0" max="10" step="0.5"><div class="rv" id="pPauseRoomV"></div></div>
+        </div>
+        <div class="frow" style="margin-top:8px"><div><div class="fl">Autoplay on load · تشغيل تلقائي عند فتح الموقع</div>
+          <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div></div>
+          <label class="switch"><input type="checkbox" id="pAuto"><i></i></label></div>
+        <div class="btnrow">
+          <button class="btn" onclick="savePlayback()">Save & Publish · حفظ ونشر</button>
+          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: بطيء وفخم</button>
+          <button class="btn ghost" onclick="pbPreset(9,6,5,2.5)">Preset: افتراضي</button>
+          <button class="btn ghost" onclick="pbPreset(16,12,3,1.5)">Preset: سريع</button>
+          <button class="btn ghost" onclick="window.open('index.html')">Test on Site ↗</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Estimated film length · المدة التقديرية للفيلم <span class="badge" id="pbTotal">—</span></h3>
+        <div class="krow"><span>Exterior · الخارجي (97 frames)</span><b id="pbExtT">—</b></div>
+        <div class="krow"><span>Rooms · الغرف (109 frames)</span><b id="pbIntT">—</b></div>
+        <div class="krow"><span>Pauses · التوقفات</span><b id="pbPauseT">—</b></div>
+      </div>
+    </div>
+
+    <!-- ========== UI ========== -->
+    <div class="page" id="p-ui">
+      <h1 class="pt">UI · تخصيص الواجهة</h1>
+      <div class="ps">الهوية ومظهر الزجاج السائل للموقع العام</div>
+      <div class="panel">
+        <div class="grid3">
+          <div class="f"><label>Company · اسم الشركة</label><input type="text" id="uName"></div>
+          <div class="f"><label>Accent · اللون الأساسي</label><input type="color" id="uAccent"></div>
+          <div class="f"><label>Theme · الثيم</label><select id="uTheme"><option value="light">Light</option><option value="dark">Dark (coming)</option></select></div>
+        </div>
+        <div class="grid3" style="margin-top:16px">
+          <div class="f"><label>Glass · شفافية الزجاج</label><input type="range" id="uGlass" min="0.2" max="0.9" step="0.05"><div class="rv" id="uGlassV"></div></div>
+          <div class="f"><label>Blur · الضبابية</label><input type="range" id="uBlur" min="8" max="48" step="1"><div class="rv" id="uBlurV"></div></div>
+          <div class="f"><label>Radius · استدارة الحواف</label><input type="range" id="uRadius" min="8" max="34" step="1"><div class="rv" id="uRadiusV"></div></div>
+        </div>
+        <div class="grid3" style="margin-top:16px">
+          <div class="f"><label>Glow · شدة التوهج</label><input type="range" id="uGlow" min="0" max="1" step="0.05"><div class="rv" id="uGlowV"></div></div>
+        </div>
+        <div class="btnrow"><button class="btn" onclick="saveUI()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="resetAll()">Reset · استعادة الافتراضي</button></div>
+      </div>
+    </div>
+
+    <!-- ========== SEO ========== -->
+    <div class="page" id="p-seo">
+      <h1 class="pt">SEO · تحسين محركات البحث</h1>
+      <div class="ps">إعدادات البحث والمشاركة الاجتماعية</div>
+      <div class="panel">
+        <div class="f"><label>Meta Title</label><input type="text" value="AURA — Interactive Architecture Portfolio · Kuwait"></div>
+        <div class="f" style="margin-top:14px"><label>Meta Description</label>
+          <textarea rows="3">Scroll through the construction of luxury villas frame by frame. Premium architecture studio in Kuwait — design, execution, finishing, project management.</textarea></div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="f"><label>Canonical URL</label><input type="text" value="https://aura.studio/"></div>
+          <div class="f"><label>OpenGraph Image</label><input type="text" value="/assets/villa-clean.png"></div>
+        </div>
+        <div class="frow" style="margin-top:8px"><div><div class="fl">Generate sitemap.xml</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+        <div class="frow"><div><div class="fl">Schema.org structured data</div><div class="fs">Organization + CreativeWork per project</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+        <div class="btnrow"><button class="btn" onclick="toast('SEO settings saved')">Save</button></div>
+      </div>
+    </div>
+
+    <!-- ========== ANALYTICS ========== -->
+    <div class="page" id="p-analytics">
+      <h1 class="pt">Analytics · التحليلات</h1>
+      <div class="ps">كيف يعيش الزوار تجربة البناء</div>
+      <div class="stats">
+        <div class="stat"><div class="k">Sessions · الجلسات (7ي)</div><div class="v">4,821</div><div class="d up">+9.1%</div></div>
+        <div class="stat"><div class="k">Completed · أكملوا الفيلم</div><div class="v">71%</div><div class="d up">reached frame 097</div></div>
+        <div class="stat"><div class="k">Depth · عمق المشاهدة</div><div class="v">86%</div><div class="d">of sequence</div></div>
+        <div class="stat"><div class="k">Mobile · موبايل</div><div class="v">58%</div><div class="d">Desktop 39% · Tablet 3%</div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><h3>Most Viewed · الأكثر مشاهدة</h3>
+          <div class="abar"><span class="lb">Facade</span><div class="tr"><i style="width:92%"></i></div><span class="v">92%</span></div>
+          <div class="abar"><span class="lb">Night View</span><div class="tr"><i style="width:85%"></i></div><span class="v">85%</span></div>
+          <div class="abar"><span class="lb">Structure</span><div class="tr"><i style="width:66%"></i></div><span class="v">66%</span></div>
+          <div class="abar"><span class="lb">Foundation</span><div class="tr"><i style="width:51%"></i></div><span class="v">51%</span></div>
+          <div class="abar"><span class="lb">Excavation</span><div class="tr"><i style="width:43%"></i></div><span class="v">43%</span></div>
+        </div>
+        <div class="panel"><h3>Heatmap · خريطة التفاعل لكل إطار</h3>
+          <div class="heat" id="heat"></div>
+          <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Peaks at stage transitions — visitors pause to explore the change.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved</span></div>
+
+<script src="js/cms.js"></script>
+<script>
+let CFG = AURA.load();
+AURA_I18N.init();const T=AURA_I18N.pick;
+
+/* ---------------- auth ---------------- */
+const SESSION='aura.session';
+function tryLogin(){
+  const pass=document.getElementById('lPass').value;
+  const email=document.getElementById('lEmail').value.trim();
+  if(pass==='aura2026'){
+    const role = email.startsWith('admin')?'admin':'editor';
+    sessionStorage.setItem(SESSION, JSON.stringify({email,role,t:Date.now()}));
+    enter();
+  } else document.getElementById('lErr').textContent='Incorrect password. Hint: aura2026';
+}
+document.getElementById('lBtn').onclick=tryLogin;
+document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+function enter(){
+  const s=JSON.parse(sessionStorage.getItem(SESSION)||'null');
+  if(!s)return;
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('in');
+  document.getElementById('roleTag').textContent=`Signed in as ${s.role==='admin'?'Admin':'Editor'} · ${s.email}`;
+  if(s.role!=='admin')document.querySelectorAll('.btn.danger').forEach(b=>b.style.display='none');
+  boot();
+}
+document.getElementById('logout').onclick=()=>{sessionStorage.removeItem(SESSION);location.reload()};
+if(sessionStorage.getItem(SESSION))enter();
+
+/* ---------------- nav ---------------- */
+function go(p){
+  document.querySelectorAll('.mi[data-p]').forEach(m=>m.classList.toggle('on',m.dataset.p===p));
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.toggle('on',pg.id==='p-'+p));
+}
+document.querySelectorAll('.mi[data-p]').forEach(m=>m.onclick=()=>go(m.dataset.p));
+
+/* ---------------- toast ---------------- */
+var toastT=null;
+function toast(msg){
+  document.getElementById('toastMsg').textContent=msg;
+  const t=document.getElementById('toast');t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ---------------- boot: fill forms ---------------- */
+function boot(){
+  // project
+  fTitle.value=CFG.project.title;fLoc.value=CFG.project.location;
+  fArea.value=CFG.project.area;fYear.value=CFG.project.year;fStatus.value=CFG.project.status;
+  // playback
+  CFG.playback=CFG.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
+  pFpsExt.value=CFG.playback.fpsExt;pFpsInt.value=CFG.playback.fpsInt;
+  pPauseExt.value=CFG.playback.pauseExplore;pPauseRoom.value=CFG.playback.pauseRoom;
+  pAuto.checked=CFG.playback.autoplay!==false;
+  updPb();
+  // ui
+  uName.value=CFG.brand.name;uAccent.value=CFG.brand.accent;uTheme.value=CFG.ui.theme;
+  uGlass.value=CFG.ui.glassOpacity;uBlur.value=CFG.ui.blur;uRadius.value=CFG.ui.radius;uGlow.value=CFG.ui.glow;
+  updRvUI();
+  buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
+  document.getElementById('dFrames').textContent=CFG.sequence.count;
+}
+['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
+function fmtT(s){const m=Math.floor(s/60),r=Math.round(s%60);return m?`${m}m ${r}s`:`${r}s`;}
+function updPb(){
+  const fe=+pFpsExt.value,fi=+pFpsInt.value,pe=+pPauseExt.value,pr=+pPauseRoom.value;
+  pFpsExtV.textContent=`${fe} fps — ${fe<6?'بطيء وسينمائي':fe<12?'متوازن':'سريع'} · exterior takes ${fmtT(97/fe)}`;
+  pFpsIntV.textContent=`${fi} fps — each room ≈ ${fmtT(31/fi)}`;
+  pPauseExtV.textContent=`${pe}s hold on "Explore the Villa"`;
+  pPauseRoomV.textContent=`${pr}s between rooms`;
+  const extT=97/fe, intT=109/fi, pauseT=pe+pr*4;
+  pbExtT.textContent=fmtT(extT);pbIntT.textContent=fmtT(intT);pbPauseT.textContent=fmtT(pauseT);
+  document.getElementById('pbTotal').textContent='≈ '+fmtT(extT+intT+pauseT)+' full loop';
+}
+function pbPreset(fe,fi,pe,pr){
+  pFpsExt.value=fe;pFpsInt.value=fi;pPauseExt.value=pe;pPauseRoom.value=pr;updPb();
+  toast('Preset applied — اضغط حفظ ونشر لتطبيقه على الموقع');
+}
+function savePlayback(){
+  CFG.playback={fpsExt:+pFpsExt.value,fpsInt:+pFpsInt.value,
+    pauseExplore:+pPauseExt.value,pauseRoom:+pPauseRoom.value,autoplay:pAuto.checked};
+  AURA.save(CFG);toast('Playback speed published · تم نشر سرعة العرض — حدّث صفحة الموقع');
+}
+['uGlass','uBlur','uRadius','uGlow'].forEach(id=>document.getElementById(id).addEventListener('input',updRvUI));
+function updRvUI(){
+  uGlassV.textContent=Math.round(uGlass.value*100)+'% opacity';
+  uBlurV.textContent=uBlur.value+'px backdrop blur';
+  uRadiusV.textContent=uRadius.value+'px radius';
+  uGlowV.textContent=Math.round(uGlow.value*100)+'% glow';
+}
+
+/* ---------------- save actions ---------------- */
+function saveProject(){
+  CFG.project={...CFG.project,title:fTitle.value,location:fLoc.value,area:fArea.value,year:fYear.value,status:fStatus.value};
+  AURA.save(CFG);toast('Project published — live on the site');
+}
+function saveUI(){
+  CFG.brand.name=uName.value;CFG.brand.accent=uAccent.value;
+  CFG.ui={...CFG.ui,theme:uTheme.value,glassOpacity:+uGlass.value,blur:+uBlur.value,radius:+uRadius.value,glow:+uGlow.value};
+  AURA.save(CFG);toast('UI theme published');
+}
+function resetAll(){AURA.reset();CFG=AURA.load();boot();toast('Reset to defaults')}
+
+/* ---------------- frames grid (drag reorder) ---------------- */
+function buildFrames(){
+  const g=document.getElementById('framesGrid');g.innerHTML='';
+  document.getElementById('seqCount').textContent=CFG.sequence.count;
+  for(let n=1;n<=CFG.sequence.count;n++){
+    const d=document.createElement('div');d.className='frame';d.draggable=true;d.dataset.n=n;
+    d.innerHTML=`<img loading="lazy" src="assets/seq/thumbs/frame${String(n).padStart(3,'0')}.webp">
+      <span class="n">${String(n).padStart(3,'0')}</span><span class="q" title="Quality check passed"></span>
+      <div class="ops"><button onclick="toast('Frame ${n} — replace dialog (demo)')">Replace</button>
+      <button onclick="toast('Frame ${n} duplicated')">Dup</button>
+      <button onclick="toast('Frame ${n} deleted (demo)')">Del</button></div>`;
+    d.addEventListener('dragstart',()=>d.classList.add('dragging'));
+    d.addEventListener('dragend',()=>{d.classList.remove('dragging');renumber();toast('Frames renumbered automatically')});
+    d.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const dr=g.querySelector('.dragging');if(!dr||dr===d)return;
+      const r=d.getBoundingClientRect();
+      g.insertBefore(dr,(e.clientX-r.left)/r.width>.5?d.nextSibling:d);
+    });
+    g.appendChild(d);
+  }
+}
+function renumber(){[...document.querySelectorAll('#framesGrid .frame .n')].forEach((el,i)=>el.textContent=String(i+1).padStart(3,'0'))}
+
+/* dropzone */
+const dz=document.getElementById('dz');
+dz.onclick=()=>dzInput.click();
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('hover')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('hover'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('hover');
+  toast(`${e.dataTransfer.files.length} file(s) queued — converting to WebP…`)});
+dzInput.addEventListener('change',()=>toast(`${dzInput.files.length} file(s) queued — converting to WebP…`));
+
+/* ---------------- stages editor ---------------- */
+function buildStages(){
+  const p=document.getElementById('stagesPanel');p.innerHTML='<h3>Stages — drag to reorder</h3>';
+  CFG.stages.forEach((s,i)=>{
+    const r=document.createElement('div');r.className='stage-row';r.draggable=true;
+    r.innerHTML=`<span class="drag">⋮⋮</span>
+      <input type="text" value="${s.name}" data-i="${i}" data-k="name">
+      <span class="range">frames ${s.from}–${s.to}</span>
+      <span class="sw-color"><input type="color" value="${s.color}" data-i="${i}" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">${s.icon}</span>
+      <span class="range">${Math.round((s.to-s.from+1)/CFG.sequence.count*100)}%</span>
+      <button class="btn sm ghost" onclick="toast('${s.name} gallery opened')">Gallery</button>`;
+    r.addEventListener('dragstart',()=>r.classList.add('dragging'));
+    r.addEventListener('dragend',()=>r.classList.remove('dragging'));
+    r.addEventListener('dragover',e=>{e.preventDefault();
+      const dr=p.querySelector('.dragging');if(!dr||dr===r)return;
+      const rect=r.getBoundingClientRect();
+      p.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?r.nextSibling:r);});
+    p.appendChild(r);
+  });
+  p.addEventListener('input',e=>{
+    const i=e.target.dataset.i,k=e.target.dataset.k;
+    if(i!==undefined&&k)CFG.stages[i][k]=e.target.value;
+  });
+}
+function saveStages(){AURA.save(CFG);toast('Stages published — timeline updated on site')}
+
+/* ---------------- gallery manager ---------------- */
+function buildGalleryTabs(){
+  const tabs=document.getElementById('galTabs');tabs.innerHTML='';
+  CFG.stages.forEach((s,i)=>{
+    const t=document.createElement('div');t.className='gtab'+(i===0?' on':'');t.textContent=s.name;
+    t.onclick=()=>{document.querySelectorAll('.gtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');fillGal(s.id)};
+    tabs.appendChild(t);
+  });
+  fillGal(CFG.stages[0].id);
+}
+function fillGal(id){
+  const g=document.getElementById('galGrid');g.innerHTML='';
+  for(let i=1;i<=8;i++){
+    const d=document.createElement('div');d.className='gimg';
+    d.innerHTML=`<img loading="lazy" src="assets/gallery/${id}-${String(i).padStart(2,'0')}-t.webp">
+      <button class="del" onclick="toast('Image removed from gallery (demo)')">✕</button>`;
+    g.appendChild(d);
+  }
+}
+
+/* ---------------- materials ---------------- */
+function buildMaterials(){
+  const mats=[
+    ['Travertine Navona','Stone','Marmi KW','86 KD/m²','#dccdb0'],
+    ['C40 SR Concrete','Concrete','Gulf RMC','42 KD/m³','#9aa0a6'],
+    ['B500B Rebar','Steel','Qurain Steel','310 KD/t','#6b7076'],
+    ['Low-E Triple Glazing','Glass','Guardian','120 KD/m²','#cfe0ea'],
+    ['Engineered Oak','Wood','Listone','54 KD/m²','#d9b98c'],
+    ['LED 2700K CRI97','Lighting','Flos','—','#f0c98a'],
+  ];
+  const p=document.getElementById('matPanel');
+  p.innerHTML='<h3>Library — 6 materials</h3>'+mats.map(m=>`
+    <div class="act"><span class="t"><span class="mat-chip" style="display:inline-block;width:22px;height:22px;border-radius:7px;background:${m[4]}"></span></span>
+    <div><b>${m[0]}</b> — ${m[1]} · ${m[2]}</div>
+    <span class="tag blue">${m[3]}</span></div>`).join('');
+}
+
+/* ---------------- heatmap ---------------- */
+function buildHeat(){
+  const h=document.getElementById('heat');h.innerHTML='';
+  for(let i=0;i<96;i++){
+    const stageEdge=[16,32,48,64,80,96].some(e=>Math.abs(i-e)<3);
+    const v=stageEdge? .55+Math.random()*.45 : .08+Math.random()*.3;
+    const el=document.createElement('i');el.style.opacity=v.toFixed(2);h.appendChild(el);
+  }
+}
+
+/* ---------------- interior management ---------------- */
+function buildInterior(){
+  if(!CFG.interior)return;
+  // theme tabs
+  const tt=document.getElementById('themeTabs');tt.innerHTML='';
+  CFG.interior.themes.forEach(th=>{
+    const t=document.createElement('div');
+    t.className='gtab'+(th===CFG.interior.theme?' on':'');
+    t.textContent=th.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+    t.onclick=()=>{CFG.interior.theme=th;AURA.save(CFG);
+      document.querySelectorAll('#themeTabs .gtab').forEach(x=>x.classList.remove('on'));
+      t.classList.add('on');toast('Theme published: '+t.textContent);};
+    tt.appendChild(t);
+  });
+  // room rows
+  const rr=document.getElementById('roomRows');rr.innerHTML='';
+  document.getElementById('roomCount').textContent=CFG.interior.rooms.length;
+  CFG.interior.rooms.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='stage-row';
+    d.style.gridTemplateColumns='34px 1fr 90px 110px 110px auto';
+    d.innerHTML=`<span class="drag">⋮⋮</span>
+      <input type="text" value="${r.name}" data-ri="${i}">
+      <span class="range">${r.area}</span>
+      <span class="range">${r.seq?r.seq+' frames':'no sequence'}</span>
+      <span class="tag ${r.interactive?'green':'amber'}" style="justify-self:start">${r.interactive?'LIVE':'PENDING'}</span>
+      <button class="btn sm ghost" onclick="toast('${r.name} — sequence upload (demo)')">Sequence</button>`;
+    rr.appendChild(d);
+  });
+  rr.addEventListener('input',e=>{
+    const i=e.target.dataset.ri;
+    if(i!==undefined)CFG.interior.rooms[i].name=e.target.value;
+  });
+  // furniture rows
+  const fr=document.getElementById('furnRows');fr.innerHTML='';
+  Object.entries(CFG.interior.furniture).forEach(([room,items])=>{
+    items.forEach(f=>{
+      const d=document.createElement('div');d.className='act';
+      d.innerHTML=`<span class="t">${room}</span><div><b>${f.name}</b> — ${f.brand} · ${f.material.split('·')[0]}</div>
+        <span class="tag blue">${f.price||'—'}</span>`;
+      fr.appendChild(d);
+    });
+  });
+}
+/* ---------------- hotspots editor ---------------- */
+var HS_LAST={living:31,kitchen:31,master:31,bath:16};
+var hsRoom='living', hsSel=-1, hsDrag=-1;
+
+function hsInit(){
+  if(!CFG.interior)return;
+  hsRoom=hsRoom||'living';
+  if(typeof HS_LAST==='undefined'||!HS_LAST)window.HS_LAST={living:31,kitchen:31,master:31,bath:16};
+  const tabs=document.getElementById('hsTabs');tabs.innerHTML='';
+  CFG.interior.rooms.filter(r=>r.interactive).forEach((r,i)=>{
+    const t=document.createElement('div');
+    t.className='gtab'+(r.id===hsRoom?' on':'');
+    t.textContent=r.name+' · '+r.ar;
+    t.onclick=()=>{hsRoom=r.id;hsSel=-1;hsInit();};
+    tabs.appendChild(t);
+  });
+  document.getElementById('hsImg').src=
+    `assets/rooms/seq/${hsRoom}/f${String(HS_LAST[hsRoom]).padStart(2,'0')}.webp`;
+  hsRender();
+}
+function hsSpots(){CFG.interior.furniture[hsRoom]=CFG.interior.furniture[hsRoom]||[];return CFG.interior.furniture[hsRoom];}
+function hsRender(){
+  const st=document.getElementById('hsStage');
+  st.querySelectorAll('.hsdot').forEach(e=>e.remove());
+  const spots=hsSpots();
+  document.getElementById('hsCount').textContent=spots.length;
+  spots.forEach((f,i)=>{
+    const d=document.createElement('div');d.className='hsdot';
+    d.style.cssText=`position:absolute;left:${f.x}%;top:${f.y}%;width:26px;height:26px;margin:-13px;
+      border-radius:50%;background:${i===hsSel?'var(--blue)':'rgba(255,255,255,.9)'};
+      color:${i===hsSel?'#fff':'var(--blue)'};border:2px solid var(--blue);cursor:grab;
+      display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:5;
+      box-shadow:0 4px 14px rgba(0,0,0,.35)`;
+    d.textContent=i+1;
+    d.onpointerdown=e=>{e.stopPropagation();hsDrag=i;hsSel=i;hsFill();hsRender();};
+    st.appendChild(d);
+  });
+  const list=document.getElementById('hsList');
+  list.innerHTML=spots.length?'':'<div style="font-size:12px;color:var(--tx3)">No spots yet — click on the image · لا توجد نقاط، انقر على الصورة</div>';
+  spots.forEach((f,i)=>{
+    const row=document.createElement('div');row.className='act';row.style.cursor='pointer';
+    row.innerHTML=`<span class="t">#${i+1}</span><div><b>${f.name||'(unnamed)'}</b>${f.nameAr?' · <span style="font-family:var(--font-ar)">'+f.nameAr+'</span>':''} — ${f.brand||'—'} · x:${Math.round(f.x)}% y:${Math.round(f.y)}%</div>
+      <span class="tag blue">${f.price||'—'}</span>`;
+    row.onclick=()=>{hsSel=i;hsFill();hsRender();};
+    list.appendChild(row);
+  });
+}
+function hsFill(){
+  const f=hsSpots()[hsSel];if(!f){document.getElementById('hsForm').style.display='none';return;}
+  document.getElementById('hsForm').style.display='block';
+  document.getElementById('hsPos').textContent=`x: ${Math.round(f.x)}% · y: ${Math.round(f.y)}%`;
+  hsName.value=f.name||'';hsNameAr.value=f.nameAr||'';
+  hsMat.value=f.material||'';hsMatAr.value=f.materialAr||'';
+  hsBrand.value=f.brand||'';hsColor.value=f.color||'';hsDims.value=f.dims||'';
+  hsSup.value=f.supplier||'';hsPrice.value=f.price||'';hsFin.value=f.finish||'';
+}
+function hsApply(){
+  const f=hsSpots()[hsSel];if(!f)return;
+  Object.assign(f,{name:hsName.value,nameAr:hsNameAr.value,
+    material:hsMat.value,materialAr:hsMatAr.value,
+    brand:hsBrand.value,color:hsColor.value,dims:hsDims.value,
+    supplier:hsSup.value,price:hsPrice.value,finish:hsFin.value});
+  hsRender();toast('Spot updated · تم التعديل (Save & Publish لتظهر بالموقع)');
+}
+function hsDelete(){
+  if(hsSel<0)return;
+  hsSpots().splice(hsSel,1);hsSel=-1;hsFill();hsRender();
+  toast('Spot deleted · تم حذف النقطة');
+}
+function hsSave(){AURA.save(CFG);toast('Hotspots published · تم النشر — الموقع يقرأها الآن');}
+(function hsWire(){
+  const st=document.getElementById('hsStage');
+  st.addEventListener('pointerdown',e=>{
+    if(e.target.classList.contains('hsdot'))return;
+    const r=st.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100;
+    hsSpots().push({x:+x.toFixed(1),y:+y.toFixed(1),name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
+      color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
+    hsSel=hsSpots().length-1;hsFill();hsRender();
+    toast('Spot added · نقطة جديدة — عدّل بياناتها ثم Apply');
+  });
+  addEventListener('pointermove',e=>{
+    if(hsDrag<0)return;
+    const r=st.getBoundingClientRect();
+    const f=hsSpots()[hsDrag];if(!f)return;
+    f.x=+Math.min(98,Math.max(2,(e.clientX-r.left)/r.width*100)).toFixed(1);
+    f.y=+Math.min(98,Math.max(2,(e.clientY-r.top)/r.height*100)).toFixed(1);
+    document.getElementById('hsPos').textContent=`x: ${Math.round(f.x)}% · y: ${Math.round(f.y)}%`;
+    hsRender();
+  });
+  addEventListener('pointerup',()=>hsDrag=-1);
+})();
+
+function saveInterior(){AURA.save(CFG);toast('Interior configuration published')}
+
+/* elements with IDs are available as globals — no redeclaration needed */
+
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+# Dev / build artifacts
+shots/
+*.log
+.sudo_as_admin_successful
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (if we add tooling later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Build output
+dist/
+build/
+.next/
+
+# Local-only assets
+uploads/
