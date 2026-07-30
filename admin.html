@@ -437,56 +437,76 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <button class="btn" onclick="toast('Material editor opened')">+ إضافة مادة · Add Material</button>
     </div>
 
-    <div class="page" id="p-hotspots">
-      <h1 class="pt">Hotspots Editor · محرر النقاط</h1>
-      <div class="ps">انقر على الصورة لإضافة نقطة جديدة · اسحب النقطة لتغيير مكانها · انقر نقطة لتعديل بياناتها — والموقع يقرأ التغييرات فورًا</div>
-
-      <div class="gal-tabs" id="hsTabs"></div>
-
-      <div class="panel" style="padding:14px">
-        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none">
-          <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
+    <!-- ========== SITE SETTINGS ========== -->
+    <div class="page" id="p-site">
+      <h1 class="pt">إعدادات الموقع · Site Settings</h1>
+      <div class="ps">كل التعديلات هنا تنعكس على الموقع فور الحفظ — واتساب، لوكيشن، نصوص الهيرو، من نحن، العملاء</div>
+      <div class="panel">
+        <h3><span>Contact Info · بيانات التواصل</span> <span class="badge">LIVE</span></h3>
+        <div class="grid2">
+          <div class="f"><label>WhatsApp (digits only, no +)</label><input type="text" id="scWa" placeholder="96522223333" dir="ltr"></div>
+          <div class="f"><label>Phone · الهاتف</label><input type="text" id="scPhone" placeholder="+965 2222 3333" dir="ltr"></div>
+          <div class="f"><label>Email · البريد</label><input type="text" id="scEmail" placeholder="studio@aura-arch.com" dir="ltr"></div>
+          <div class="f"><label>Location (EN)</label><input type="text" id="scLoc" placeholder="Kuwait City, Kuwait"></div>
+          <div class="f"><label>الموقع (AR)</label><input type="text" id="scLocAr" placeholder="مدينة الكويت، الكويت" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>Map Embed URL</label><input type="text" id="scMap" placeholder="https://www.openstreetmap.org/..." dir="ltr"></div>
         </div>
-        <div style="font-size:11px;color:var(--tx3);margin-top:10px">💡 Click empty area = add spot · Drag = move · Click spot = edit</div>
       </div>
-
-      <div class="grid2">
-        <div class="panel" id="hsForm" style="display:none">
-          <h3><span>Edit Spot · تعديل النقطة</span> <span class="badge" id="hsPos">x: — · y: —</span></h3>
-          <div class="grid2">
-            <div class="f"><label>Name (EN) · الاسم إنجليزي</label><input type="text" id="hsName"></div>
-            <div class="f"><label>الاسم عربي · Name (AR)</label><input type="text" id="hsNameAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-            <div class="f"><label>Material (EN) · الخامة إنجليزي</label><input type="text" id="hsMat"></div>
-            <div class="f"><label>الخامة عربي · Material (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-            <div class="f"><label>Brand · الماركة</label><input type="text" id="hsBrand"></div>
-            <div class="f"><label>Color · اللون</label><input type="text" id="hsColor"></div>
-            <div class="f"><label>Dimensions · الأبعاد</label><input type="text" id="hsDims"></div>
-            <div class="f"><label>Supplier · المورد</label><input type="text" id="hsSup"></div>
-            <div class="f"><label>Price · السعر</label><input type="text" id="hsPrice"></div>
-            <div class="f"><label>Finish · التشطيب</label><input type="text" id="hsFin"></div>
-          </div>
-          <div class="btnrow">
-            <button class="btn" onclick="hsApply()">Apply · تطبيق</button>
-            <button class="btn danger" onclick="hsDelete()">Delete · حذف</button>
-          </div>
+      <div class="panel">
+        <h3><span>Hero Text · نصوص الواجهة</span></h3>
+        <div class="grid2">
+          <div class="f"><label>العنوان 1 (AR)</label><input type="text" id="scH1Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان 2 (AR)</label><input type="text" id="scH2Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scHSubAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>الوصف (AR)</label><input type="text" id="scHLineAr" dir="rtl" style="font-family:var(--font-ar)"></div>
         </div>
-        <div class="panel">
-          <h3>Spots in this room · نقاط الغرفة <span class="badge" id="hsCount">0</span></h3>
-          <div id="hsList"></div>
-          <div class="btnrow">
-            <button class="btn" onclick="hsSave()">Save & Publish · حفظ ونشر</button>
-            <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة الموقع ↗</button>
-          </div>
+      </div>
+      <div class="panel">
+        <h3><span>About Us · من نحن</span></h3>
+        <div class="grid2">
+          <div class="f"><label>العنوان الرئيسي (AR)</label><input type="text" id="scAHead" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scATitle" dir="rtl" style="font-family:var(--font-ar)"></div>
         </div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 1 (AR)</label><textarea id="scAP1" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 2 (AR)</label><textarea id="scAP2" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="grid3" style="margin-top:14px">
+          <div class="f"><label>اقتباس (AR)</label><input type="text" id="scAQuote" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>إحصائية 1 — قيمة</label><input type="text" id="scS1V" dir="ltr"></div>
+          <div class="f"><label>إحصائية 1 — وصف (AR)</label><input type="text" id="scS1L" dir="rtl" style="font-family:var(--font-ar)"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3><span>Clients · العملاء</span> <span class="badge" id="scClientCount">0</span></h3>
+        <div id="scClientList"></div>
+        <div class="btnrow">
+          <button class="btn sm ghost" onclick="scAddClient()">+ Add Client · إضافة عميل</button>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveSiteContent()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
       </div>
     </div>
 
-    <!-- ========== MATERIALS ========== -->
-    <div class="page" id="p-materials">
-      <h1 class="pt">Materials · مكتبة المواد</h1>
-      <div class="ps">قاعدة مواد مركزية — مواصفات وموردون وتكاليف ومستندات</div>
-      <div class="panel" id="matPanel"></div>
-      <button class="btn" onclick="toast('Material editor opened (demo)')">+ Add Material · إضافة مادة</button>
+    <!-- ========== INQUIRIES ========== -->
+    <div class="page" id="p-inquiries">
+      <h1 class="pt">الطلبات · Inquiries <span class="badge" id="inqCount" style="margin-inline-start:10px">0</span></h1>
+      <div class="ps">الطلبات الواردة من نموذج التواصل في الموقع — مخزنة في المتصفح (localStorage)</div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn sm ghost" onclick="filterInquiries('all')" id="inqFAll">All · الكل</button>
+            <button class="btn sm ghost" onclick="filterInquiries('new')" id="inqFNew">New · جديد</button>
+            <button class="btn sm ghost" onclick="filterInquiries('contacted')" id="inqFCont">Contacted · تم التواصل</button>
+            <button class="btn sm ghost" onclick="filterInquiries('closed')" id="inqFClosed">Closed · مغلق</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn sm ghost" onclick="exportInquiries()">Export CSV · تصدير</button>
+            <button class="btn sm danger" onclick="clearInquiries()">Clear All · حذف الكل</button>
+          </div>
+        </div>
+        <div id="inqList"></div>
+      </div>
     </div>
 
     <!-- ========== SCROLL / PLAYBACK SETTINGS ========== -->
@@ -1292,17 +1312,19 @@ function saveBA(){AURA.save(CFG);toast('Before/After published · تم نشر ق
    ============================================================ */
 function buildContactEditor(){
   const c=PROJ.contact||{};
-  cCompany.value=c.company||'';cCompanyAr.value=c.companyAr||'';
-  cPhone.value=c.phone||'';cWhatsapp.value=c.whatsapp||'';
-  cEmail.value=c.email||'';cInstagram.value=c.instagram||'';
-  cLocation.value=c.location||'';
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  set('cCompany',c.company);set('cCompanyAr',c.companyAr);
+  set('cPhone',c.phone);set('cWhatsapp',c.whatsapp);
+  set('cEmail',c.email);set('cInstagram',c.instagram);
+  set('cLocation',c.location);
 }
 function saveContact(){
+  const get=id=>{const el=document.getElementById(id);return el?el.value:'';};
   PROJ.contact={
-    company:cCompany.value,companyAr:cCompanyAr.value,
-    phone:cPhone.value,whatsapp:cWhatsapp.value,
-    email:cEmail.value,instagram:cInstagram.value,
-    location:cLocation.value
+    company:get('cCompany'),companyAr:get('cCompanyAr'),
+    phone:get('cPhone'),whatsapp:get('cWhatsapp'),
+    email:get('cEmail'),instagram:get('cInstagram'),
+    location:get('cLocation')
   };
   AURA.save(CFG);toast('Contact published · تم نشر بيانات التواصل');
 }
