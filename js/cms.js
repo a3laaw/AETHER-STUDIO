@@ -326,7 +326,58 @@ const VILLA_NAIRO = {
 /* ---------- ROOT DEFAULTS ---------- */
 window.AURA_DEFAULTS = {
   currentProjectId: 'villa-solara',
-  projects: [VILLA_SOLARA, VILLA_NAIRO]
+  projects: [VILLA_SOLARA, VILLA_NAIRO],
+  siteContent: {
+    contact: {
+      company: 'AURA Studio',
+      companyAr: 'أورا ستوديو',
+      whatsapp: '96522223333',
+      phone: '+965 2222 3333',
+      email: 'studio@aura-arch.com',
+      location: 'Kuwait City, Kuwait',
+      locationAr: 'مدينة الكويت، الكويت',
+      mapUrl: 'https://www.openstreetmap.org/export/embed.html?bbox=47.95%2C29.34%2C48.05%2C29.40&layer=mapnik&marker=29.3702%2C48.0083'
+    },
+    hero: {
+      title1Ar: 'من أول حجر…',
+      title2Ar: 'حتى آخر غرفة',
+      subtitleAr: 'فيلم واحد متواصل لمشروعك',
+      sublineAr: 'منصة واحدة تجمع التوثيق البصري الحي، تقدّم المشروع لحظة بلحظة، وتأخذ عميلك في جولة تفاعلية.',
+      title1En: 'From the first stone',
+      title2En: 'to the last room',
+      subtitleEn: 'One continuous living record of your project',
+      sublineEn: 'One platform for live visual documentation, real-time progress, and interactive walkthroughs.'
+    },
+    about: {
+      headingAr: 'نحوّل كل مشروع إلى فيلم متواصل',
+      headingEn: 'We turn every project into a continuous film',
+      titleAr: 'منصة واحدة، من أول حجر حتى آخر غرفة.',
+      titleEn: 'One platform, from the first stone to the last room.',
+      p1Ar: 'في AURA Studio نؤمن بأن كل مشروع بناء يستحق أن يُروى كقصة واحدة متواصلة — لا كملفات متناثرة وتقارير شهرية مملة. لذلك بنينا منصة تجمع التوثيق البصري الحي، لوحات التحكم الذكية، والجولات التفاعلية في مكان واحد.',
+      p1En: 'At AURA Studio we believe every construction project deserves to be told as one continuous story — not scattered files and boring monthly reports. So we built a platform that combines live visual documentation, smart dashboards, and interactive walkthroughs in one place.',
+      p2Ar: 'نعمل مع المطورين العقاريين وشركات المقاولات والتشطيبات في الخليج لنمنحهم شفافية كاملة، حماية من النزاعات، وتجربة عميل تليق بمستوى المشاريع الفاخرة.',
+      p2En: 'We work with real estate developers, contractors, and finishing companies in the Gulf to give them full transparency, dispute protection, and a client experience worthy of luxury projects.',
+      quoteAr: 'البناء فن، والتوثيق احترام لهذا الفن.',
+      quoteEn: 'Construction is art, and documentation is respect for that art.',
+      stat1Val: '2+', stat1LabelAr: 'سنوات خبرة', stat1LabelEn: 'Years experience',
+      stat2Val: '12+', stat2LabelAr: 'مشروع موثّق', stat2LabelEn: 'Projects documented',
+      stat3Val: '97', stat3LabelAr: 'إطار لكل مشروع', stat3LabelEn: 'Frames per project'
+    },
+    clients: [
+      {icon:'▲',name:'Al-Sabah Developments'},
+      {icon:'◆',name:'Marmi Kuwait'},
+      {icon:'●',name:'Studio Forma'},
+      {icon:'■',name:'Gulf RMC'},
+      {icon:'★',name:'Light House KW'},
+      {icon:'⬢',name:'Qurain Steel'},
+      {icon:'◐',name:'Joinery Works'},
+      {icon:'◈',name:'Dar Gallery'},
+      {icon:'◇',name:'Green Studio'},
+      {icon:'▼',name:'Apparatus KW'},
+      {icon:'▣',name:'Flexform Gulf'},
+      {icon:'◉',name:'Agape Interiors'}
+    ]
+  }
 };
 
 /* ---------- STORE API ---------- */

@@ -209,6 +209,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>Hotspots · محرر النقاط</div>
     <div class="mi" data-p="materials"><span class="ic">◨</span>Materials · المواد</div>
     <div class="mi" data-p="contact"><span class="ic">✆</span>Contact · التواصل</div>
+    <div class="mi" data-p="site"><span class="ic">⚙</span>Site Settings · إعدادات الموقع</div>
     <div class="mi" data-p="inquiries"><span class="ic">✉</span>Inquiries · الطلبات <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
     <div class="sep">Configuration · الإعدادات</div>
     <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
@@ -333,6 +334,66 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <div class="f"><label>Location · الموقع</label><input type="text" id="cLocation"></div>
         </div>
         <div class="btnrow"><button class="btn" onclick="saveContact()">Save & Publish · حفظ ونشر</button></div>
+      </div>
+    </div>
+
+    <!-- ========== SITE SETTINGS ========== -->
+    <div class="page" id="p-site">
+      <h1 class="pt">Site Settings · إعدادات الموقع</h1>
+      <div class="ps">كل التعديلات هنا تنعكس على الموقع فور الحفظ — واتساب، لوكيشن، نصوص الهيرو، من نحن، العملاء</div>
+
+      <!-- Contact -->
+      <div class="panel">
+        <h3><span>Contact Info · بيانات التواصل</span> <span class="badge">LIVE</span></h3>
+        <div class="grid2">
+          <div class="f"><label>WhatsApp (digits only, no +)</label><input type="text" id="scWa" placeholder="96522223333" dir="ltr"></div>
+          <div class="f"><label>Phone · الهاتف</label><input type="text" id="scPhone" placeholder="+965 2222 3333" dir="ltr"></div>
+          <div class="f"><label>Email · البريد</label><input type="text" id="scEmail" placeholder="studio@aura-arch.com" dir="ltr"></div>
+          <div class="f"><label>Location (EN)</label><input type="text" id="scLoc" placeholder="Kuwait City, Kuwait"></div>
+          <div class="f"><label>الموقع (AR)</label><input type="text" id="scLocAr" placeholder="مدينة الكويت، الكويت" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>Map Embed URL</label><input type="text" id="scMap" placeholder="https://www.openstreetmap.org/..." dir="ltr"></div>
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <div class="panel">
+        <h3><span>Hero Text · نصوص الواجهة</span></h3>
+        <div class="grid2">
+          <div class="f"><label>العنوان 1 (AR)</label><input type="text" id="scH1Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان 2 (AR)</label><input type="text" id="scH2Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scHSubAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>الوصف (AR)</label><input type="text" id="scHLineAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="panel">
+        <h3><span>About Us · من نحن</span></h3>
+        <div class="grid2">
+          <div class="f"><label>العنوان الرئيسي (AR)</label><input type="text" id="scAHead" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scATitle" dir="rtl" style="font-family:var(--font-ar)"></div>
+        </div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 1 (AR)</label><textarea id="scAP1" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 2 (AR)</label><textarea id="scAP2" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="grid3" style="margin-top:14px">
+          <div class="f"><label>اقتباس (AR)</label><input type="text" id="scAQuote" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>إحصائية 1 — قيمة</label><input type="text" id="scS1V" dir="ltr"></div>
+          <div class="f"><label>إحصائية 1 — وصف (AR)</label><input type="text" id="scS1L" dir="rtl" style="font-family:var(--font-ar)"></div>
+        </div>
+      </div>
+
+      <!-- Clients -->
+      <div class="panel">
+        <h3><span>Clients · العملاء</span> <span class="badge" id="scClientCount">0</span></h3>
+        <div id="scClientList"></div>
+        <div class="btnrow">
+          <button class="btn sm ghost" onclick="scAddClient()">+ Add Client · إضافة عميل</button>
+        </div>
+      </div>
+
+      <div class="btnrow">
+        <button class="btn" onclick="saveSiteContent()">Save & Publish · حفظ ونشر</button>
+        <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
       </div>
     </div>
 
@@ -677,7 +738,7 @@ function boot(){
   uGlass.value=PROJ.ui.glassOpacity;uBlur.value=PROJ.ui.blur;uRadius.value=PROJ.ui.radius;uGlow.value=PROJ.ui.glow;
   updRvUI();
   buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
-  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();buildInquiries();
+  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();buildInquiries();buildSiteContent();
   document.getElementById('dFrames').textContent=PROJ.sequence.count;
 }
 function $(id){return document.getElementById(id);}
@@ -1239,6 +1300,51 @@ function saveContact(){
     location:cLocation.value
   };
   AURA.save(CFG);toast('Contact published · تم نشر بيانات التواصل');
+}
+
+/* ============================================================
+   SITE CONTENT — controls everything on index.html
+   ============================================================ */
+function buildSiteContent(){
+  CFG=AURA.load();
+  const sc=CFG.siteContent=CFG.siteContent||{};
+  const c=sc.contact=sc.contact||{};
+  scWa.value=c.whatsapp||'';scPhone.value=c.phone||'';scEmail.value=c.email||'';
+  scLoc.value=c.location||'';scLocAr.value=c.locationAr||'';scMap.value=c.mapUrl||'';
+  const h=sc.hero=sc.hero||{};
+  scH1Ar.value=h.title1Ar||'';scH2Ar.value=h.title2Ar||'';scHSubAr.value=h.subtitleAr||'';scHLineAr.value=h.sublineAr||'';
+  const a=sc.about=sc.about||{};
+  scAHead.value=a.headingAr||'';scATitle.value=a.titleAr||'';scAP1.value=a.p1Ar||'';scAP2.value=a.p2Ar||'';
+  scAQuote.value=a.quoteAr||'';scS1V.value=a.stat1Val||'';scS1L.value=a.stat1LabelAr||'';
+  sc.clients=sc.clients||[];
+  scRenderClients();
+}
+function scRenderClients(){
+  const list=$('scClientList');list.innerHTML='';
+  $('scClientCount').textContent=CFG.siteContent.clients.length;
+  CFG.siteContent.clients.forEach((cl,i)=>{
+    const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='60px 1fr 80px';
+    d.innerHTML=`<input type="text" value="${cl.icon}" data-ci="${i}" style="text-align:center" placeholder="▲">
+      <input type="text" value="${cl.name}" data-cn="${i}" placeholder="Client name">
+      <button class="btn sm danger" onclick="scDelClient(${i})">✕</button>`;
+    list.appendChild(d);
+  });
+  list.addEventListener('input',e=>{
+    const ci=e.target.dataset.ci,cn=e.target.dataset.cn;
+    if(ci!==undefined)CFG.siteContent.clients[+ci].icon=e.target.value;
+    if(cn!==undefined)CFG.siteContent.clients[+cn].name=e.target.value;
+  });
+}
+function scAddClient(){CFG.siteContent.clients.push({icon:'◆',name:'New Client'});scRenderClients();}
+function scDelClient(i){CFG.siteContent.clients.splice(i,1);scRenderClients();}
+function saveSiteContent(){
+  const sc=CFG.siteContent;
+  sc.contact.whatsapp=scWa.value;sc.contact.phone=scPhone.value;sc.contact.email=scEmail.value;
+  sc.contact.location=scLoc.value;sc.contact.locationAr=scLocAr.value;sc.contact.mapUrl=scMap.value;
+  sc.hero.title1Ar=scH1Ar.value;sc.hero.title2Ar=scH2Ar.value;sc.hero.subtitleAr=scHSubAr.value;sc.hero.sublineAr=scHLineAr.value;
+  sc.about.headingAr=scAHead.value;sc.about.titleAr=scATitle.value;sc.about.p1Ar=scAP1.value;sc.about.p2Ar=scAP2.value;
+  sc.about.quoteAr=scAQuote.value;sc.about.stat1Val=scS1V.value;sc.about.stat1LabelAr=scS1L.value;
+  AURA.save(CFG);toast('Site content published · تم نشر المحتوى — حدّث صفحة الموقع');
 }
 
 /* ============================================================
