@@ -6,33 +6,36 @@
 <title>AURA Admin — CMS</title>
 <style>
 :root{
-  --bg:#101013;--bg2:#17171b;--panel:#1d1d22;--panel2:#26262c;
-  --tx:#f2f2f4;--tx2:#9d9da4;--tx3:#6a6a72;
+  --bg:#FAFAF7;--bg2:#F2F1EC;--panel:#FFFFFF;--panel2:#F5F4EF;
+  --tx:#1A1A1C;--tx2:#5C5C63;--tx3:#8E8E94;
   --blue:#3c82f6;--green:#34c759;--amber:#ff9f0a;--red:#ff453a;
-  --brd:rgba(255,255,255,.07);
+  --gold:#BFA76A;--gold-2:#8C7B5B;
+  --brd:rgba(0,0,0,.08);
+  --shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px -8px rgba(0,0,0,.08);
+  --shadow-lg:0 20px 60px -20px rgba(0,0,0,.12);
   --font-ar:"SF Arabic","Segoe UI",Tahoma,sans-serif;
   --font:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;min-height:100vh}
-::selection{background:rgba(60,130,246,.3)}
+::selection{background:rgba(60,130,246,.2)}
 button{font-family:inherit}
 
 /* ---------- login ---------- */
 #login{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(100% 100% at 50% 0%,#1a1a20,#0d0d10)}
-.login-card{width:360px;background:rgba(255,255,255,.04);border:1px solid var(--brd);border-radius:24px;padding:38px 34px;
-  backdrop-filter:blur(30px);box-shadow:0 40px 100px rgba(0,0,0,.5)}
-.login-card .logo{font-weight:700;letter-spacing:.3em;font-size:18px;text-align:center;margin-bottom:6px}
-.login-card .logo b{color:var(--blue)}
+  background:radial-gradient(100% 100% at 50% 0%,#FFFFFF,#F2F1EC)}
+.login-card{width:360px;background:#FFFFFF;border:1px solid var(--brd);border-radius:24px;padding:38px 34px;
+  box-shadow:var(--shadow-lg)}
+.login-card .logo{font-weight:700;letter-spacing:.3em;font-size:18px;text-align:center;margin-bottom:6px;color:var(--tx)}
+.login-card .logo b{color:var(--gold)}
 .login-card .sub{font-size:12px;color:var(--tx3);text-align:center;margin-bottom:28px}
 .login-card label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);display:block;margin:14px 0 7px}
-.login-card input{width:100%;background:var(--panel);border:1px solid var(--brd);border-radius:12px;color:var(--tx);
+.login-card input{width:100%;background:var(--panel2);border:1px solid var(--brd);border-radius:12px;color:var(--tx);
   padding:12px 14px;font-size:14px;outline:none;transition:border .3s}
-.login-card input:focus{border-color:var(--blue)}
-.login-card .btn{width:100%;margin-top:24px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:13px;
+.login-card input:focus{border-color:var(--blue);background:#fff}
+.login-card .btn{width:100%;margin-top:24px;background:var(--tx);color:#fff;border:none;border-radius:12px;padding:13px;
   font-size:14px;font-weight:600;cursor:pointer;transition:.3s}
-.login-card .btn:hover{filter:brightness(1.15)}
+.login-card .btn:hover{background:var(--gold);color:#fff}
 .login-card .hint{font-size:11px;color:var(--tx3);text-align:center;margin-top:16px}
 .login-card .err{color:var(--red);font-size:12px;text-align:center;margin-top:12px;min-height:16px}
 
@@ -40,18 +43,18 @@ button{font-family:inherit}
 #app{display:none;grid-template-columns:230px 1fr;min-height:100vh}
 #app.in{display:grid}
 aside{background:var(--bg2);border-right:1px solid var(--brd);padding:26px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
-aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0 12px;margin-bottom:4px}
-aside .logo b{color:var(--blue)}
+aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0 12px;margin-bottom:4px;color:var(--tx)}
+aside .logo b{color:var(--gold)}
 aside .role{font-size:10.5px;color:var(--tx3);padding:0 12px;margin-bottom:26px}
 .mi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;font-size:13px;font-weight:500;color:var(--tx2);
   cursor:pointer;transition:.25s;margin-bottom:2px}
-.mi:hover{background:rgba(255,255,255,.05);color:var(--tx)}
-.mi.on{background:rgba(60,130,246,.14);color:var(--blue)}
+.mi:hover{background:rgba(0,0,0,.04);color:var(--tx)}
+.mi.on{background:rgba(60,130,246,.1);color:var(--blue)}
 .mi .ic{width:18px;text-align:center;font-size:14px}
 aside .sep{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);padding:18px 12px 8px}
 aside .logout{margin-top:20px;color:var(--red)}
 .lang-btn{display:flex;align-items:center;gap:8px;margin:0 12px 14px;padding:9px 14px;border-radius:11px;
-  font-size:12px;font-weight:600;color:var(--tx2);background:var(--panel2);border:1px solid var(--brd);cursor:pointer;transition:.3s;width:calc(100% - 24px)}
+  font-size:12px;font-weight:600;color:var(--tx2);background:#fff;border:1px solid var(--brd);cursor:pointer;transition:.3s;width:calc(100% - 24px)}
 .lang-btn:hover{color:var(--blue);border-color:rgba(60,130,246,.5)}
 html[lang=ar] body{font-family:var(--font-ar)}
 html[lang=ar] input,html[lang=ar] select,html[lang=ar] textarea{font-family:var(--font-ar)}
@@ -65,14 +68,14 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
 /* cards & stats */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:26px}
-.stat{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:20px 22px}
+.stat{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow)}
 .stat .k{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
 .stat .v{font-size:27px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
 .stat .d{font-size:11px;margin-top:4px}
 .stat .d.up{color:var(--green)}.stat .d.dn{color:var(--amber)}
-.panel{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:24px;margin-bottom:20px}
+.panel{background:var(--panel);border:1px solid var(--brd);border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
 .panel h3{font-size:14px;font-weight:650;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
-.panel h3 .badge{font-size:10px;font-weight:600;color:var(--blue);background:rgba(60,130,246,.14);padding:4px 10px;border-radius:100px}
+.panel h3 .badge{font-size:10px;font-weight:600;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px}
 
 /* activity */
 .act{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--brd);font-size:12.5px;color:var(--tx2)}
@@ -105,17 +108,17 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .frow .fl{font-size:13px;font-weight:500}
 .frow .fs{font-size:11px;color:var(--tx3);margin-top:2px}
 
-.btn{background:var(--blue);color:#fff;border:none;border-radius:11px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:.3s}
-.btn:hover{filter:brightness(1.15)}
-.btn.ghost{background:var(--panel2);color:var(--tx2);border:1px solid var(--brd)}
-.btn.ghost:hover{color:var(--tx)}
-.btn.danger{background:rgba(255,69,58,.14);color:var(--red)}
+.btn{background:#1A1A1C;color:#fff;border:none;border-radius:11px;padding:11px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:.3s}
+.btn:hover{background:var(--gold)}
+.btn.ghost{background:#fff;color:var(--tx2);border:1px solid var(--brd)}
+.btn.ghost:hover{color:var(--tx);border-color:rgba(0,0,0,.2)}
+.btn.danger{background:rgba(255,69,58,.1);color:var(--red)}
 .btn.sm{padding:7px 14px;font-size:11.5px;border-radius:9px}
 .btnrow{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
 
 /* sequence manager */
-.dropzone{border:1.5px dashed rgba(255,255,255,.16);border-radius:16px;padding:34px;text-align:center;color:var(--tx3);
-  font-size:13px;transition:.3s;cursor:pointer;margin-bottom:20px}
+.dropzone{border:1.5px dashed rgba(0,0,0,.18);border-radius:16px;padding:34px;text-align:center;color:var(--tx3);
+  font-size:13px;transition:.3s;cursor:pointer;margin-bottom:20px;background:var(--panel)}
 .dropzone.hover{border-color:var(--blue);color:var(--blue);background:rgba(60,130,246,.06)}
 .dropzone b{color:var(--tx2)}
 .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;max-height:420px;overflow-y:auto;padding-right:6px}
@@ -128,8 +131,8 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .frame .ops{position:absolute;inset:auto 0 0 0;display:flex;justify-content:center;gap:6px;padding:6px;
   background:linear-gradient(transparent,rgba(0,0,0,.65));opacity:0;transition:.25s}
 .frame:hover .ops{opacity:1}
-.frame .ops button{background:rgba(255,255,255,.16);border:none;color:#fff;border-radius:7px;font-size:10px;padding:4px 8px;cursor:pointer;backdrop-filter:blur(6px)}
-.frame .ops button:hover{background:var(--blue)}
+.frame .ops button{background:rgba(255,255,255,.85);border:none;color:#1A1A1C;border-radius:7px;font-size:10px;padding:4px 8px;cursor:pointer;backdrop-filter:blur(6px)}
+.frame .ops button:hover{background:var(--blue);color:#fff}
 .frame.dragging{opacity:.4}
 
 /* stages table */
@@ -144,7 +147,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .gal-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .gtab{font-size:11.5px;font-weight:600;padding:7px 15px;border-radius:100px;cursor:pointer;background:var(--panel2);
   border:1px solid var(--brd);color:var(--tx2);transition:.3s}
-.gtab.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.gtab.on{background:#1A1A1C;color:#fff;border-color:#1A1A1C}
 .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .gimg{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--brd)}
 .gimg img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
@@ -172,12 +175,12 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .exp-upload .eu-empty .ico{font-size:24px;opacity:.5}
 .exp-mode{display:flex;gap:6px;margin-bottom:10px}
 .exp-mode .em-btn{flex:1;padding:9px;font-size:11.5px;font-weight:600;border:1px solid var(--brd);background:var(--panel);color:var(--tx3);border-radius:9px;cursor:pointer;transition:.2s;text-align:center}
-.exp-mode .em-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.exp-mode .em-btn.on{background:#1A1A1C;color:#fff;border-color:#1A1A1C}
 
 /* toast */
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:600;
-  background:var(--panel);border:1px solid var(--brd);color:var(--tx);font-size:13px;font-weight:500;
-  padding:13px 26px;border-radius:100px;box-shadow:0 20px 60px rgba(0,0,0,.5);transition:.4s;display:flex;gap:10px;align-items:center}
+  background:#1A1A1C;border:1px solid #000;color:#fff;font-size:13px;font-weight:500;
+  padding:13px 26px;border-radius:100px;box-shadow:0 20px 60px rgba(0,0,0,.25);transition:.4s;display:flex;gap:10px;align-items:center}
 #toast.show{transform:translateX(-50%) translateY(0)}
 #toast .ok{color:var(--green)}
 
@@ -207,7 +210,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <input type="password" id="lPass" placeholder="••••••••">
     <button class="btn" id="lBtn">Sign In · تسجيل الدخول</button>
     <div class="err" id="lErr"></div>
-    <div class="hint">Demo: password is <b>aura2026</b> · role-based (admin / editor)</div>
+    <div class="hint">Demo password: <b>aura2026</b> — للعرض فقط · Demo only</div>
   </div>
 </div>
 
@@ -241,20 +244,20 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <h1 class="pt">Dashboard · الرئيسية</h1>
       <div class="ps">Overview · نظرة عامة على موقعك التفاعلي</div>
       <div class="stats">
-        <div class="stat"><div class="k">Projects · المشاريع</div><div class="v">4</div><div class="d up">+1 this month</div></div>
+        <div class="stat"><div class="k">Projects · المشاريع</div><div class="v">4</div><div class="d up">+1 this month · +1 هذا الشهر</div></div>
         <div class="stat"><div class="k">Visitors · الزوار (30ي)</div><div class="v">18,402</div><div class="d up">+22.4%</div></div>
-        <div class="stat"><div class="k">Frames · الإطارات</div><div class="v" id="dFrames">97</div><div class="d">WebP · 4.8 MB total</div></div>
-        <div class="stat"><div class="k">Storage · التخزين</div><div class="v">1.2<span style="font-size:15px;color:var(--tx3)"> GB</span></div><div class="d dn">62% of plan</div></div>
-        <div class="stat"><div class="k">Images · الصور</div><div class="v">483</div><div class="d up">+56 this week</div></div>
+        <div class="stat"><div class="k">Frames · الإطارات</div><div class="v" id="dFrames">97</div><div class="d">WebP — 4.8 MB total · ٤.٨ ميجا</div></div>
+        <div class="stat"><div class="k">Storage · التخزين</div><div class="v">1.2<span style="font-size:15px;color:var(--tx3)"> GB</span></div><div class="d dn">62% of plan · ٦٢٪ من الباقة</div></div>
+        <div class="stat"><div class="k">Images · الصور</div><div class="v">483</div><div class="d up">+56 this week · +٥٦ هذا الأسبوع</div></div>
         <div class="stat"><div class="k">View Time · مدة المشاهدة</div><div class="v">3:42</div><div class="d up">+0:31</div></div>
       </div>
       <div class="grid2">
         <div class="panel"><h3><span>Recent Activity · النشاط الأخير</span> <span class="badge">LIVE</span></h3>
-          <div class="act"><span class="t">14:22</span><div><b>Hero frame 097</b> replaced (night view re-render)</div><span class="tag blue">SEQUENCE</span></div>
-          <div class="act"><span class="t">13:05</span><div><b>Villa Solara</b> — facade gallery +12 images</div><span class="tag green">GALLERY</span></div>
-          <div class="act"><span class="t">11:48</span><div>Scroll smoothness changed 0.10 → 0.085</div><span class="tag amber">SETTINGS</span></div>
-          <div class="act"><span class="t">10:31</span><div><b>Blueprint B-204 rev 13</b> uploaded (DWG)</div><span class="tag blue">BLUEPRINT</span></div>
-          <div class="act"><span class="t">09:12</span><div>Editor <b>sara@aura.studio</b> signed in</div><span class="tag green">AUTH</span></div>
+          <div class="act"><span class="t">14:22</span><div><b>Hero frame 097</b> replaced — night view re-render · استبدال إطار ٠٩٧</div><span class="tag blue">SEQUENCE</span></div>
+          <div class="act"><span class="t">13:05</span><div><b>Villa Solara</b> — facade gallery +12 images · +١٢ صورة للواجهة</div><span class="tag green">GALLERY</span></div>
+          <div class="act"><span class="t">11:48</span><div>Scroll smoothness 0.10 → 0.085 · تعديل سلاسة التمرير</div><span class="tag amber">SETTINGS</span></div>
+          <div class="act"><span class="t">10:31</span><div><b>Blueprint B-204 rev 13</b> uploaded (DWG) · رفع مخطط</div><span class="tag blue">BLUEPRINT</span></div>
+          <div class="act"><span class="t">09:12</span><div>Editor <b>sara@aura.studio</b> signed in · تسجيل دخول</div><span class="tag green">AUTH</span></div>
         </div>
         <div class="panel"><h3>Project Status · حالة المشاريع</h3>
           <div class="abar"><span class="lb">Villa Solara</span><div class="tr"><i style="width:100%"></i></div><span class="v">100%</span></div>
@@ -334,14 +337,14 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div class="panel" id="stagesPanel"></div>
         <div class="btnrow">
           <button class="btn" onclick="saveStages()">حفظ ونشر · Save</button>
-          <button class="btn ghost" onclick="toast('New stage added')">+ إضافة مرحلة · Add Stage</button>
+          <button class="btn ghost" onclick="toast('New stage added · تمت إضافة مرحلة')">+ إضافة مرحلة · Add Stage</button>
         </div>
       </div>
 
       <!-- Tab: Sequence -->
       <div class="proj-tab" id="pt-sequence" style="display:none">
         <div class="dropzone" id="dz">⬆ اسحب الصور هنا أو <b>انقر للاختيار</b><br>
-          <span style="font-size:11px">97 إطار · WebP · اسحب لإعادة الترتيب</span>
+          <span style="font-size:11px">97 إطار — WebP — اسحب للترتيب</span>
           <input type="file" id="dzInput" multiple accept="image/*" style="display:none">
         </div>
         <div class="panel">
@@ -353,7 +356,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <!-- Tab: Galleries -->
       <div class="proj-tab" id="pt-gallery" style="display:none">
         <div class="gal-tabs" id="galTabs"></div>
-        <div class="dropzone" style="padding:22px" onclick="toast('Drag images to add')">⬆ اسحب الصور لإضافتها · Drop images here</div>
+        <div class="dropzone" style="padding:22px" onclick="toast('Drag images to add · اسحب الصور للإضافة')">⬆ اسحب الصور لإضافتها · Drop images here</div>
         <div class="gal-grid" id="galGrid"></div>
       </div>
 
@@ -366,7 +369,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <div id="roomRows"></div>
           <div class="btnrow">
             <button class="btn" onclick="saveInterior()">حفظ · Save</button>
-            <button class="btn ghost" onclick="toast('New room added')">+ إضافة غرفة · Add Room</button>
+            <button class="btn ghost" onclick="toast('New room added · تمت إضافة غرفة')">+ إضافة غرفة · Add Room</button>
           </div>
         </div>
         <div class="grid2">
@@ -404,7 +407,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           </div>
           <div class="grid2" style="margin-top:14px">
             <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
-            <div class="f"><label>صورة الغلاف · Poster Image (اختياري)</label>
+            <div class="f"><label>صورة الغلاف · Poster Image (Optional)</label>
               <div style="display:flex;gap:8px">
                 <input type="text" id="expWalkImg" style="flex:1">
                 <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
@@ -479,14 +482,14 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       </div>
       <div class="grid2">
         <div class="panel" id="hsForm" style="display:none">
-          <h3><span>تعديل النقطة · Edit Spot</span> <span class="badge" id="hsPos">x: — · y: —</span></h3>
+          <h3><span>تعديل النقطة · Edit Spot</span> <span class="badge" id="hsPos">x: — y: —</span></h3>
           <div class="grid2">
-            <div class="f"><label>Name (EN)</label><input type="text" id="hsName"></div>
-            <div class="f"><label>الاسم (AR)</label><input type="text" id="hsNameAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-            <div class="f"><label>Material (EN)</label><input type="text" id="hsMat"></div>
-            <div class="f"><label>الخامة (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-            <div class="f"><label>Brand</label><input type="text" id="hsBrand"></div>
-            <div class="f"><label>Price</label><input type="text" id="hsPrice"></div>
+            <div class="f"><label>Name (EN) · الاسم</label><input type="text" id="hsName"></div>
+            <div class="f"><label>الاسم · Name (AR)</label><input type="text" id="hsNameAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Material · الخامة</label><input type="text" id="hsMat"></div>
+            <div class="f"><label>الخامة · Material (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Brand · الماركة</label><input type="text" id="hsBrand"></div>
+            <div class="f"><label>Price · السعر</label><input type="text" id="hsPrice"></div>
           </div>
           <div class="btnrow">
             <button class="btn" onclick="hsApply()">تطبيق · Apply</button>
@@ -507,7 +510,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="page" id="p-materials">
       <h1 class="pt">المواد · Materials Library</h1>
       <div class="panel" id="matPanel"></div>
-      <button class="btn" onclick="toast('Material editor opened')">+ إضافة مادة · Add Material</button>
+      <button class="btn" onclick="toast('Material editor opened · فتح محرر المواد')">+ إضافة مادة · Add Material</button>
     </div>
 
     <!-- ========== SITE SETTINGS ========== -->
@@ -517,35 +520,35 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <div class="panel">
         <h3><span>Contact Info · بيانات التواصل</span> <span class="badge">LIVE</span></h3>
         <div class="grid2">
-          <div class="f"><label>WhatsApp (digits only, no +)</label><input type="text" id="scWa" placeholder="96522223333" dir="ltr"></div>
+          <div class="f"><label>WhatsApp · واتساب</label><input type="text" id="scWa" placeholder="96522223333" dir="ltr"></div>
           <div class="f"><label>Phone · الهاتف</label><input type="text" id="scPhone" placeholder="+965 2222 3333" dir="ltr"></div>
           <div class="f"><label>Email · البريد</label><input type="text" id="scEmail" placeholder="studio@aura-arch.com" dir="ltr"></div>
-          <div class="f"><label>Location (EN)</label><input type="text" id="scLoc" placeholder="Kuwait City, Kuwait"></div>
-          <div class="f"><label>الموقع (AR)</label><input type="text" id="scLocAr" placeholder="مدينة الكويت، الكويت" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>Map Embed URL</label><input type="text" id="scMap" placeholder="https://www.openstreetmap.org/..." dir="ltr"></div>
+          <div class="f"><label>Location (EN) · الموقع</label><input type="text" id="scLoc" placeholder="Kuwait City, Kuwait"></div>
+          <div class="f"><label>الموقع · Location (AR)</label><input type="text" id="scLocAr" placeholder="مدينة الكويت، الكويت" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>Map Embed URL · رابط الخريطة</label><input type="text" id="scMap" placeholder="https://www.openstreetmap.org/..." dir="ltr"></div>
         </div>
       </div>
       <div class="panel">
-        <h3><span>Hero Text · نصوص الواجهة</span></h3>
+        <h3><span>Hero Text · نصوص الواجهة الرئيسية</span></h3>
         <div class="grid2">
-          <div class="f"><label>العنوان 1 (AR)</label><input type="text" id="scH1Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان 2 (AR)</label><input type="text" id="scH2Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scHSubAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>الوصف (AR)</label><input type="text" id="scHLineAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان 1 · Title 1 (AR)</label><input type="text" id="scH1Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان 2 · Title 2 (AR)</label><input type="text" id="scH2Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي · Subtitle (AR)</label><input type="text" id="scHSubAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>الوصف · Description (AR)</label><input type="text" id="scHLineAr" dir="rtl" style="font-family:var(--font-ar)"></div>
         </div>
       </div>
       <div class="panel">
         <h3><span>About Us · من نحن</span></h3>
         <div class="grid2">
-          <div class="f"><label>العنوان الرئيسي (AR)</label><input type="text" id="scAHead" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scATitle" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الرئيسي · Heading (AR)</label><input type="text" id="scAHead" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>العنوان الفرعي · Subtitle (AR)</label><input type="text" id="scATitle" dir="rtl" style="font-family:var(--font-ar)"></div>
         </div>
-        <div class="f" style="margin-top:14px"><label>الفقرة 1 (AR)</label><textarea id="scAP1" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
-        <div class="f" style="margin-top:14px"><label>الفقرة 2 (AR)</label><textarea id="scAP2" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 1 · Paragraph 1 (AR)</label><textarea id="scAP1" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
+        <div class="f" style="margin-top:14px"><label>الفقرة 2 · Paragraph 2 (AR)</label><textarea id="scAP2" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
         <div class="grid3" style="margin-top:14px">
-          <div class="f"><label>اقتباس (AR)</label><input type="text" id="scAQuote" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>إحصائية 1 — قيمة</label><input type="text" id="scS1V" dir="ltr"></div>
-          <div class="f"><label>إحصائية 1 — وصف (AR)</label><input type="text" id="scS1L" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>اقتباس · Quote (AR)</label><input type="text" id="scAQuote" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>إحصائية 1 — قيمة · Stat 1 Value</label><input type="text" id="scS1V" dir="ltr"></div>
+          <div class="f"><label>إحصائية 1 — وصف · Stat 1 Label (AR)</label><input type="text" id="scS1L" dir="rtl" style="font-family:var(--font-ar)"></div>
         </div>
       </div>
       <div class="panel">
@@ -606,17 +609,17 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <label class="switch"><input type="checkbox" id="pAuto"><i></i></label></div>
         <div class="btnrow">
           <button class="btn" onclick="savePlayback()">Save & Publish · حفظ ونشر</button>
-          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: بطيء وفخم</button>
-          <button class="btn ghost" onclick="pbPreset(9,6,5,2.5)">Preset: افتراضي</button>
-          <button class="btn ghost" onclick="pbPreset(16,12,3,1.5)">Preset: سريع</button>
-          <button class="btn ghost" onclick="window.open('index.html')">Test on Site ↗</button>
+          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: Slow cinematic · بطيء سينمائي</button>
+          <button class="btn ghost" onclick="pbPreset(9,6,5,2.5)">Preset: Default · افتراضي</button>
+          <button class="btn ghost" onclick="pbPreset(16,12,3,1.5)">Preset: Fast · سريع</button>
+          <button class="btn ghost" onclick="window.open('index.html')">Test on Site ↗ · جرّب على الموقع</button>
         </div>
       </div>
 
       <div class="panel">
         <h3>Estimated film length · المدة التقديرية للفيلم <span class="badge" id="pbTotal">—</span></h3>
-        <div class="krow"><span>Exterior · الخارجي (97 frames)</span><b id="pbExtT">—</b></div>
-        <div class="krow"><span>Rooms · الغرف (109 frames)</span><b id="pbIntT">—</b></div>
+        <div class="krow"><span>Exterior — الخارجي (97 frames)</span><b id="pbExtT">—</b></div>
+        <div class="krow"><span>Rooms — الغرف (109 frames)</span><b id="pbIntT">—</b></div>
         <div class="krow"><span>Pauses · التوقفات</span><b id="pbPauseT">—</b></div>
       </div>
     </div>
@@ -629,7 +632,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div class="grid3">
           <div class="f"><label>Company · اسم الشركة</label><input type="text" id="uName"></div>
           <div class="f"><label>Accent · اللون الأساسي</label><input type="color" id="uAccent"></div>
-          <div class="f"><label>Theme · الثيم</label><select id="uTheme"><option value="light">Light</option><option value="dark">Dark (coming)</option></select></div>
+          <div class="f"><label>Theme · الثيم</label><select id="uTheme"><option value="light">Light · فاتح</option><option value="dark">Dark · داكن (قريبًا)</option></select></div>
         </div>
         <div class="grid3" style="margin-top:16px">
           <div class="f"><label>Glass · شفافية الزجاج</label><input type="range" id="uGlass" min="0.2" max="0.9" step="0.05"><div class="rv" id="uGlassV"></div></div>
@@ -649,16 +652,16 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <h1 class="pt">SEO · تحسين محركات البحث</h1>
       <div class="ps">إعدادات البحث والمشاركة الاجتماعية</div>
       <div class="panel">
-        <div class="f"><label>Meta Title</label><input type="text" value="AURA — Interactive Architecture Portfolio · Kuwait"></div>
-        <div class="f" style="margin-top:14px"><label>Meta Description</label>
+        <div class="f"><label>Meta Title · العنوان للبحث</label><input type="text" value="AURA — Interactive Architecture Portfolio · Kuwait"></div>
+        <div class="f" style="margin-top:14px"><label>Meta Description · الوصف للبحث</label>
           <textarea rows="3">Scroll through the construction of luxury villas frame by frame. Premium architecture studio in Kuwait — design, execution, finishing, project management.</textarea></div>
         <div class="grid2" style="margin-top:14px">
-          <div class="f"><label>Canonical URL</label><input type="text" value="https://aura.studio/"></div>
-          <div class="f"><label>OpenGraph Image</label><input type="text" value="/assets/villa-clean.png"></div>
+          <div class="f"><label>Canonical URL · الرابط الأساسي</label><input type="text" value="https://aura.studio/"></div>
+          <div class="f"><label>OpenGraph Image · صورة المشاركة</label><input type="text" value="/assets/villa-clean.png"></div>
         </div>
-        <div class="frow" style="margin-top:8px"><div><div class="fl">Generate sitemap.xml</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-        <div class="frow"><div><div class="fl">Schema.org structured data</div><div class="fs">Organization + CreativeWork per project</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-        <div class="btnrow"><button class="btn" onclick="toast('SEO settings saved')">Save</button></div>
+        <div class="frow" style="margin-top:8px"><div><div class="fl">Generate sitemap.xml · توليد خريطة الموقع</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+        <div class="frow"><div><div class="fl">Schema.org structured data · بيانات منظمة</div><div class="fs">Organization + CreativeWork per project · لكل مشروع</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+        <div class="btnrow"><button class="btn" onclick="toast('SEO saved · تم الحفظ')">Save · حفظ</button></div>
       </div>
     </div>
 
@@ -668,33 +671,33 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <div class="ps">كيف يعيش الزوار تجربة البناء</div>
       <div class="stats">
         <div class="stat"><div class="k">Sessions · الجلسات (7ي)</div><div class="v">4,821</div><div class="d up">+9.1%</div></div>
-        <div class="stat"><div class="k">Completed · أكملوا الفيلم</div><div class="v">71%</div><div class="d up">reached frame 097</div></div>
-        <div class="stat"><div class="k">Depth · عمق المشاهدة</div><div class="v">86%</div><div class="d">of sequence</div></div>
-        <div class="stat"><div class="k">Mobile · موبايل</div><div class="v">58%</div><div class="d">Desktop 39% · Tablet 3%</div></div>
+        <div class="stat"><div class="k">Completed · أكملوا الفيلم</div><div class="v">71%</div><div class="d up">reached frame 097 · وصلوا للإطار ٠٩٧</div></div>
+        <div class="stat"><div class="k">Depth · عمق المشاهدة</div><div class="v">86%</div><div class="d">of sequence · من التسلسل</div></div>
+        <div class="stat"><div class="k">Mobile · موبايل</div><div class="v">58%</div><div class="d">Desktop 39% — Tablet 3% · كمبيوتر ٣٩٪ — تابلت ٣٪</div></div>
       </div>
       <div class="grid2">
         <div class="panel"><h3>Most Viewed · الأكثر مشاهدة</h3>
-          <div class="abar"><span class="lb">Facade</span><div class="tr"><i style="width:92%"></i></div><span class="v">92%</span></div>
-          <div class="abar"><span class="lb">Night View</span><div class="tr"><i style="width:85%"></i></div><span class="v">85%</span></div>
-          <div class="abar"><span class="lb">Structure</span><div class="tr"><i style="width:66%"></i></div><span class="v">66%</span></div>
-          <div class="abar"><span class="lb">Foundation</span><div class="tr"><i style="width:51%"></i></div><span class="v">51%</span></div>
-          <div class="abar"><span class="lb">Excavation</span><div class="tr"><i style="width:43%"></i></div><span class="v">43%</span></div>
+          <div class="abar"><span class="lb">Facade · الواجهة</span><div class="tr"><i style="width:92%"></i></div><span class="v">92%</span></div>
+          <div class="abar"><span class="lb">Night View · الليلي</span><div class="tr"><i style="width:85%"></i></div><span class="v">85%</span></div>
+          <div class="abar"><span class="lb">Structure · الهيكل</span><div class="tr"><i style="width:66%"></i></div><span class="v">66%</span></div>
+          <div class="abar"><span class="lb">Foundation · الأساس</span><div class="tr"><i style="width:51%"></i></div><span class="v">51%</span></div>
+          <div class="abar"><span class="lb">Excavation · الحفر</span><div class="tr"><i style="width:43%"></i></div><span class="v">43%</span></div>
         </div>
         <div class="panel"><h3>Heatmap · خريطة التفاعل لكل إطار</h3>
           <div class="heat" id="heat"></div>
-          <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Peaks at stage transitions — visitors pause to explore the change.</div>
+          <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Peaks at stage transitions — visitors pause to explore the change · قمم عند انتقال المراحل — يتوقف الزوار لاستكشاف التغيير</div>
         </div>
       </div>
     </div>
 
   </main>
   <!-- Floating preview button (always visible) -->
-  <a href="index.html" target="_blank" id="floatPreview" style="position:fixed;bottom:20px;right:20px;z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:100px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 12px 32px -8px rgba(60,130,246,.5);transition:.3s">
+  <a href="index.html" target="_blank" id="floatPreview" style="position:fixed;bottom:20px;right:20px;z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:100px;background:#1A1A1C;color:#fff;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 12px 32px -8px rgba(0,0,0,.4);transition:.3s">
     <span>↗</span><span>معاينة الموقع · Preview</span>
   </a>
 </div>
 
-<div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved</span></div>
+<div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved · تم الحفظ</span></div>
 
 <script src="js/cms.js"></script>
 <script src="js/supabase.js"></script>
@@ -725,7 +728,7 @@ function enter(){
   if(!s)return;
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('in');
-  document.getElementById('roleTag').textContent=`Signed in as ${s.role==='admin'?'Admin':'Editor'} · ${s.email}`;
+  document.getElementById('roleTag').textContent=`Signed in as ${s.role==='admin'?'Admin':'Editor'} — ${s.email}`;
   if(s.role!=='admin')document.querySelectorAll('.btn.danger').forEach(b=>b.style.display='none');
   boot();
 }
@@ -768,7 +771,7 @@ function boot(){
   fArea.value=PROJ.project.area;fYear.value=PROJ.project.year;fStatus.value=PROJ.status||'completed';
   fProgress.value=PROJ.project.progress||0;
   $('pIdBadge').textContent=PROJ.id||'—';
-  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
   // playback
   PROJ.playback=PROJ.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
   pFpsExt.value=PROJ.playback.fpsExt;pFpsInt.value=PROJ.playback.fpsInt;
@@ -811,14 +814,14 @@ function uploadImage(inputId){
 }
 async function handleUpload(fileInput, targetId){
   const file=fileInput.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
-  toast('Uploading image...');
+  if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
+  toast('Uploading image... · جاري الرفع');
   /* try Supabase Storage first */
   if(window.AURA_DB && AURA_DB.isReady()){
     try{
       const url=await AURA_DB.uploadImage(file, targetId.replace('f',''));
       const target=document.getElementById(targetId);
-      if(target){target.value=url;toast('Image uploaded to Supabase ✓');}
+      if(target){target.value=url;toast('Image uploaded to Supabase ✓ · تم الرفع');}
       return;
     }catch(e){console.warn('Supabase upload failed, using Base64',e);}
   }
@@ -878,7 +881,7 @@ setInterval(()=>{
 function fmtT(s){const m=Math.floor(s/60),r=Math.round(s%60);return m?`${m}m ${r}s`:`${r}s`;}
 function updPb(){
   const fe=+pFpsExt.value,fi=+pFpsInt.value,pe=+pPauseExt.value,pr=+pPauseRoom.value;
-  pFpsExtV.textContent=`${fe} fps — ${fe<6?'بطيء وسينمائي':fe<12?'متوازن':'سريع'} · exterior takes ${fmtT(97/fe)}`;
+  pFpsExtV.textContent=`${fe} fps — ${fe<6?'Slow cinematic · بطيء سينمائي':fe<12?'Balanced · متوازن':'Fast · سريع'} — exterior ${fmtT(97/fe)}`;
   pFpsIntV.textContent=`${fi} fps — each room ≈ ${fmtT(31/fi)}`;
   pPauseExtV.textContent=`${pe}s hold on "Explore the Villa"`;
   pPauseRoomV.textContent=`${pr}s between rooms`;
@@ -888,7 +891,7 @@ function updPb(){
 }
 function pbPreset(fe,fi,pe,pr){
   pFpsExt.value=fe;pFpsInt.value=fi;pPauseExt.value=pe;pPauseRoom.value=pr;updPb();
-  toast('Preset applied — اضغط حفظ ونشر لتطبيقه على الموقع');
+  toast('Preset applied · تم تطبيق الإعداد — اضغط حفظ ونشر');
 }
 function savePlayback(){
   const get=id=>{const el=document.getElementById(id);return el?el.value:0;};
@@ -916,7 +919,7 @@ function saveProject(){
   PROJ.status=get('fStatus');
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
   buildProjectManager();
   toast('Project saved · تم الحفظ');
 }
@@ -927,9 +930,9 @@ function switchToProject(){
 function saveUI(){
   PROJ.brand.name=uName.value;PROJ.brand.accent=uAccent.value;
   PROJ.ui={...PROJ.ui,theme:uTheme.value,glassOpacity:+uGlass.value,blur:+uBlur.value,radius:+uRadius.value,glow:+uGlow.value};
-  AURA.save(CFG);toast('UI theme published');
+  AURA.save(CFG);toast('UI theme published · تم نشر الواجهة');
 }
-function resetAll(){AURA.reset();CFG=AURA.load();PROJ=AURA.getCurrent(CFG);boot();toast('Reset to defaults')}
+function resetAll(){AURA.reset();CFG=AURA.load();PROJ=AURA.getCurrent(CFG);boot();toast('Reset to defaults · تم الاستعادة')}
 
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){
@@ -945,9 +948,9 @@ function buildFrames(){
     d.innerHTML=`<img loading="lazy" src="${src}" onerror="this.style.opacity=0.2">
       <span class="n">${String(n).padStart(3,'0')}</span><span class="q" title="Quality check passed"></span>
       <div class="ops">
-      <button onclick="replaceFrame(${n})">Replace</button>
-      <button onclick="toast('Frame ${n} duplicated')">Dup</button>
-      <button onclick="deleteFrame(${n})">Del</button></div>`;
+      <button onclick="replaceFrame(${n})">Replace · استبدال</button>
+      <button onclick="toast('Frame ${n} duplicated · تم نسخ الإطار')">Dup · نسخ</button>
+      <button onclick="deleteFrame(${n})">Del · حذف</button></div>`;
     d.addEventListener('dragstart',()=>d.classList.add('dragging'));
     d.addEventListener('dragend',()=>{d.classList.remove('dragging');renumberFrames();saveFrameOrder();});
     d.addEventListener('dragover',e=>{
@@ -1019,10 +1022,10 @@ async function replaceFrame(n){
 }
 function deleteFrame(n){
   if(!PROJ.sequence.images||PROJ.sequence.images.length===0){
-    toast('Cannot delete default frames — upload custom images first');
+    toast('Cannot delete default frames · لا يمكن حذف الإطارات الافتراضية — upload custom images first');
     return;
   }
-  if(!confirm('Delete frame '+n+'?'))return;
+  if(!confirm('Delete frame '+n+'? · حذف الإطار '+n+'؟'))return;
   PROJ.sequence.images.splice(n-1,1);
   PROJ.sequence.count=PROJ.sequence.images.length;
   /* adjust stage ranges if needed */
@@ -1075,13 +1078,13 @@ async function handleFrameUpload(fileList){
 /* ---------------- stages editor ---------------- */
 function buildStages(){
   const p=document.getElementById('stagesPanel');
-  p.innerHTML='<h3>المراحل · Stages — اسحب للترتيب</h3>';
+  p.innerHTML='<h3>المراحل — اسحب للترتيب</h3>';
   PROJ.stages.forEach((s,i)=>{
     const r=document.createElement('div');r.className='stage-row';r.draggable=true;r.dataset.idx=i;
     r.innerHTML='<span class="drag">⋮⋮</span>'+
       '<input type="text" value="'+(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="اسم المرحلة">'+
       '<input type="text" value="'+(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="عربي">'+
-      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
+      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span> · من/إلى'+
       '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+(s.icon||'◆')+'</span>'+
       '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">نقاط التوقف</button>'+
       '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
@@ -1131,7 +1134,7 @@ function addStage(){
 }
 function deleteStage(i){
   if(PROJ.stages.length<=1){toast('Cannot delete the only stage');return;}
-  if(!confirm('Delete stage "'+PROJ.stages[i].name+'"?'))return;
+  if(!confirm('Delete stage "'+PROJ.stages[i].name+'"? · حذف المرحلة؟'))return;
   PROJ.stages.splice(i,1);
   AURA.save(CFG);
   buildStages();
@@ -1155,7 +1158,7 @@ function buildPausePointsHTML(stage,stageIdx){
   let html='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:10px">نقاط التوقف · Pause Points ('+pps.length+')</div>';
   pps.forEach((pp,i)=>{
     html+=`<div style="display:grid;grid-template-columns:60px 1fr 1fr 80px;gap:8px;margin-bottom:8px;align-items:center">
-      <input type="number" value="${pp.frame}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="frame" style="text-align:center" placeholder="Frame #">
+      <input type="number" value="${pp.frame}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="frame" style="text-align:center" placeholder="Frame # · إطار">
       <input type="text" value="${pp.title?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="titleAr" dir="rtl" placeholder="عنوان عربي" style="font-family:var(--font-ar)">
       <input type="text" value="${pp.desc?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="descAr" dir="rtl" placeholder="وصف عربي" style="font-family:var(--font-ar)">
       <select data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="widget" style="font-size:11px">
@@ -1341,7 +1344,7 @@ function expAdd360(){
   buildExperiences();
 }
 function expDel360(i){
-  if(!confirm('Delete this 360° room?'))return;
+  if(!confirm('Delete this 360° room? · حذف هذه الغرفة؟'))return;
   PROJ.experiences.panos.splice(i,1);
   buildExperiences();
 }
@@ -1352,7 +1355,7 @@ function expAddBA(){
   buildExperiences();
 }
 function expDelBA(i){
-  if(!confirm('Delete this before/after pair?'))return;
+  if(!confirm('Delete this before/after pair? · حذف هذا الزوج؟'))return;
   PROJ.experiences.beforeAfter.splice(i,1);
   buildExperiences();
 }
@@ -1363,14 +1366,14 @@ function expUploadPano(i){
 }
 async function handlePanoUpload(input,i){
   const file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
-  toast('Uploading pano image...');
+  if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
+  toast('Uploading pano image... · جاري رفع الصورة');
   try{
     const url=await AURA_DB.uploadMedia(file,'pano-'+PROJ.id);
     PROJ.experiences.panos[i].img=url;
     PROJ.experiences.panos[i].embed='';
     buildExperiences();
-    toast('Pano uploaded ✓');
+    toast('Pano uploaded ✓ · تم رفع الصورة');
   }catch(e){toast(e.message||'Upload failed');}
   input.value='';
 }
@@ -1381,8 +1384,8 @@ function expUploadBA(i,side){
 }
 async function handleBAUpload(input,i,side){
   const file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
-  toast('Uploading '+side+' image...');
+  if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
+  toast('Uploading '+side+' image... · جاري الرفع');
   try{
     const url=await AURA_DB.uploadMedia(file,'ba-'+PROJ.id);
     if(!PROJ.experiences.beforeAfter)PROJ.experiences.beforeAfter=PROJ.beforeAfter||[];
@@ -1400,15 +1403,15 @@ function expUploadVideo(){
 }
 async function handleVideoUpload(input,targetId){
   const file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('video/')){toast('Please select a video file');return;}
+  if(!file.type.startsWith('video/')){toast('Please select a video file · اختر ملف فيديو');return;}
   const sizeMB=(file.size/1024/1024).toFixed(1);
-  toast('Uploading video ('+sizeMB+'MB) — may take a minute...');
+  toast('Uploading video ('+sizeMB+'MB) — may take a minute... · جاري الرفع');
   try{
     const url=await AURA_DB.uploadMedia(file,'walk-'+PROJ.id);
     const target=document.getElementById(targetId);
     if(target){target.value=url;}
     updateWalkVideoPreview(url);
-    toast('Video uploaded ✓');
+    toast('Video uploaded ✓ · تم رفع الفيديو');
   }catch(e){toast(e.message||'Upload failed');}
   input.value='';
 }
@@ -1441,7 +1444,7 @@ function fillGal(id){
   for(let i=1;i<=8;i++){
     const d=document.createElement('div');d.className='gimg';
     d.innerHTML=`<img loading="lazy" src="assets/gallery/${id}-${String(i).padStart(2,'0')}-t.webp">
-      <button class="del" onclick="toast('Image removed from gallery (demo)')">✕</button>`;
+      <button class="del" onclick="toast('Image removed (demo) · تم الحذف')">✕</button>`;
     g.appendChild(d);
   }
 }
@@ -1457,9 +1460,9 @@ function buildMaterials(){
     ['LED 2700K CRI97','Lighting','Flos','—','#f0c98a'],
   ];
   const p=document.getElementById('matPanel');
-  p.innerHTML='<h3>Library — 6 materials</h3>'+mats.map(m=>`
+  p.innerHTML='<h3>Library — المكتبة (6 materials)</h3>'+mats.map(m=>`
     <div class="act"><span class="t"><span class="mat-chip" style="display:inline-block;width:22px;height:22px;border-radius:7px;background:${m[4]}"></span></span>
-    <div><b>${m[0]}</b> — ${m[1]} · ${m[2]}</div>
+    <div><b>${m[0]}</b> — ${m[1]} — ${m[2]}</div>
     <span class="tag blue">${m[3]}</span></div>`).join('');
 }
 
@@ -1621,7 +1624,7 @@ function hsRender(){
   spots.forEach((f,i)=>{
     const d=document.createElement('div');d.className='hsdot';
     d.style.cssText=`position:absolute;left:${f.x}%;top:${f.y}%;width:26px;height:26px;margin:-13px;
-      border-radius:50%;background:${i===hsSel?'var(--blue)':'rgba(255,255,255,.9)'};
+      border-radius:50%;background:${i===hsSel?'#1A1A1C':'#fff'};border:2px solid ${i===hsSel?'#1A1A1C':'#1A1A1C'};
       color:${i===hsSel?'#fff':'var(--blue)'};border:2px solid var(--blue);cursor:grab;
       display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:5;
       box-shadow:0 4px 14px rgba(0,0,0,.35)`;
@@ -1642,7 +1645,7 @@ function hsRender(){
 function hsFill(){
   const f=hsSpots()[hsSel];if(!f){document.getElementById('hsForm').style.display='none';return;}
   document.getElementById('hsForm').style.display='block';
-  const pos=document.getElementById('hsPos');if(pos)pos.textContent='x: '+Math.round(f.x)+'% · y: '+Math.round(f.y)+'%';
+  const pos=document.getElementById('hsPos');if(pos)pos.textContent='x: '+Math.round(f.x)+'% y: '+Math.round(f.y)+'%';
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
   set('hsName',f.name);set('hsNameAr',f.nameAr);
   set('hsMat',f.material);set('hsMatAr',f.materialAr);
@@ -1677,7 +1680,7 @@ function hsSave(){
     hsSpots().push({x:+x.toFixed(1),y:+y.toFixed(1),name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
       color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
     hsSel=hsSpots().length-1;hsFill();hsRender();
-    toast('Spot added · نقطة جديدة — عدّل بياناتها ثم Apply');
+    toast('Spot added · نقطة جديدة');
   });
   addEventListener('pointermove',e=>{
     if(hsDrag<0)return;
@@ -1685,13 +1688,13 @@ function hsSave(){
     const f=hsSpots()[hsDrag];if(!f)return;
     f.x=+Math.min(98,Math.max(2,(e.clientX-r.left)/r.width*100)).toFixed(1);
     f.y=+Math.min(98,Math.max(2,(e.clientY-r.top)/r.height*100)).toFixed(1);
-    document.getElementById('hsPos').textContent=`x: ${Math.round(f.x)}% · y: ${Math.round(f.y)}%`;
+    document.getElementById('hsPos').textContent=`x: ${Math.round(f.x)}% y: ${Math.round(f.y)}%`;
     hsRender();
   });
   addEventListener('pointerup',()=>hsDrag=-1);
 })();
 
-function saveInterior(){AURA.save(CFG);toast('Interior configuration published')}
+function saveInterior(){AURA.save(CFG);toast('Interior published · تم نشر الديكور')}
 
 /* ============================================================
    PROJECTS MANAGER
@@ -1755,7 +1758,7 @@ function pmEdit(id){
   set('fArea',PROJ.project?.area);set('fYear',PROJ.project?.year);
   set('fStatus',PROJ.status||'completed');set('fProgress',PROJ.project?.progress||0);
   $('pIdBadge').textContent=PROJ.id||'—';
-  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  ·  ID: '+(PROJ.id||'—');
+  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
   /* also refresh dependent editors */
   try{buildFrames();}catch(e){}
   try{buildStages();}catch(e){}
@@ -1854,8 +1857,8 @@ function pmDuplicate(){
   toast('Project duplicated (structure only, no images) · تم نسخ الهيكل بدون الصور');
 }
 function pmDeleteCurrent(){
-  if(CFG.projects.length<=1){toast('Cannot delete the only remaining project');return;}
-  if(!confirm('Delete "'+(PROJ.project?.title||PROJ.id)+'"? This cannot be undone.'))return;
+  if(CFG.projects.length<=1){toast('Cannot delete the only project · لا يمكن حذف المشروع الوحيد');return;}
+  if(!confirm('Delete "'+(PROJ.project?.title||PROJ.id)+'"? This cannot be undone. · حذف المشروع؟ لا يمكن التراجع.'))return;
   AURA.deleteProject(CFG,PROJ.id);
   PROJ=AURA.getCurrent(CFG);
   boot();
@@ -1875,7 +1878,7 @@ function pmSave(){
 function buildWidgets(){
   const tabs=$('wTabs');tabs.innerHTML='';
   const wids=Object.keys(PROJ.widgets||{});
-  if(!wids.length){$('wPanel').innerHTML='<div style="color:var(--tx3);font-size:13px">No widgets yet. Click "+ Add Widget".</div>';return;}
+  if(!wids.length){$('wPanel').innerHTML='<div style="color:var(--tx3);font-size:13px">No widgets yet · لا توجد ويدجات بعد</div>';return;}
   if(!wids.includes(_wCur))_wCur=wids[0];
   wids.forEach(id=>{
     const t=document.createElement('div');
@@ -1895,18 +1898,18 @@ function buildWidgets(){
       <div class="f"><label>العنوان (AR)</label><input type="text" id="wTitleAr" value="${w.titleAr||''}" dir="rtl" style="font-family:var(--font-ar)"></div>
     </div>
     <div class="grid2" style="margin-top:14px">
-      <div class="f"><label>Description (EN)</label><textarea id="wDesc" rows="2">${w.desc||''}</textarea></div>
-      <div class="f"><label>الوصف (AR)</label><textarea id="wDescAr" rows="2" dir="rtl" style="font-family:var(--font-ar)">${w.descAr||''}</textarea></div>
+      <div class="f"><label>Description (EN) · الوصف</label><textarea id="wDesc" rows="2">${w.desc||''}</textarea></div>
+      <div class="f"><label>الوصف · Description (AR)</label><textarea id="wDescAr" rows="2" dir="rtl" style="font-family:var(--font-ar)">${w.descAr||''}</textarea></div>
     </div>
     <h3 style="margin-top:20px">Gallery · معرض الصور <span class="badge">${(w.gallery||[]).length}</span></h3>
     <div class="gal-grid" id="wGalGrid"></div>
     <div class="btnrow" style="margin-top:10px">
-      <button class="btn sm ghost" onclick="addWidgetImage()">+ Add Image</button>
-      <button class="btn sm danger" onclick="deleteWidget()">Delete Widget · حذف</button>
+      <button class="btn sm ghost" onclick="addWidgetImage()">+ Add Image · إضافة صورة</button>
+      <button class="btn sm danger" onclick="deleteWidget()">Delete Widget · حذف الويدجت</button>
     </div>
     <h3 style="margin-top:20px">Info Bullets · النقاط المعلوماتية</h3>
     <div id="wBullets"></div>
-    <div class="btnrow" style="margin-top:10px"><button class="btn sm ghost" onclick="addWidgetBullet()">+ Add Bullet</button></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn sm ghost" onclick="addWidgetBullet()">+ Add Bullet · إضافة نقطة</button></div>
     <div class="btnrow" style="margin-top:20px">
       <button class="btn" onclick="saveWidgets()">Save & Publish · حفظ ونشر</button>
     </div>
@@ -1924,9 +1927,9 @@ function buildWidgets(){
     const d=document.createElement('div');d.className='stage-row';
     d.style.gridTemplateColumns='1fr 1fr 2fr 90px';
     d.innerHTML=`
-      <input type="text" value="${b[0]||''}" data-bi="${i}" data-bk="0" placeholder="Label EN">
-      <input type="text" value="${b[1]||''}" data-bi="${i}" data-bk="1" placeholder="Label AR" dir="rtl" style="font-family:var(--font-ar)">
-      <input type="text" value="${b[2]||''}" data-bi="${i}" data-bk="2" placeholder="Detail">
+      <input type="text" value="${b[0]||''}" data-bi="${i}" data-bk="0" placeholder="Label EN · عنوان إنجليزي">
+      <input type="text" value="${b[1]||''}" data-bi="${i}" data-bk="1" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${b[2]||''}" data-bi="${i}" data-bk="2" placeholder="Detail · تفاصيل">
       <button class="btn sm danger" onclick="removeWidgetBullet(${i})">✕</button>`;
     wb.appendChild(d);
   });
@@ -1947,13 +1950,13 @@ async function addWidgetImage(){
   const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
   fi.onchange=async ()=>{
     const file=fi.files[0];if(!file)return;
-    toast('Uploading image...');
+    toast('Uploading image... · جاري الرفع');
     /* try Supabase Storage */
     if(window.AURA_DB && AURA_DB.isReady()){
       try{
         const url=await AURA_DB.uploadImage(file, 'widget-'+_wCur);
         w.gallery=w.gallery||[];w.gallery.push(url);buildWidgets();
-        toast('Image uploaded to Supabase ✓');
+        toast('Image uploaded to Supabase ✓ · تم الرفع');
         return;
       }catch(e){console.warn('Supabase upload failed, using Base64',e);}
     }
@@ -1985,17 +1988,17 @@ function removeWidgetBullet(i){
   w.bullets.splice(i,1);buildWidgets();
 }
 function addWidget(){
-  const id=prompt('New widget ID (e.g. "design", "execution", "custom"):','custom-'+Date.now());
+  const id=prompt('New widget ID · معرّف الويدجت','custom-'+Date.now());
   if(!id)return;
-  if(PROJ.widgets[id]){toast('Widget ID already exists');return;}
+  if(PROJ.widgets[id]){toast('Widget ID exists · المعرّف موجود');return;}
   PROJ.widgets[id]={title:id,titleAr:id,kicker:'',desc:'',descAr:'',gallery:[],bullets:[]};
-  _wCur=id;buildWidgets();toast('Widget added — save to publish');
+  _wCur=id;buildWidgets();toast('Widget added · تمت الإضافة');
 }
 function deleteWidget(){
   if(!confirm('Delete widget "'+_wCur+'"?'))return;
   delete PROJ.widgets[_wCur];
   _wCur=Object.keys(PROJ.widgets)[0]||'';
-  buildWidgets();toast('Widget deleted (save to publish)');
+  buildWidgets();toast('Widget deleted · تم الحذف');
 }
 function saveWidgets(){AURA.save(CFG);toast('Widgets published · تم نشر الويدجات')}
 
@@ -2011,11 +2014,11 @@ function buildBAEditor(){
     row.style.gridTemplateColumns='34px 1fr 1fr 1fr 1fr 90px';
     row.innerHTML=`
       <span class="drag">⋮⋮</span>
-      <input type="text" value="${it.label||''}" data-bai="${i}" data-k="label" placeholder="Label EN">
-      <input type="text" value="${it.labelAr||''}" data-bai="${i}" data-k="labelAr" placeholder="Label AR" dir="rtl" style="font-family:var(--font-ar)">
-      <input type="text" value="${it.before||''}" data-bai="${i}" data-k="before" placeholder="Before image">
-      <input type="text" value="${it.after||''}" data-bai="${i}" data-k="after" placeholder="After image">
-      <button class="btn sm ghost" onclick="previewBA(${i})">Preview</button>`;
+      <input type="text" value="${it.label||''}" data-bai="${i}" data-k="label" placeholder="Label EN · عنوان إنجليزي">
+      <input type="text" value="${it.labelAr||''}" data-bai="${i}" data-k="labelAr" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${it.before||''}" data-bai="${i}" data-k="before" placeholder="Before image URL · رابط الصورة قبل">
+      <input type="text" value="${it.after||''}" data-bai="${i}" data-k="after" placeholder="After image URL · رابط الصورة بعد">
+      <button class="btn sm ghost" onclick="previewBA(${i})">Preview · معاينة</button>`;
     panel.appendChild(row);
   });
   panel.addEventListener('input',e=>{
@@ -2085,8 +2088,8 @@ function scRenderClients(){
     const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 70px 70px';
     const hasLogo=cl.logo&&cl.logo.length>10;
     d.innerHTML=`<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:url('${hasLogo?cl.logo:''}') center/contain no-repeat;background-color:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:16px">${hasLogo?'':(cl.icon||'◆')}</div>
-      <input type="text" value="${cl.name}" data-cn="${i}" placeholder="Client name" style="background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%">
-      <button class="btn sm ghost" onclick="scUploadLogo(${i})">Logo</button>
+      <input type="text" value="${cl.name}" data-cn="${i}" placeholder="Client name · اسم العميل" style="background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%">
+      <button class="btn sm ghost" onclick="scUploadLogo(${i})">Logo · شعار</button>
       <button class="btn sm danger" onclick="scDelClient(${i})">✕</button>`;
     list.appendChild(d);
   });
@@ -2101,12 +2104,12 @@ async function scUploadLogo(i){
   const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
   fi.onchange=async ()=>{
     const file=fi.files[0];if(!file)return;
-    toast('Uploading logo...');
+    toast('Uploading logo... · جاري رفع الشعار');
     if(window.AURA_DB&&AURA_DB.isReady()){
       try{
         const url=await AURA_DB.uploadImage(file,'client-logo-'+i);
         CFG.siteContent.clients[i].logo=url;scRenderClients();
-        toast('Logo uploaded ✓');return;
+        toast('Logo uploaded ✓ · تم رفع الشعار');return;
       }catch(e){}
     }
     /* fallback: Base64 */
@@ -2116,7 +2119,7 @@ async function scUploadLogo(i){
       if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
       CFG.siteContent.clients[i].logo=canvas.toDataURL('image/jpeg',0.82);
-      scRenderClients();toast('Logo uploaded ✓');
+      scRenderClients();toast('Logo uploaded ✓ · تم رفع الشعار');
     };img.src=e.target.result;};
     reader.readAsDataURL(file);
   };
@@ -2167,9 +2170,9 @@ async function buildInquiries(){
     const id='inqF'+k;const el=$(id);if(!el)return;
     const want=_inqFilter===({All:'all',New:'new',Cont:'contacted',Closed:'closed'}[k]);
     el.classList.toggle('on',want);
-    el.style.background=want?'var(--blue)':'';
+    el.style.background=want?'#1A1A1C':'';
     el.style.color=want?'#fff':'';
-    el.style.borderColor=want?'var(--blue)':'';
+    el.style.borderColor=want?'#1A1A1C':'';
   });
   /* render rows */
   const list=$('inqList');list.innerHTML='';
@@ -2195,18 +2198,18 @@ async function buildInquiries(){
         <div style="font-size:11.5px;color:var(--tx2);margin-top:2px">📞 ${escapeHtml(inq.phone||'—')}</div>
       </div>
       <div style="font-size:11px;color:var(--tx3)">
-        <div>Project</div>
+        <div>Project · المشروع</div>
         <div style="color:var(--tx2);font-weight:600;margin-top:2px">${escapeHtml(inq.project||'—')}</div>
-        <div style="margin-top:6px">Service</div>
+        <div style="margin-top:6px">Service · الخدمة</div>
         <div style="color:var(--tx2);font-weight:600;margin-top:2px">${escapeHtml(inq.widget||'—')}</div>
       </div>
-      <div style="font-size:12px;color:var(--tx2);line-height:1.55">${escapeHtml(inq.msg||'(no message)')}</div>
+      <div style="font-size:12px;color:var(--tx2);line-height:1.55">${escapeHtml(inq.msg||'(no message · لا توجد رسالة)')}</div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','contacted')">Mark Contacted</button>
-        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','closed')">Close</button>
-        <a class="btn sm" style="text-decoration:none;text-align:center" href="tel:${escapeHtml(inq.phone||'')}">Call</a>
-        <a class="btn sm" style="text-decoration:none;text-align:center;background:#25d366;color:#fff;border-color:#25d366" href="https://wa.me/${(inq.phone||'').replace(/[^0-9]/g,'')}" target="_blank">WhatsApp</a>
-        <button class="btn sm danger" onclick="inqDelete('${inq.id}')">Delete</button>
+        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','contacted')">Mark Contacted · تم التواصل</button>
+        <button class="btn sm ghost" onclick="inqStatus('${inq.id}','closed')">Close · إغلاق</button>
+        <a class="btn sm" style="text-decoration:none;text-align:center" href="tel:${escapeHtml(inq.phone||'')}">Call · اتصال</a>
+        <a class="btn sm" style="text-decoration:none;text-align:center;background:#25d366;color:#fff;border-color:#25d366" href="https://wa.me/${(inq.phone||'').replace(/[^0-9]/g,'')}" target="_blank">WhatsApp · واتساب</a>
+        <button class="btn sm danger" onclick="inqDelete('${inq.id}')">Delete · حذف</button>
       </div>`;
     list.appendChild(row);
   });
@@ -2227,11 +2230,11 @@ function inqDelete(id){
 }
 function clearInquiries(){
   if(!confirm('Delete ALL inquiries? This cannot be undone.'))return;
-  saveInquiries([]);buildInquiries();toast('All inquiries cleared');
+  saveInquiries([]);buildInquiries();toast('All inquiries cleared · تم مسح كل الطلبات');
 }
 function exportInquiries(){
   const all=loadInquiries();
-  if(!all.length){toast('No inquiries to export');return;}
+  if(!all.length){toast('No inquiries to export · لا توجد طلبات للتصدير');return;}
   const header=['Date','Name','Phone','Project','Service','Message','Status'];
   const rows=all.map(i=>[i.date,i.name||'',i.phone||'',i.project||'',i.widget||'',(i.msg||'').replace(/"/g,'""'),i.status||'new']);
   const csv=[header,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
