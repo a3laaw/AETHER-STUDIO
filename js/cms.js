@@ -364,18 +364,18 @@ window.AURA_DEFAULTS = {
       stat3Val: '97', stat3LabelAr: 'إطار لكل مشروع', stat3LabelEn: 'Frames per project'
     },
     clients: [
-      {icon:'▲',name:'Al-Sabah Developments'},
-      {icon:'◆',name:'Marmi Kuwait'},
-      {icon:'●',name:'Studio Forma KW'},
-      {icon:'■',name:'Gulf RMC'},
-      {icon:'★',name:'Light House KW'},
-      {icon:'⬢',name:'Qurain Steel'},
-      {icon:'◐',name:'Joinery Works'},
-      {icon:'◈',name:'Dar Gallery'},
-      {icon:'◇',name:'Green Studio'},
-      {icon:'▼',name:'Apparatus KW'},
-      {icon:'▣',name:'Flexform Gulf'},
-      {icon:'◉',name:'Agape Interiors'}
+      {icon:'▲',name:'Al-Sabah Developments',logo:''},
+      {icon:'◆',name:'Marmi Kuwait',logo:''},
+      {icon:'●',name:'Studio Forma KW',logo:''},
+      {icon:'■',name:'Gulf RMC',logo:''},
+      {icon:'★',name:'Light House KW',logo:''},
+      {icon:'⬢',name:'Qurain Steel',logo:''},
+      {icon:'◐',name:'Joinery Works',logo:''},
+      {icon:'◈',name:'Dar Gallery',logo:''},
+      {icon:'◇',name:'Green Studio',logo:''},
+      {icon:'▼',name:'Apparatus KW',logo:''},
+      {icon:'▣',name:'Flexform Gulf',logo:''},
+      {icon:'◉',name:'Agape Interiors',logo:''}
     ]
   }
 };
@@ -392,7 +392,10 @@ window.AURA = (function(){
       return JSON.parse(JSON.stringify(window.AURA_DEFAULTS));
     }
   }
-  function save(cfg){ localStorage.setItem(KEY, JSON.stringify(cfg)); }
+  function save(cfg){
+    cfg._lastUpdate=Date.now().toString();
+    localStorage.setItem(KEY, JSON.stringify(cfg));
+  }
   function reset(){ localStorage.removeItem(KEY); }
 
   function getProjects(cfg){ return cfg.projects || []; }

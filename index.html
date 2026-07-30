@@ -1052,13 +1052,59 @@ function applySiteContent(){
   if(stats[0]){stats[0].querySelector('.v').textContent=a.stat1Val||'2+';stats[0].querySelector('.l').textContent=isAr?a.stat1LabelAr:a.stat1LabelEn;}
   if(stats[1]){stats[1].querySelector('.v').textContent=a.stat2Val||'12+';stats[1].querySelector('.l').textContent=isAr?a.stat2LabelAr:a.stat2LabelEn;}
   if(stats[2]){stats[2].querySelector('.v').textContent=a.stat3Val||'97';stats[2].querySelector('.l').textContent=isAr?a.stat3LabelAr:a.stat3LabelEn;}
-  /* clients */
+  /* clients — show logo image if available, fallback to icon */
   if(sc.clients&&sc.clients.length){
     const track=$('clientsTrack');if(track){track.innerHTML='';
-    for(let r=0;r<2;r++){sc.clients.forEach(cl=>{const el=document.createElement('div');el.className='client-logo';el.innerHTML='<span class="c-ic">'+cl.icon+'</span>'+cl.name;track.appendChild(el);});}}
+    for(let r=0;r<2;r++){sc.clients.forEach(cl=>{
+      const el=document.createElement('div');el.className='client-logo';
+      if(cl.logo&&cl.logo.length>10){
+        el.innerHTML='<img src="'+cl.logo+'" alt="'+cl.name+'" style="max-width:100%;max-height:50px;object-fit:contain">';
+      } else {
+        el.innerHTML='<span class="c-ic">'+(cl.icon||'◆')+'</span>'+cl.name;
+      }
+      track.appendChild(el);
+    });}}
   }
 }
 applySiteContent();
+
+/* ---------- sync: when admin saves, site updates automatically ---------- */
+function applyPlayback(){
+  const pb=PROJ.playback||{fpsExt:9,pauseExplore:5};
+  if(typeof FPS!=='undefined'){FPS=+pb.fpsExt||9;}
+  if(typeof PB!=='undefined'){PB.fpsExt=+pb.fpsExt||9;PB.pauseExplore=+pb.pauseExplore||5;}
+}
+function applyAllFromStorage(){
+  CFG=AURA.load();
+  PROJ=AURA.getCurrent(CFG);
+  AURA.applyTheme(PROJ);
+  applyPlayback();
+  applySiteContent();
+  buildProjectBar();
+  buildPlaybar();
+  buildWidgets();
+  /* update hero title */
+  $('projTitle').textContent=PROJ.project.title;
+  /* update stage caption */
+  if(lastStageId){lastStageId=null;}
+}
+window.addEventListener('storage',e=>{
+  if(e.key==='aura.cms'||e.key==='aura.lang'){
+    if(e.key==='aura.lang'){location.reload();return;}
+    applyAllFromStorage();
+    toast(isAr?'تم تحديث المحتوى من لوحة التحكم':'Content updated from admin');
+  }
+});
+/* also check every 3s for same-tab changes (admin open in same tab) */
+setInterval(()=>{
+  try{
+    const stored=JSON.parse(localStorage.getItem('aura.cms')||'{}');
+    if(stored._lastUpdate && stored._lastUpdate!==window._lastCfgUpdate){
+      window._lastCfgUpdate=stored._lastUpdate;
+      applyAllFromStorage();
+    }
+  }catch(err){}
+},3000);
 
 /* ---------- cta ---------- */
 document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?'اطلب تجربتك الحية عبر واتساب: +965 2222 3333':'Request your live demo via WhatsApp: +965 2222 3333'));
