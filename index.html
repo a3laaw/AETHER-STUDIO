@@ -410,7 +410,59 @@ footer p .ar{font-family:var(--font-ar)}
   .nav{padding:13px 20px}
   #services{padding:60px 20px 80px}
   .modal-card{padding:28px 22px}
+  /* === MOBILE: hide glass HUD to avoid overlap with video === */
+  .glass-hud{display:none !important}
+  .glass-overall{display:none !important}
+  .glass-overall.show{display:none !important}
+  /* show a compact progress badge instead */
+  #mobileProgress{display:flex !important}
+  /* tour button smaller */
+  #tourBtn{padding:5px 10px;font-size:9px}
+  #tourBtn span:last-child{display:none}
+  /* build timeline smaller */
+  #buildTimeline{width:94vw !important;bottom:70px !important;height:6px !important}
+  /* widget overlay full width */
+  .widget-overlay{width:92vw !important;max-width:none !important}
+  .widget-overlay .ow-card{padding:10px 12px;gap:8px}
+  .widget-overlay .ow-ic{width:28px;height:28px;font-size:13px}
+  .widget-overlay .ow-tx b{font-size:11.5px}
+  .widget-overlay .ow-tx span{font-size:9.5px}
+  .widget-overlay .ow-cta{padding:5px 8px;font-size:10px}
+  .widget-overlay .ow-hint{font-size:8.5px}
+  /* playbar compact */
+  .playbar{width:94vw !important;padding:7px 10px;gap:8px}
+  .playbar .pbtn{width:30px;height:30px;font-size:11px}
+  /* stage caption hidden on mobile (overlap) */
+  .stage-cap{display:none !important}
+  /* hero copy smaller */
+  .hero-copy{top:4% !important}
+  .hero-copy h1{font-size:20px !important}
+  .hero-copy .sub{font-size:11px !important}
+  .hero-copy .eyebrow{font-size:9px;padding:6px 12px}
 }
+
+/* tablet: reduce glass HUD */
+@media(max-width:900px) and (min-width:641px){
+  .glass-hud{max-width:180px;gap:6px}
+  .glass-hud .gh-stage{padding:10px 12px}
+  .glass-hud .gh-stage .gh-name{font-size:11px}
+  .glass-hud .gh-stage .gh-pct{font-size:14px}
+  .glass-hud .gh-stage .gh-bar-wrap{height:4px;margin-bottom:4px}
+  .glass-overall{padding:12px 14px}
+  .glass-overall .go-ring svg{width:42px;height:42px}
+  .glass-overall .go-pct{font-size:13px}
+  .glass-overall .go-info b{font-size:11px}
+  .glass-overall .go-info span{font-size:9px}
+  #buildTimeline{width:90vw !important;bottom:72px !important}
+  .stage-cap{bottom:88px;font-size:9.5px;padding:6px 14px}
+}
+
+/* compact mobile progress badge */
+#mobileProgress{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:13;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);border-radius:100px;padding:6px 16px;
+  box-shadow:0 8px 24px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
+  font-size:11px;font-weight:700;color:var(--gold);font-family:var(--font);pointer-events:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -466,6 +518,9 @@ footer p .ar{font-family:var(--font-ar)}
 
   <!-- Apple Liquid Glass: stage progress HUD (top-right) -->
   <div class="glass-hud" id="glassHud"></div>
+
+  <!-- Mobile: compact progress badge (replaces glass HUD on small screens) -->
+  <div id="mobileProgress">0% · Frame 1</div>
 
   <!-- overlay widget (shows inside video on each pause) -->
   <div class="widget-overlay" id="widgetOverlay">
@@ -909,6 +964,8 @@ function updateGlassHudLive(){
   const circumference=2*Math.PI*22;
   const offset=circumference*(1-overallPct/100);
   const ring=$('goRingFg');if(ring)ring.style.strokeDashoffset=offset;
+  /* update mobile badge */
+  const mp=$('mobileProgress');if(mp)mp.textContent=overallPct+'% · Frame '+Math.round(current);
 }
 
 /* ---------- main loop ---------- */
