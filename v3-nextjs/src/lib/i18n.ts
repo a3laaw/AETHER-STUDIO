@@ -144,10 +144,10 @@ export const t = {
   /* ---------- Interactive Experience ---------- */
   interactive: {
     eyebrow: { ar: "تجربة تفاعلية", en: "Interactive Experience" },
-    title: { ar: "ادخل المشروع. لا تشاهده فقط.", en: "Enter the project. Don't just watch it." },
+    title: { ar: "استكشف المشروع من الداخل", en: "Step inside the project" },
     subtitle: {
-      ar: "مخطط تفاعلي، جولة 360°، ومقارنة قبل/بعد — ثلاث وحدات مدمجة في تجربة واحدة.",
-      en: "Interactive floor plan, 360° tour, and before/after — three modules in one experience.",
+      ar: "مخطط تفاعلي، جولة 360°، ومقارنة قبل/بعد — توثيق مستمر تشوفه بنفسك.",
+      en: "Interactive floor plan, 360° tour, and before/after — continuous documentation you can see for yourself.",
     },
     floorPlan: { ar: "المخطط التفاعلي", en: "Interactive Floor Plan" },
     floorPlanHint: { ar: "انقر أي غرفة لرؤية تقدّمها وصورها", en: "Click any room to see its progress and photos" },

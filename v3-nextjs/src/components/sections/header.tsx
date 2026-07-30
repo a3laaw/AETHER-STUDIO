@@ -57,19 +57,19 @@ export function Header() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={toggle}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[var(--border-strong)] text-[12px] font-semibold text-[var(--fg)] hover:border-[var(--accent-gold)] hover:text-[var(--accent-gold)] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[var(--accent-gold)]/10 border border-[var(--accent-gold)]/40 text-[12.5px] font-bold text-[var(--accent-gold)] hover:bg-[var(--accent-gold)]/20 transition-colors"
               aria-label="Toggle language"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{lang === "ar" ? "EN" : "ع"}</span>
+              <Globe className="w-4 h-4" />
+              <span>{lang === "ar" ? "English" : "العربية"}</span>
             </button>
 
             <a
               href="#cta"
-              className="hidden md:inline-flex btn-gold !py-2.5 !px-5 !text-[13px]"
+              className="hidden md:inline-flex btn-gold !py-3 !px-6 !text-[14px] !font-bold shadow-[0_8px_24px_-8px_rgba(191,167,106,0.5)]"
             >
               {tr(t.nav.cta, lang)}
             </a>

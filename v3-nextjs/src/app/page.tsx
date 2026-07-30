@@ -4,6 +4,7 @@ import { LiveProjectProof } from "@/components/sections/live-project-proof";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { PlatformCapabilities } from "@/components/sections/platform-capabilities";
 import { InteractiveExperience } from "@/components/sections/interactive-experience";
+import { ConstructionTimeline } from "@/components/sections/construction-timeline";
 import { WhoItsFor } from "@/components/sections/who-its-for";
 import { FinalCTA } from "@/components/sections/final-cta";
 import { Footer } from "@/components/sections/footer";
@@ -18,6 +19,7 @@ export default function Home() {
         <HowItWorks />
         <PlatformCapabilities />
         <InteractiveExperience />
+        <ConstructionTimeline />
         <WhoItsFor />
         <FinalCTA />
       </main>
