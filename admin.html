@@ -274,6 +274,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div class="gtab" data-pt="sequence">التسلسل · Sequence</div>
         <div class="gtab" data-pt="gallery">المعارض · Galleries</div>
         <div class="gtab" data-pt="interior">الداخلي · Interior</div>
+        <div class="gtab" data-pt="experiences">تجارب · Experiences</div>
         <div class="gtab" data-pt="contact">تواصل · Contact</div>
       </div>
 
@@ -353,6 +354,44 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
             <div class="frow"><div><div class="fl">Door hotspots</div><div class="fs">Auto-generated</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
             <div class="frow"><div><div class="fl">Walkthrough</div><div class="fs">Free look + doors</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
           </div>
+        </div>
+      </div>
+
+      <!-- Tab: Experiences (360°, Walkthrough, Before/After — per project) -->
+      <div class="proj-tab" id="pt-experiences" style="display:none">
+        <!-- 360° Tour -->
+        <div class="panel">
+          <h3><span>جولة 360° · 360° Tour</span> <span class="badge">لكل غرفة</span></h3>
+          <div id="exp360List"></div>
+          <div class="btnrow">
+            <button class="btn sm ghost" onclick="expAdd360()">+ إضافة بانوراما · Add Pano</button>
+          </div>
+        </div>
+        <!-- Free Walkthrough -->
+        <div class="panel">
+          <h3><span>جولة حرة · Free Walkthrough</span></h3>
+          <div class="grid2">
+            <div class="f"><label>صورة الجولة · Walkthrough Image (URL or upload)</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="expWalkImg" style="flex:1">
+                <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
+                <input type="file" id="expWalkImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'expWalkImg')">
+              </div>
+            </div>
+            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
+          </div>
+          <div class="f" style="margin-top:14px"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك · انقر الأبواب للتنقل"></textarea></div>
+        </div>
+        <!-- Before/After (per project) -->
+        <div class="panel">
+          <h3><span>قبل وبعد · Before/After</span> <span class="badge" id="expBACount">0</span></h3>
+          <div id="expBAList"></div>
+          <div class="btnrow">
+            <button class="btn sm ghost" onclick="expAddBA()">+ إضافة زوج · Add Pair</button>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button class="btn" onclick="saveExperiences()">حفظ · Save</button>
         </div>
       </div>
 
@@ -724,6 +763,7 @@ function wireProjTabs(){
       if(t.dataset.pt==='sequence')buildFrames();
       if(t.dataset.pt==='gallery')buildGalleryTabs();
       if(t.dataset.pt==='interior')buildInterior();
+      if(t.dataset.pt==='experiences')buildExperiences();
       if(t.dataset.pt==='contact')buildContactEditor();
     };
   });
@@ -1117,6 +1157,83 @@ function saveStages(){
   toast('Stages saved · تم حفظ المراحل والنقاط');
 }
 
+/* ============================================================
+   EXPERIENCES (360°, Walkthrough, Before/After) — per project
+   ============================================================ */
+function buildExperiences(){
+  PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{img:'',title:'',desc:''},beforeAfter:[]};
+  const exp=PROJ.experiences;
+  /* 360° list */
+  const list360=$('exp360List');list360.innerHTML='';
+  (exp.panos||[]).forEach((p,i)=>{
+    const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 1fr 70px';
+    d.innerHTML='<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:'+(p.img?'url('+p.img+') center/cover':'var(--panel2)')+';display:flex;align-items:center;justify-content:center;color:var(--tx3)">⟲</div>'+
+      '<input type="text" value="'+(p.room||'')+'" data-p360="'+i+'" data-k="room" placeholder="اسم الغرفة">'+
+      '<input type="text" value="'+(p.img||'')+'" data-p360="'+i+'" data-k="img" placeholder="صورة URL" dir="ltr">'+
+      '<button class="btn sm danger" onclick="expDel360('+i+')">✕</button>';
+    list360.appendChild(d);
+  });
+  /* walkthrough */
+  const set=(id,val)=>{const el=$(id);if(el)el.value=val||'';};
+  set('expWalkImg',exp.walkthrough?.img);set('expWalkTitle',exp.walkthrough?.title);set('expWalkDesc',exp.walkthrough?.desc);
+  /* before/after list */
+  const baList=$('expBAList');baList.innerHTML='';
+  const ba=exp.beforeAfter||PROJ.beforeAfter||[];
+  $('expBACount').textContent=ba.length;
+  ba.forEach((b,i)=>{
+    const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 1fr 70px';
+    d.innerHTML='<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3)">⇆</div>'+
+      '<input type="text" value="'+(b.label||b.labelAr||'')+'" data-ba="'+i+'" data-k="label" placeholder="عنوان">'+
+      '<input type="text" value="'+(b.before||'')+'" data-ba="'+i+'" data-k="before" placeholder="قبل URL" dir="ltr">'+
+      '<button class="btn sm danger" onclick="expDelBA('+i+')">✕</button>';
+    baList.appendChild(d);
+  });
+  /* wire inputs */
+  list360.addEventListener('input',e=>{
+    const i=e.target.dataset.p360,k=e.target.dataset.k;
+    if(i!==undefined&&k){exp.panos[+i][k]=e.target.value;}
+  });
+  baList.addEventListener('input',e=>{
+    const i=e.target.dataset.ba,k=e.target.dataset.k;
+    if(i!==undefined&&k){
+      if(!exp.beforeAfter)exp.beforeAfter=PROJ.beforeAfter||[];
+      exp.beforeAfter[+i]=exp.beforeAfter[+i]||{};
+      exp.beforeAfter[+i][k]=e.target.value;
+    }
+  });
+}
+function expAdd360(){
+  PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
+  PROJ.experiences.panos=PROJ.experiences.panos||[];
+  PROJ.experiences.panos.push({room:'New Room',img:''});
+  buildExperiences();
+}
+function expDel360(i){
+  PROJ.experiences.panos.splice(i,1);
+  buildExperiences();
+}
+function expAddBA(){
+  PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
+  PROJ.experiences.beforeAfter=PROJ.experiences.beforeAfter||[];
+  PROJ.experiences.beforeAfter.push({label:'New Pair',before:'',after:''});
+  buildExperiences();
+}
+function expDelBA(i){
+  PROJ.experiences.beforeAfter.splice(i,1);
+  buildExperiences();
+}
+function saveExperiences(){
+  PROJ.experiences=PROJ.experiences||{};
+  PROJ.experiences.walkthrough={
+    img:$('expWalkImg')?.value||'',
+    title:$('expWalkTitle')?.value||'',
+    desc:$('expWalkDesc')?.value||''
+  };
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  toast('Experiences saved · تم حفظ التجارب');
+}
+
 /* ---------------- gallery manager ---------------- */
 function buildGalleryTabs(){
   const tabs=document.getElementById('galTabs');tabs.innerHTML='';
@@ -1452,6 +1569,7 @@ function pmEdit(id){
   try{buildStages();}catch(e){}
   try{buildGalleryTabs();}catch(e){}
   try{buildInterior();}catch(e){}
+  try{buildExperiences();}catch(e){}
   try{hsInit();}catch(e){}
   try{buildWidgets();}catch(e){}
   try{buildBAEditor();}catch(e){}

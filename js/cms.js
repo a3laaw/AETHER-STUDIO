@@ -237,7 +237,26 @@ const VILLA_SOLARA = {
       ]
     }
   },
-  /* ---- NEW: Before/After pairs (4 items × 2 images = 8 images) ---- */
+  /* ---- NEW: Experiences (360°, Walkthrough, Before/After) — per project ---- */
+  experiences: {
+    panos: [
+      {room:'Living Room',roomAr:'غرفة المعيشة',img:'assets/rooms/pano-living.webp'},
+      {room:'Kitchen',roomAr:'المطبخ',img:'assets/rooms/pano-kitchen.webp'},
+      {room:'Master Bedroom',roomAr:'غرفة النوم',img:'assets/rooms/pano-master.webp'},
+      {room:'Master Bathroom',roomAr:'الحمام',img:'assets/rooms/pano-bath.webp'}
+    ],
+    walkthrough: {
+      img:'assets/rooms/pano-living.webp',
+      title:'جولة حرة في فيلا سولارا',
+      desc:'اسحب للنظر حولك · انقر الأبواب للتنقل بين الغرف'
+    },
+    beforeAfter: [
+      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.png',after:'assets/villa-wireframe.png'},
+      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s3-structure.png',after:'assets/stages/s4-shell.png'},
+      {label:'Finishing',labelAr:'التشطيبات',before:'assets/stages/s4-shell.png',after:'assets/stages/s5-facade.png'},
+      {label:'Handover',labelAr:'التسليم',before:'assets/villa-clean.png',after:'assets/stages/s7-night.png'}
+    ]
+  },
   widgetSequences: {
     progress: {images:['assets/stages/s1-excavation.png','assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
     structural: {images:['assets/villa-wireframe.png','assets/stages/s3-structure.png','assets/gallery/structure-02.webp'],autoplay:true,interval:3500},

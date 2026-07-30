@@ -515,6 +515,19 @@ footer p .ar{font-family:var(--font-ar)}
     </div>
   </div>
 
+  <!-- Experience buttons (below glass-overall) -->
+  <div id="expButtons" style="position:absolute;top:148px;left:24px;z-index:13;display:flex;flex-direction:column;gap:6px;pointer-events:auto">
+    <button id="btn360" onclick="openExp360()" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 4px 14px -6px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6);font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+      ⟲ <span>360°</span>
+    </button>
+    <button id="btnWalk" onclick="openExpWalk()" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 4px 14px -6px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6);font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+      ◎ <span>جولة حرة</span>
+    </button>
+    <button id="btnBA" onclick="openExpBA()" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 4px 14px -6px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6);font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+      ⇆ <span>قبل/بعد</span>
+    </button>
+  </div>
+
   <!-- Apple Liquid Glass: stage progress HUD (top-right) -->
   <div class="glass-hud" id="glassHud"></div>
 
@@ -1561,6 +1574,80 @@ AURA.save=function(cfg){_origSave(cfg);markSaved();};
 
 /* init build timeline */
 buildBuildTimeline();
+
+/* ============================================================
+   EXPERIENCES: 360°, Walkthrough, Before/After
+   ============================================================ */
+function openExp360(){
+  const exp=PROJ.experiences||{};
+  const panos=exp.panos||[];
+  if(!panos.length){toast(isAr?'لا توجد بانوراما متاحة':'No panoramas available');return;}
+  /* build 360° viewer in details view */
+  const dv=$('detailsView');
+  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⟲</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?'استكشف الغرف':'Explore Rooms')+'</h2><p class="dv-sub">'+(isAr?'اسحب للنظر حولك':'Drag to look around')+'</p></div></div>'+
+    '<div class="dv-rooms-grid" style="grid-template-columns:1fr">'+panos.map((p,i)=>'<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+p.img+'" alt="'+(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8"><div class="dv-room-info"><b>'+(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?'انقر للدخول':'Click to enter')+'</span></div></div>').join('')+'</div>'+
+    '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
+  dv.classList.add('on');document.body.style.overflow='hidden';
+}
+function loadPano(i){
+  const p=PROJ.experiences.panos[i];if(!p)return;
+  const dv=$('detailsView');
+  $('dvContent').innerHTML='<div style="position:relative;width:100%;height:60vh;overflow:hidden;border-radius:14px;cursor:grab;background:#000" id="panoWrap">'+
+    '<img src="'+p.img+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
+    '<div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.5);padding:8px 18px;border-radius:100px;backdrop-filter:blur(8px)">'+(isAr?'اسحب للنظر حولك':'Drag to look')+'</div></div>'+
+    '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
+  /* drag to look */
+  let px=0,down=false,sx=0,ox=0;
+  const wrap=$('panoWrap')||dv.querySelector('[id=panoWrap]');
+  const img=$('panoImg')||dv.querySelector('[id=panoImg]');
+  if(wrap&&img){
+    wrap.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;ox=px;wrap.style.cursor='grabbing';});
+    addEventListener('pointermove',e=>{if(!down)return;px=ox+(e.clientX-sx);const w=img.width;if(px>0)px-=w/1.5;if(px<-w+innerWidth)px+=w/1.5;img.style.left=px+'px';});
+    addEventListener('pointerup',()=>{down=false;wrap.style.cursor='grab';});
+    img.onload=()=>{px=-img.width/4;img.style.left=px+'px';};
+  }
+}
+function openExpWalk(){
+  const exp=PROJ.experiences||{};
+  const walk=exp.walkthrough||{};
+  if(!walk.img){toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;}
+  loadPano(0); /* reuse pano viewer with walkthrough image */
+  /* override the image */
+  const img=document.querySelector('[id=panoImg]');
+  if(img){img.src=walk.img;}
+}
+function openExpBA(){
+  const exp=PROJ.experiences||{};
+  const ba=exp.beforeAfter||PROJ.beforeAfter||[];
+  if(!ba.length){toast(isAr?'لا توجد مقارنات':'No before/after available');return;}
+  const dv=$('detailsView');
+  let baPos=50,baIdx=0;
+  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⇆</div><div><div class="dv-eyebrow">'+(isAr?'قبل / بعد':'BEFORE / AFTER')+'</div><h2>'+(isAr?'مقارنة تفاعلية':'Interactive Comparison')+'</h2></div></div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+(isAr?(b.labelAr||b.label):b.label)+'</button>').join('')+'</div>'+
+    '<div id="baSlider" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;cursor:ew-resize;background:#000">'+
+      '<img id="baAfter" src="'+ba[0].after+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
+      '<img id="baBefore" src="'+ba[0].before+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
+      '<div id="baHandle" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.4)"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:100px;padding:6px 10px;font-size:11px;font-weight:700">↔</div></div>'+
+      '<span style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'قبل':'BEFORE')+'</span>'+
+      '<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'بعد':'AFTER')+'</span>'+
+    '</div>'+
+    '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
+  dv.classList.add('on');document.body.style.overflow='hidden';
+  /* drag slider */
+  const slider=$('baSlider');const before=$('baBefore');const handle=$('baHandle');
+  let dragging=false;
+  function setBA(x){const r=slider.getBoundingClientRect();const p=Math.min(.98,Math.max(.02,(x-r.left)/r.width));before.style.clipPath='inset(0 '+(100-p)+'% 0 0)';handle.style.left=(p*100)+'%';}
+  slider.addEventListener('pointerdown',e=>{dragging=true;setBA(e.clientX);});
+  addEventListener('pointermove',e=>{if(dragging)setBA(e.clientX);});
+  addEventListener('pointerup',()=>dragging=false);
+  /* tab switching */
+  window._baSelect=function(i){
+    baIdx=i;
+    ba.forEach((b,j)=>{const t=$('baTab'+j);if(t){t.style.border='1px solid '+(j===i?'#BFA76A':'rgba(0,0,0,.1)');t.style.background=(j===i?'#BFA76A':'transparent');t.style.color=(j===i?'#fff':'#6E7079');}});
+    before.src=ba[i].before;$('baAfter').src=ba[i].after;
+    setBA(slider.getBoundingClientRect().left+slider.getBoundingClientRect().width/2);
+  };
+}
 </script>
 </body>
 </html>
