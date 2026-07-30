@@ -855,7 +855,8 @@ dzInput.addEventListener('change',()=>toast(`${dzInput.files.length} file(s) que
 
 /* ---------------- stages editor ---------------- */
 function buildStages(){
-  const p=document.getElementById('stagesPanel');p.innerHTML='<h3>Stages — drag to reorder</h3>';
+  const p=document.getElementById('stagesPanel');
+  p.innerHTML='<h3>المراحل · Stages</h3>';
   PROJ.stages.forEach((s,i)=>{
     const r=document.createElement('div');r.className='stage-row';r.draggable=true;
     r.innerHTML=`<span class="drag">⋮⋮</span>
@@ -863,7 +864,7 @@ function buildStages(){
       <span class="range">frames ${s.from}–${s.to}</span>
       <span class="sw-color"><input type="color" value="${s.color}" data-i="${i}" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">${s.icon}</span>
       <span class="range">${Math.round((s.to-s.from+1)/PROJ.sequence.count*100)}%</span>
-      <button class="btn sm ghost" onclick="toast('${s.name} gallery opened')">Gallery</button>`;
+      <button class="btn sm ghost" onclick="togglePausePoints(${i})">نقاط التوقف</button>`;
     r.addEventListener('dragstart',()=>r.classList.add('dragging'));
     r.addEventListener('dragend',()=>r.classList.remove('dragging'));
     r.addEventListener('dragover',e=>{e.preventDefault();
@@ -871,12 +872,55 @@ function buildStages(){
       const rect=r.getBoundingClientRect();
       p.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?r.nextSibling:r);});
     p.appendChild(r);
+    /* pause points section (collapsible) */
+    const ppDiv=document.createElement('div');
+    ppDiv.id='pp-'+i;ppDiv.style.cssText='display:none;margin:10px 0;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)';
+    ppDiv.innerHTML=buildPausePointsHTML(s,i);
+    p.appendChild(ppDiv);
   });
   p.addEventListener('input',e=>{
     const i=e.target.dataset.i,k=e.target.dataset.k;
     if(i!==undefined&&k)PROJ.stages[i][k]=e.target.value;
   });
 }
+function togglePausePoints(i){
+  const el=document.getElementById('pp-'+i);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function buildPausePointsHTML(stage,stageIdx){
+  const pps=stage.pausePoints||[];
+  let html='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:10px">نقاط التوقف · Pause Points ('+pps.length+')</div>';
+  pps.forEach((pp,i)=>{
+    html+=`<div style="display:grid;grid-template-columns:60px 1fr 1fr 80px;gap:8px;margin-bottom:8px;align-items:center">
+      <input type="number" value="${pp.frame}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="frame" style="text-align:center" placeholder="Frame #">
+      <input type="text" value="${pp.title?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="titleAr" dir="rtl" placeholder="عنوان عربي" style="font-family:var(--font-ar)">
+      <input type="text" value="${pp.desc?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="descAr" dir="rtl" placeholder="وصف عربي" style="font-family:var(--font-ar)">
+      <select data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="widget" style="font-size:11px">
+        ${['progress','structural','materials','schedule','cost','qa','rooms','ba'].map(w=>`<option value="${w}" ${pp.widget===w?'selected':''}>${w}</option>`).join('')}
+      </select>
+    </div>`;
+  });
+  html+=`<button class="btn sm ghost" onclick="addPausePoint(${stageIdx})" style="margin-top:6px">+ إضافة نققة توقف</button>`;
+  return html;
+}
+function addPausePoint(stageIdx){
+  if(!PROJ.stages[stageIdx].pausePoints)PROJ.stages[stageIdx].pausePoints=[];
+  PROJ.stages[stageIdx].pausePoints.push({frame:1,title:{ar:'',en:''},desc:{ar:'',en:''},images:[],widget:'progress'});
+  buildStages();
+  togglePausePoints(stageIdx);
+}
+/* wire pause point inputs */
+document.addEventListener('input',e=>{
+  const stageIdx=e.target.dataset.ppStage,ppIdx=e.target.dataset.ppI,k=e.target.dataset.ppK;
+  if(stageIdx!==undefined&&ppIdx!==undefined&&k){
+    const pp=PROJ.stages[+stageIdx].pausePoints[+ppIdx];
+    if(!pp)return;
+    if(k==='frame')pp.frame=+e.target.value;
+    else if(k==='titleAr'){pp.title=pp.title||{};pp.title.ar=e.target.value;}
+    else if(k==='descAr'){pp.desc=pp.desc||{};pp.desc.ar=e.target.value;}
+    else if(k==='widget')pp.widget=e.target.value;
+  }
+});
 function saveStages(){AURA.save(CFG);toast('Stages published — timeline updated on site')}
 
 /* ---------------- gallery manager ---------------- */

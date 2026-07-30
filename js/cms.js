@@ -33,13 +33,39 @@ const VILLA_SOLARA = {
   playback: { fpsExt: 9, fpsInt: 6, pauseExplore: 5, pauseRoom: 2.5, autoplay: true },
   sequence: { path: 'assets/seq/', prefix: 'frame', digits: 3, ext: '.webp', count: 97 },
   stages: [
-    { id:'excavation', name:'Excavation',  ar:'الحفر',        from:1,  to:16, color:'#b08d5f', icon:'◧', desc:'Site survey, excavation pit and foundation set-out.' },
-    { id:'foundation', name:'Foundation',  ar:'الأساسات',     from:17, to:32, color:'#8e8e93', icon:'▦', desc:'Rebar grids, concrete pour, waterproofing.' },
-    { id:'structure',  name:'Structure',   ar:'الهيكل',       from:33, to:48, color:'#7d7d82', icon:'▤', desc:'Columns, beams, slabs — the concrete skeleton.' },
-    { id:'shell',      name:'Shell',       ar:'البناء',       from:49, to:64, color:'#a4a4a8', icon:'◫', desc:'Blockwork, wall infill, window openings.' },
-    { id:'facade',     name:'Facade',      ar:'الواجهات',     from:65, to:80, color:'#cbb99a', icon:'◨', desc:'Travertine cladding, glazing, bronze frames.' },
-    { id:'complete',   name:'Completed',   ar:'الإنجاز',      from:81, to:96, color:'#3c82f6', icon:'◆', desc:'Interiors, landscape, pool and lighting.' },
-    { id:'night',      name:'Night View',  ar:'المشهد الليلي', from:97, to:97, color:'#f0a54c', icon:'☾', desc:'Evening scene — the villa fully alive.' }
+    { id:'excavation', name:'Excavation',  ar:'الحفر',        from:1,  to:16, color:'#b08d5f', icon:'◧', desc:'Site survey, excavation pit and foundation set-out.',
+      pausePoints:[
+        {frame:5,title:{ar:'بداية الحفر',en:'Excavation start'},desc:{ar:'تحديد الموقع والأبعاد النهائية للحفرة',en:'Site set-out and final excavation dimensions'},images:['assets/gallery/excavation-01.webp'],widget:'progress'},
+        {frame:12,title:{ar:'اكتمال الحفر',en:'Excavation complete'},desc:{ar:'الحفر يصل لمستوى التأسيس المطلوب',en:'Excavation reaches formation level'},images:['assets/gallery/excavation-04.webp'],widget:'materials'}
+      ]},
+    { id:'foundation', name:'Foundation',  ar:'الأساسات',     from:17, to:32, color:'#8e8e93', icon:'▦', desc:'Rebar grids, concrete pour, waterproofing.',
+      pausePoints:[
+        {frame:20,title:{ar:'حديد التسليح',en:'Rebar installation'},desc:{ar:'شبكة حديد B500B بقطر 16مم',en:'B500B rebar grid Ø16mm'},images:['assets/gallery/foundation-02.webp'],widget:'structural'},
+        {frame:28,title:{ar:'صب الخرسانة',en:'Concrete pour'},desc:{ar:'صب 210 م³ خرسانة C40 مقاومة للكبريتات',en:'210m³ C40 sulphate-resistant concrete pour'},images:['assets/gallery/foundation-05.webp'],widget:'cost'}
+      ]},
+    { id:'structure',  name:'Structure',   ar:'الهيكل',       from:33, to:48, color:'#7d7d82', icon:'▤', desc:'Columns, beams, slabs — the concrete skeleton.',
+      pausePoints:[
+        {frame:38,title:{ar:'الأعمدة',en:'Columns'},desc:{ar:'أعمدة 400×400 خرسانية',en:'400×400 concrete columns'},images:['assets/gallery/structure-02.webp'],widget:'structural'},
+        {frame:45,title:{ar:'البلاطات',en:'Slabs'},desc:{ar:'بلاطات لاحقة 220مم',en:'220mm post-tensioned slabs'},images:['assets/gallery/structure-05.webp'],widget:'schedule'}
+      ]},
+    { id:'shell',      name:'Shell',       ar:'البناء',       from:49, to:64, color:'#a4a4a8', icon:'◫', desc:'Blockwork, wall infill, window openings.',
+      pausePoints:[
+        {frame:55,title:{ar:'مبانى طوبية',en:'Blockwork'},desc:{ar:'حوائط AAC بسماكة 200مم',en:'200mm AAC blockwork walls'},images:['assets/gallery/shell-02.webp'],widget:'materials'}
+      ]},
+    { id:'facade',     name:'Facade',      ar:'الواجهات',     from:65, to:80, color:'#cbb99a', icon:'◨', desc:'Travertine cladding, glazing, bronze frames.',
+      pausePoints:[
+        {frame:70,title:{ar:'ترافرتين',en:'Travertine'},desc:{ar:'ترافرتين نافونا متطابق',en:'Book-matched Travertine Navona'},images:['assets/gallery/facade-02.webp'],widget:'qa'},
+        {frame:76,title:{ar:'زجاج وبرونز',en:'Glazing & Bronze'},desc:{ar:'زجاج Low-E ثلاثي + إطارات برونزية',en:'Triple Low-E glazing + bronze frames'},images:['assets/gallery/facade-05.webp'],widget:'finishing'}
+      ]},
+    { id:'complete',   name:'Completed',   ar:'الإنجاز',      from:81, to:96, color:'#3c82f6', icon:'◆', desc:'Interiors, landscape, pool and lighting.',
+      pausePoints:[
+        {frame:85,title:{ar:'التشطيبات الداخلية',en:'Interior finishes'},desc:{ar:'أرضيات بلوط + جير معدني',en:'Oak flooring + mineral lime plaster'},images:['assets/gallery/complete-02.webp'],widget:'rooms'},
+        {frame:92,title:{ar:'التنسيق والمسبح',en:'Landscape & pool'},desc:{ar:'تنسيق خارجي + مسبح لا متناهي',en:'Landscape + infinity pool'},images:['assets/gallery/complete-06.webp'],widget:'ba'}
+      ]},
+    { id:'night',      name:'Night View',  ar:'المشهد الليلي', from:97, to:97, color:'#f0a54c', icon:'☾', desc:'Evening scene — the villa fully alive.',
+      pausePoints:[
+        {frame:97,title:{ar:'التسليم النهائي',en:'Final handover'},desc:{ar:'إضاءة ليلية + تسليم المشروع',en:'Night lighting + project handover'},images:['assets/stages/s7-night.png'],widget:'progress'}
+      ]}
   ],
   project: {
     title: 'Villa Solara',
@@ -209,6 +235,16 @@ const VILLA_SOLARA = {
     }
   },
   /* ---- NEW: Before/After pairs (4 items × 2 images = 8 images) ---- */
+  widgetSequences: {
+    progress: {images:['assets/stages/s1-excavation.png','assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    structural: {images:['assets/villa-wireframe.png','assets/stages/s3-structure.png','assets/gallery/structure-02.webp'],autoplay:true,interval:3500},
+    materials: {images:['assets/stages/s5-facade.png','assets/gallery/facade-02.webp','assets/gallery/facade-05.webp'],autoplay:true,interval:3500},
+    schedule: {images:['assets/stages/s1-excavation.png','assets/stages/s3-structure.png','assets/stages/s7-night.png'],autoplay:true,interval:3500},
+    cost: {images:['assets/villa-clean.png','assets/stages/s3-structure.png','assets/stages/s7-night.png'],autoplay:true,interval:3500},
+    qa: {images:['assets/stages/s5-facade.png','assets/gallery/complete-02.webp','assets/gallery/complete-06.webp'],autoplay:true,interval:3500},
+    rooms: {images:['assets/rooms/pano-living.webp','assets/rooms/pano-kitchen.webp','assets/rooms/pano-master.webp','assets/rooms/pano-bath.webp'],autoplay:true,interval:3500},
+    ba: {images:['assets/villa-blueprint.png','assets/villa-wireframe.png','assets/stages/s5-facade.png','assets/stages/s7-night.png'],autoplay:true,interval:3500}
+  },
   beforeAfter: [
     { id:'design',      label:'Design',            labelAr:'التصميم',      before:'assets/villa-blueprint.png',    after:'assets/villa-wireframe.png' },
     { id:'execution',   label:'Execution',         labelAr:'التنفيذ',       before:'assets/stages/s3-structure.png',after:'assets/stages/s4-shell.png' },

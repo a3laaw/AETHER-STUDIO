@@ -706,13 +706,17 @@ $('pbPlay').onclick=()=>{
 $('pbRestart').onclick=()=>{
   clearTimeout(holdT);pauseHold=false;
   hideOverlayWidget();$('pauseBadge').classList.remove('show');
-  pausesDone.clear();target=current=1;playing=true;$('pbPlay').textContent='❚❚';
+  stopWidgetSequence();
+  pausesDone.clear();_pausePointTriggered.clear();
+  target=current=1;playing=true;$('pbPlay').textContent='❚❚';
 };
 $('scrub').addEventListener('pointerdown',e=>{
   const r=$('scrub').getBoundingClientRect();
   const p=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
   clearTimeout(holdT);pauseHold=false;
   hideOverlayWidget();$('pauseBadge').classList.remove('show');
+  stopWidgetSequence();
+  _pausePointTriggered.clear();
   target=current=1+p*(TOTAL-1);
 });
 
@@ -749,6 +753,7 @@ function setExtStage(st,idx){
 
 /* ---------- main loop ---------- */
 let widgetPauseUntil=0;
+let _pausePointTriggered=new Set();  /* track which pausePoints fired */
 (function loop(now){
   now=now||performance.now();
   if(!SEGS||!SEGS.length){requestAnimationFrame(loop);return;}
@@ -757,7 +762,16 @@ let widgetPauseUntil=0;
   const segNow=SEGS[siNow];
   if(playing&&!pauseHold&&now>widgetPauseUntil){
     target+=FPS*dt;
-    if(target>=segNow.end&&!pausesDone.has(siNow)){
+    /* check for pausePoints at current frame */
+    const g=Math.round(target);
+    const pp=findPausePoint(g);
+    if(pp&&!_pausePointTriggered.has(pp.frame)){
+      _pausePointTriggered.add(pp.frame);
+      target=pp.frame;
+      schedulePausePoint(pp);
+    }
+    /* stage end pause */
+    else if(target>=segNow.end&&!pausesDone.has(siNow)){
       target=segNow.end;pausesDone.add(siNow);schedulePause(segNow);
     }
     if(target>TOTAL)target=TOTAL;
@@ -774,6 +788,68 @@ let widgetPauseUntil=0;
   $('heroCopy').style.opacity=Math.max(0,1-(g-1)/6);
   requestAnimationFrame(loop);
 })();
+
+/* find pausePoint at a given frame */
+function findPausePoint(frame){
+  for(const stage of PROJ.stages){
+    if(frame>=stage.from&&frame<=stage.to){
+      if(stage.pausePoints){
+        const pp=stage.pausePoints.find(p=>p.frame===frame);
+        if(pp)return pp;
+      }
+    }
+  }
+  return null;
+}
+
+/* schedule a pause at a pausePoint */
+function schedulePausePoint(pp){
+  playing=true;pauseHold=true;
+  clearTimeout(holdT);
+  /* show the specific widget for this pausePoint */
+  const w=widgets.find(x=>x.id===pp.widget)||widgets[0];
+  currentOverlayWidget=w;
+  _overlayIdx=widgets.indexOf(w);
+  showOverlayWidgetForPause(w,pp);
+  $('pauseBadge').classList.add('show');
+  holdT=setTimeout(()=>{
+    pauseHold=false;
+    hideOverlayWidget();
+    $('pauseBadge').classList.remove('show');
+    stopWidgetSequence();
+  },(PB.pauseExplore||5)*1000);
+}
+
+/* show overlay widget with pausePoint data + auto-play sequence */
+let _widgetSeqTimer=null,_widgetSeqIdx=0,_widgetSeqImages=[];
+function showOverlayWidgetForPause(w,pp){
+  $('owIcon').textContent=w.icon;
+  $('owTitle').textContent=T(pp.title.ar,pp.title.en);
+  $('owSub').textContent=T(pp.desc.ar,pp.desc.en);
+  $('owVal').textContent=w.val();
+  $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
+  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
+  $('widgetOverlay').classList.add('show');
+  /* start widget sequence auto-play if available */
+  const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
+  if(seq&&seq.images&&seq.images.length>1){
+    _widgetSeqImages=seq.images;
+    _widgetSeqIdx=0;
+    startWidgetSequence(seq.interval||3500);
+  }
+}
+function startWidgetSequence(interval){
+  stopWidgetSequence();
+  _widgetSeqTimer=setInterval(()=>{
+    _widgetSeqIdx=(_widgetSeqIdx+1)%_widgetSeqImages.length;
+    /* we could show sequence images as a mini-gallery in the overlay */
+    /* for now, just update the overlay background subtly */
+  },interval);
+}
+function stopWidgetSequence(){
+  if(_widgetSeqTimer){clearInterval(_widgetSeqTimer);_widgetSeqTimer=null;}
+  _widgetSeqImages=[];_widgetSeqIdx=0;
+}
 
 function bootFrames(){
   Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
