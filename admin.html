@@ -1369,7 +1369,8 @@ async function handlePanoUpload(input,i){
   if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
   toast('Uploading pano image... · جاري رفع الصورة');
   try{
-    const url=await AURA_DB.uploadMedia(file,'pano-'+PROJ.id);
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    const url=await uploader(file,'pano-'+PROJ.id);
     PROJ.experiences.panos[i].img=url;
     PROJ.experiences.panos[i].embed='';
     buildExperiences();
@@ -1387,7 +1388,8 @@ async function handleBAUpload(input,i,side){
   if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
   toast('Uploading '+side+' image... · جاري الرفع');
   try{
-    const url=await AURA_DB.uploadMedia(file,'ba-'+PROJ.id);
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    const url=await uploader(file,'ba-'+PROJ.id);
     if(!PROJ.experiences.beforeAfter)PROJ.experiences.beforeAfter=PROJ.beforeAfter||[];
     PROJ.experiences.beforeAfter[i]=PROJ.experiences.beforeAfter[i]||{};
     PROJ.experiences.beforeAfter[i][side]=url;
@@ -1407,7 +1409,8 @@ async function handleVideoUpload(input,targetId){
   const sizeMB=(file.size/1024/1024).toFixed(1);
   toast('Uploading video ('+sizeMB+'MB) — may take a minute... · جاري الرفع');
   try{
-    const url=await AURA_DB.uploadMedia(file,'walk-'+PROJ.id);
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    const url=await uploader(file,'walk-'+PROJ.id);
     const target=document.getElementById(targetId);
     if(target){target.value=url;}
     updateWalkVideoPreview(url);
