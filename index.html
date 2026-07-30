@@ -196,6 +196,69 @@ html[dir="rtl"] .svc-card h3 .en{display:none}
 .svc-card p{font-size:12.5px;color:var(--fg-2);line-height:1.6;margin-top:5px}
 @media(max-width:900px){.svc-grid{grid-template-columns:1fr;gap:32px}}
 
+/* ================= WHITE SECTIONS (below preview) ================= */
+.white-section{background:#FAFAF7;color:#1A1A1C;padding:90px 6vw;position:relative}
+.white-section .w-head{text-align:center;max-width:720px;margin:0 auto 56px}
+.white-section .w-head .w-eyebrow{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#BFA76A;margin-bottom:14px}
+.white-section .w-head h2{font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.025em;color:#1A1A1C;margin-bottom:14px}
+html[dir="rtl"] .white-section .w-head h2{font-family:var(--font-ar)}
+.white-section .w-head p{font-size:14.5px;color:#6E7079;line-height:1.75}
+
+/* About */
+#about{background:#FAFAF7}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1200px;margin:0 auto}
+.about-text h3{font-size:22px;font-weight:700;color:#1A1A1C;margin-bottom:18px;line-height:1.4}
+html[dir="rtl"] .about-text h3{font-family:var(--font-ar)}
+.about-text p{font-size:14.5px;color:#3A3A3E;line-height:1.85;margin-bottom:14px}
+.about-text .w-quote{font-size:17px;font-style:italic;color:#BFA76A;border-inline-start:3px solid #BFA76A;padding-inline-start:18px;margin:24px 0;font-weight:500}
+html[dir="rtl"] .about-text .w-quote{font-family:var(--font-ar);font-style:normal}
+.about-visual{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 30px 80px -30px rgba(0,0,0,.25)}
+.about-visual img{width:100%;height:100%;object-fit:cover}
+.about-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.3))}
+.about-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:36px}
+.about-stats .stat{text-align:center;padding:18px 0;border-top:1px solid rgba(0,0,0,.08)}
+.about-stats .stat .v{font-size:32px;font-weight:700;color:#BFA76A;font-family:var(--font);line-height:1}
+.about-stats .stat .l{font-size:11.5px;color:#6E7079;margin-top:6px;font-weight:500}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:36px}.about-visual{aspect-ratio:4/3;max-height:400px}}
+
+/* Clients */
+#clients{background:#F2F1EC}
+.clients-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;max-width:1200px;margin:0 auto}
+.client-logo{aspect-ratio:5/3;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:14px;display:flex;align-items:center;justify-content:center;
+  padding:18px;transition:.4s;font-family:var(--font);font-weight:700;color:#3A3A3E;font-size:13px;letter-spacing:.04em;text-align:center;
+  filter:grayscale(1) opacity(.55)}
+.client-logo:hover{filter:grayscale(0) opacity(1);transform:translateY(-2px);box-shadow:0 14px 38px -14px rgba(0,0,0,.18);border-color:rgba(191,167,106,.3)}
+.client-logo .c-ic{font-size:24px;color:#BFA76A;margin-bottom:6px;display:block}
+@media(max-width:900px){.clients-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.clients-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Contact */
+#contact{background:#FAFAF7}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;max-width:1200px;margin:0 auto;align-items:start}
+.contact-info h3{font-size:22px;font-weight:700;color:#1A1A1C;margin-bottom:18px;line-height:1.4}
+html[dir="rtl"] .contact-info h3{font-family:var(--font-ar)}
+.contact-info p{font-size:14.5px;color:#3A3A3E;line-height:1.75;margin-bottom:28px}
+.contact-channels{display:flex;flex-direction:column;gap:14px}
+.contact-channel{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:14px;transition:.3s;text-decoration:none;color:#1A1A1C}
+.contact-channel:hover{border-color:rgba(191,167,106,.4);background:#fff;transform:translateX(4px);box-shadow:0 10px 30px -14px rgba(191,167,106,.2)}
+html[dir="rtl"] .contact-channel:hover{transform:translateX(-4px)}
+.contact-channel .c-ic{width:38px;height:38px;border-radius:10px;background:#1A1A1C;color:#BFA76A;display:flex;align-items:center;justify-content:center;flex:none;font-size:16px}
+.contact-channel .c-tx{display:flex;flex-direction:column;line-height:1.3}
+.contact-channel .c-tx b{font-size:13.5px;font-weight:600;color:#1A1A1C}
+.contact-channel .c-tx span{font-size:11.5px;color:#6E7079;font-family:var(--font)}
+.contact-form{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:32px;box-shadow:0 24px 60px -20px rgba(0,0,0,.08)}
+.contact-form .f-group{margin-bottom:16px}
+.contact-form label{display:block;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6E7079;margin-bottom:7px}
+.contact-form input,.contact-form textarea{width:100%;background:#FAFAF7;border:1px solid rgba(0,0,0,.08);border-radius:11px;color:#1A1A1C;
+  padding:13px 15px;font-size:13.5px;outline:none;transition:.25s;font-family:inherit}
+.contact-form input:focus,.contact-form textarea:focus{border-color:#BFA76A;background:#fff}
+.contact-form textarea{resize:vertical;min-height:90px}
+.contact-form .submit{width:100%;background:#1A1A1C;color:#fff;border:none;border-radius:11px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;transition:.3s;font-family:inherit;margin-top:6px}
+.contact-form .submit:hover{background:#000;transform:translateY(-1px);box-shadow:0 14px 38px -10px rgba(0,0,0,.3)}
+.contact-form .f-msg{font-size:12.5px;color:#6FAD7F;font-weight:600;margin-top:10px;display:none;text-align:center}
+.contact-form .f-msg.show{display:block}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr;gap:36px}}
+
 /* ================= FOOTER ================= */
 footer{padding:50px 6vw 30px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px;background:var(--bg)}
 footer .logo{font-weight:700;letter-spacing:.28em;font-size:14px;color:var(--fg)}
@@ -233,8 +296,11 @@ footer p .ar{font-family:var(--font-ar)}
   <a href="#" class="logo" data-aura-logo="1">AU<b>R</b>A</a>
   <div class="links">
     <a data-go="services">خدماتنا · Services</a>
+    <a data-go="about">من نحن · About</a>
+    <a data-go="clients">عملاؤنا · Clients</a>
+    <a data-go="contact">تواصل · Contact</a>
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">English</span></button>
-    <a class="cta-btn" href="#cta">اطلب تجربة حية</a>
+    <a class="cta-btn" href="#contact">اطلب تجربة حية</a>
   </div>
 </nav>
 
@@ -270,10 +336,10 @@ footer p .ar{font-family:var(--font-ar)}
   </div>
 </section>
 
-<!-- ================= SERVICES (only section below preview) ================= -->
-<section id="services">
-  <div class="s-head">
-    <div class="eyebrow">خدماتنا · What We Do</div>
+<!-- ================= SERVICES (white) ================= -->
+<section id="services" class="white-section">
+  <div class="w-head">
+    <div class="w-eyebrow">خدماتنا · What We Do</div>
     <h2>نموذج واحد… لكل مراحل مشروعك</h2>
     <p>أربع خدمات متكاملة تجعل مشروعك شفافًا للعميل وللإدارة من أول حجر حتى آخر غرفة.</p>
   </div>
@@ -303,6 +369,106 @@ footer p .ar{font-family:var(--font-ar)}
         <p>لوحة واحدة حية للتكلفة والجدول والجودة — والذكاء الاصطناعي ينذر مبكرًا.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT US (white) ================= -->
+<section id="about" class="white-section">
+  <div class="w-head">
+    <div class="w-eyebrow">من نحن · About Us</div>
+    <h2>نحوّل كل مشروع إلى فيلم متواصل</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <h3>منصة واحدة، من أول حجر حتى آخر غرفة.</h3>
+      <p>في AURA Studio نؤمن بأن كل مشروع بناء يستحق أن يُروى كقصة واحدة متواصلة — لا كملفات متناثرة وتقارير شهرية مملة. لذلك بنينا منصة تجمع التوثيق البصري الحي، لوحات التحكم الذكية، والجولات التفاعلية في مكان واحد.</p>
+      <p>نعمل مع المطورين العقاريين وشركات المقاولات والتشطيبات في الخليج لنمنحهم شفافية كاملة، حماية من النزاعات، وتجربة عميل تليق بمستوى المشاريع الفاخرة.</p>
+      <div class="w-quote">«البناء فن، والتوثيق احترام لهذا الفن.»</div>
+      <div class="about-stats">
+        <div class="stat"><div class="v">2+</div><div class="l">سنوات خبرة</div></div>
+        <div class="stat"><div class="v">12+</div><div class="l">مشروع موثّق</div></div>
+        <div class="stat"><div class="v">97</div><div class="l">إطار لكل مشروع</div></div>
+      </div>
+    </div>
+    <div class="about-visual">
+      <img src="assets/stages/s7-night.png" alt="AURA Studio — Villa Solara Night View">
+    </div>
+  </div>
+</section>
+
+<!-- ================= OUR CLIENTS (white) ================= -->
+<section id="clients" class="white-section">
+  <div class="w-head">
+    <div class="w-eyebrow">عملاؤنا · Our Clients</div>
+    <h2>ثقة رواد البناء في الخليج</h2>
+    <p>نفخر بشراكاتنا مع نخبة من المطورين والمقاولين وشركات التشطيب في الكويت والمنطقة.</p>
+  </div>
+  <div class="clients-grid">
+    <div class="client-logo"><span class="c-ic">▲</span>Al-Sabah Developments</div>
+    <div class="client-logo"><span class="c-ic">◆</span>Marmi Kuwait</div>
+    <div class="client-logo"><span class="c-ic">●</span>Studio Forma</div>
+    <div class="client-logo"><span class="c-ic">■</span>Gulf RMC</div>
+    <div class="client-logo"><span class="c-ic">★</span>Light House KW</div>
+    <div class="client-logo"><span class="c-ic">⬢</span>Qurain Steel</div>
+    <div class="client-logo"><span class="c-ic">◐</span>Joinery Works</div>
+    <div class="client-logo"><span class="c-ic">◈</span>Dar Gallery</div>
+    <div class="client-logo"><span class="c-ic">◇</span>Green Studio</div>
+    <div class="client-logo"><span class="c-ic">▼</span>Apparatus KW</div>
+    <div class="client-logo"><span class="c-ic">▣</span>Flexform Gulf</div>
+    <div class="client-logo"><span class="c-ic">◉</span>Agape Interiors</div>
+  </div>
+</section>
+
+<!-- ================= CONTACT US (white) ================= -->
+<section id="contact" class="white-section">
+  <div class="w-head">
+    <div class="w-eyebrow">تواصل معنا · Contact Us</div>
+    <h2>ابدأ بمشروع تجريبي خلال أسبوعين</h2>
+    <p>اكتب بياناتك وسنتواصل معك خلال 24 ساعة لتحديد موعد العرض التجريبي على مشروعك.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h3>نحن هنا للإجابة على كل أسئلتك.</h3>
+      <p>سواء كنت مطورًا عقاريًا، مقاولًا رئيسيًا، أو شركة تشطيبات — فريق AURA Studio جاهز لمساعدتك على تحويل مشروعك القادم إلى فيلم متواصل.</p>
+      <div class="contact-channels">
+        <a class="contact-channel" href="https://wa.me/96522223333" target="_blank" rel="noreferrer">
+          <div class="c-ic">✆</div>
+          <div class="c-tx"><b>واتساب · WhatsApp</b><span>+965 2222 3333</span></div>
+        </a>
+        <a class="contact-channel" href="mailto:studio@aura-arch.com">
+          <div class="c-ic">@</div>
+          <div class="c-tx"><b>بريد إلكتروني · Email</b><span>studio@aura-arch.com</span></div>
+        </a>
+        <a class="contact-channel" href="tel:+96522223333">
+          <div class="c-ic">☏</div>
+          <div class="c-tx"><b>هاتف · Phone</b><span>+965 2222 3333</span></div>
+        </a>
+        <div class="contact-channel">
+          <div class="c-ic">⌖</div>
+          <div class="c-tx"><b>الموقع · Location</b><span>Kuwait City, Kuwait</span></div>
+        </div>
+      </div>
+    </div>
+    <form class="contact-form" id="contactForm">
+      <div class="f-group">
+        <label for="cName">الاسم · Name</label>
+        <input type="text" id="cName" required placeholder="اكتب اسمك الكامل">
+      </div>
+      <div class="f-group">
+        <label for="cPhone">رقم الهاتف · Phone</label>
+        <input type="tel" id="cPhone" required placeholder="+965 9999 8888" dir="ltr">
+      </div>
+      <div class="f-group">
+        <label for="cCompany">الشركة · Company (اختياري)</label>
+        <input type="text" id="cCompany" placeholder="اسم الشركة">
+      </div>
+      <div class="f-group">
+        <label for="cMsg">رسالتك · Message</label>
+        <textarea id="cMsg" placeholder="أخبرنا عن مشروعك..."></textarea>
+      </div>
+      <button type="submit" class="submit">أرسل الطلب · Submit →</button>
+      <div class="f-msg" id="contactMsg">✓ تم استلام طلبك. سنتواصل معك خلال 24 ساعة.</div>
+    </form>
   </div>
 </section>
 
@@ -712,6 +878,22 @@ bootFrames();
 
 /* ---------- cta ---------- */
 document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?'اطلب تجربتك الحية عبر واتساب: +965 2222 3333':'Request your live demo via WhatsApp: +965 2222 3333'));
+
+/* ---------- contact form ---------- */
+$('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('cName').value.trim(),phone=$('cPhone').value.trim(),company=$('cCompany').value.trim(),msg=$('cMsg').value.trim();
+  if(!name||!phone){toast(isAr?'اكتب اسمك ورقم هاتفك':'Please enter name and phone');return;}
+  const inq={id:'inq-'+Date.now(),date:new Date().toISOString(),name,phone,company,msg,status:'new',source:'contact-section'};
+  try{
+    const all=JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
+    all.unshift(inq);
+    localStorage.setItem('aura.inquiries',JSON.stringify(all));
+  }catch(err){}
+  $('contactMsg').classList.add('show');
+  $('contactForm').reset();
+  setTimeout(()=>$('contactMsg').classList.remove('show'),5000);
+});
 </script>
 </body>
 </html>
