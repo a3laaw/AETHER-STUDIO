@@ -251,6 +251,26 @@ const VILLA_SOLARA = {
     { id:'finishing',   label:'Finishing',         labelAr:'التشطيبات',    before:'assets/stages/s4-shell.png',    after:'assets/stages/s5-facade.png' },
     { id:'management',  label:'Project Management',labelAr:'إدارة المشاريع',before:'assets/villa-clean.png',       after:'assets/stages/s7-night.png' }
   ],
+  /* ---- NEW: comprehensive hotspots (video frames + before/after + galleries) ---- */
+  hotspots: {
+    sequence: {
+      '5':  [{x:40,y:35,title:{ar:'بداية الحفر',en:'Excavation start'},type:'info'}],
+      '20': [{x:50,y:50,title:{ar:'حديد التسليح',en:'Rebar'},type:'warning'}],
+      '70': [{x:30,y:40,title:{ar:'ترافرتين',en:'Travertine'},type:'info'}],
+      '97': [{x:50,y:30,title:{ar:'التسليم',en:'Handover'},type:'milestone'}]
+    },
+    beforeAfter: {
+      'design':    [{x:25,y:40,title:{ar:'مخطط تفصيلي',en:'Blueprint detail'},type:'info'}],
+      'execution': [{x:55,y:35,title:{ar:'الهيكل',en:'Structure'},type:'info'}],
+      'finishing': [{x:40,y:45,title:{ar:'الواجهة',en:'Facade'},type:'info'}],
+      'management':[{x:50,y:50,title:{ar:'التسليم',en:'Handover'},type:'milestone'}]
+    },
+    gallery: {
+      'excavation': [{x:50,y:50,title:{ar:'موقع الحفر',en:'Excavation site'},type:'info'}],
+      'facade':     [{x:45,y:40,title:{ar:'ترافرتين',en:'Travertine'},type:'info'}],
+      'complete':   [{x:50,y:50,title:{ar:'الإنجاز',en:'Complete'},type:'milestone'}]
+    }
+  },
   /* ---- NEW: contact info shown in widget modals ---- */
   contact: {
     company: 'AURA Architecture Studio',

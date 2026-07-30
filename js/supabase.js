@@ -1,13 +1,12 @@
 /* ============================================================
-   AURA Studio — Supabase Client
-   Handles: projects, site content, inquiries, image uploads
-   Falls back to localStorage if Supabase is not configured
+   AURA Studio — Supabase Client (v2 — full sync)
+   Handles: projects, site content, inquiries, images, hotspots
+   Falls back to localStorage if Supabase is unavailable
    ============================================================ */
 
 const SUPABASE_URL = 'https://ykhlvghqrnpwkipaowem.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_LA4t2YWeyThQ_M7azbPx8g_fkRH0flK';
 
-/* Load Supabase JS client from CDN */
 (function loadSupabase() {
   if (window.supabase) return;
   const s = document.createElement('script');
@@ -17,20 +16,16 @@ const SUPABASE_KEY = 'sb_publishable_LA4t2YWeyThQ_M7azbPx8g_fkRH0flK';
       auth: { persistSession: false }
     });
     console.log('[AURA] Supabase connected');
+    window.dispatchEvent(new Event('supabase-ready'));
   };
   document.head.appendChild(s);
 })();
 
-/* ============================================================
-   AURA DB — unified data layer (Supabase primary, localStorage fallback)
-   ============================================================ */
 window.AURA_DB = (function () {
   const LS_KEY = 'aura.cms';
   const INQ_KEY = 'aura.inquiries';
 
-  function isReady() {
-    return !!window.sb;
-  }
+  function isReady() { return !!window.sb; }
 
   function waitReady() {
     return new Promise((resolve) => {
@@ -42,41 +37,80 @@ window.AURA_DB = (function () {
     });
   }
 
-  /* ---------- PROJECTS ---------- */
-  async function loadProjects() {
+  /* ---------- FULL CONFIG (all projects + site content) ---------- */
+  async function loadAll() {
     try {
       await waitReady();
-      const { data, error } = await window.sb.from('projects').select('id,data,is_default,sort_order').order('sort_order');
-      if (error) throw error;
-      if (data && data.length) {
-        const projects = data.map(r => r.data);
-        const defaultRow = data.find(r => r.is_default);
-        return {
-          currentProjectId: defaultRow ? defaultRow.id : (data[0]?.id || 'villa-solara'),
-          projects: projects
-        };
+      /* load all projects */
+      const { data: projRows, error: projErr } = await window.sb.from('projects')
+        .select('id,data,is_default,sort_order').order('sort_order');
+      if (projErr) throw projErr;
+      /* load site content */
+      const { data: siteRow, error: siteErr } = await window.sb.from('site_content')
+        .select('data').eq('id', 'main').single();
+
+      const cfg = { projects: [], currentProjectId: 'villa-solara', siteContent: {} };
+
+      if (projRows && projRows.length) {
+        cfg.projects = projRows.map(r => r.data);
+        const def = projRows.find(r => r.is_default);
+        cfg.currentProjectId = def ? def.id : projRows[0].id;
       }
-      throw new Error('No projects in DB');
+      if (siteRow && siteRow.data) {
+        cfg.siteContent = siteRow.data;
+      }
+      if (cfg.projects.length > 0) return cfg;
+      throw new Error('No data in Supabase, using localStorage');
     } catch (e) {
-      console.warn('[AURA DB] Using localStorage fallback for projects:', e.message);
+      console.warn('[AURA DB] loadAll fallback:', e.message);
       return JSON.parse(localStorage.getItem(LS_KEY) || '{}');
     }
   }
+
+  async function saveAll(cfg) {
+    /* save to localStorage first (always) */
+    cfg._lastUpdate = Date.now().toString();
+    localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+    /* try Supabase */
+    try {
+      await waitReady();
+      /* save each project */
+      if (cfg.projects) {
+        for (const p of cfg.projects) {
+          await window.sb.from('projects').upsert({
+            id: p.id, data: p,
+            is_default: p.id === cfg.currentProjectId,
+            updated_at: new Date().toISOString()
+          });
+        }
+      }
+      /* save site content */
+      if (cfg.siteContent) {
+        await window.sb.from('site_content').upsert({
+          id: 'main', data: cfg.siteContent,
+          updated_at: new Date().toISOString()
+        });
+      }
+      return true;
+    } catch (e) {
+      console.warn('[AURA DB] saveAll Supabase failed (localStorage OK):', e.message);
+      return false;
+    }
+  }
+
+  /* ---------- PROJECTS ---------- */
+  async function loadProjects() { return loadAll(); }
 
   async function saveProject(project) {
     try {
       await waitReady();
       const { error } = await window.sb.from('projects').upsert({
-        id: project.id,
-        data: project,
+        id: project.id, data: project,
         updated_at: new Date().toISOString()
       });
       if (error) throw error;
       return true;
-    } catch (e) {
-      console.warn('[AURA DB] Save project fallback to localStorage:', e.message);
-      return false;
-    }
+    } catch (e) { console.warn('[AURA DB] saveProject:', e.message); return false; }
   }
 
   /* ---------- SITE CONTENT ---------- */
@@ -86,26 +120,18 @@ window.AURA_DB = (function () {
       const { data, error } = await window.sb.from('site_content').select('data').eq('id', 'main').single();
       if (error) throw error;
       return data?.data || null;
-    } catch (e) {
-      console.warn('[AURA DB] Site content fallback to defaults:', e.message);
-      return null;
-    }
+    } catch (e) { console.warn('[AURA DB] siteContent:', e.message); return null; }
   }
 
   async function saveSiteContent(content) {
     try {
       await waitReady();
       const { error } = await window.sb.from('site_content').upsert({
-        id: 'main',
-        data: content,
-        updated_at: new Date().toISOString()
+        id: 'main', data: content, updated_at: new Date().toISOString()
       });
       if (error) throw error;
       return true;
-    } catch (e) {
-      console.warn('[AURA DB] Save site content fallback:', e.message);
-      return false;
-    }
+    } catch (e) { console.warn('[AURA DB] saveSiteContent:', e.message); return false; }
   }
 
   /* ---------- INQUIRIES ---------- */
@@ -116,62 +142,41 @@ window.AURA_DB = (function () {
       if (error) throw error;
       return data || [];
     } catch (e) {
-      console.warn('[AURA DB] Inquiries fallback to localStorage:', e.message);
+      console.warn('[AURA DB] inquiries fallback:', e.message);
       return JSON.parse(localStorage.getItem(INQ_KEY) || '[]');
     }
   }
 
   async function saveInquiry(inq) {
-    /* always save to localStorage as backup */
     try {
       const all = JSON.parse(localStorage.getItem(INQ_KEY) || '[]');
       all.unshift(inq);
       localStorage.setItem(INQ_KEY, JSON.stringify(all));
     } catch (e) {}
-
-    /* try Supabase */
     try {
       await waitReady();
       const { error } = await window.sb.from('inquiries').insert({
-        id: inq.id,
-        name: inq.name,
-        phone: inq.phone,
-        company: inq.company || '',
-        message: inq.msg || inq.message || '',
-        project_type: inq.projectType || '',
-        source: inq.source || 'contact-form',
+        id: inq.id, name: inq.name, phone: inq.phone,
+        company: inq.company || '', message: inq.msg || inq.message || '',
+        project_type: inq.projectType || '', source: inq.source || 'contact-form',
         status: 'new'
       });
       if (error) throw error;
       return true;
-    } catch (e) {
-      console.warn('[AURA DB] Inquiry save fallback:', e.message);
-      return false;
-    }
+    } catch (e) { console.warn('[AURA DB] saveInquiry:', e.message); return false; }
   }
 
   async function updateInquiryStatus(id, status) {
-    try {
-      await waitReady();
-      const { error } = await window.sb.from('inquiries').update({ status }).eq('id', id);
-      if (error) throw error;
-    } catch (e) {
-      console.warn('[AURA DB] Update inquiry fallback:', e.message);
-    }
-    /* also update localStorage */
+    try { await waitReady(); await window.sb.from('inquiries').update({ status }).eq('id', id); } catch (e) {}
     try {
       const all = JSON.parse(localStorage.getItem(INQ_KEY) || '[]');
-      const item = all.find(i => i.id === id);
-      if (item) item.status = status;
+      const item = all.find(i => i.id === id); if (item) item.status = status;
       localStorage.setItem(INQ_KEY, JSON.stringify(all));
     } catch (e) {}
   }
 
   async function deleteInquiry(id) {
-    try {
-      await waitReady();
-      await window.sb.from('inquiries').delete().eq('id', id);
-    } catch (e) {}
+    try { await waitReady(); await window.sb.from('inquiries').delete().eq('id', id); } catch (e) {}
     try {
       const all = JSON.parse(localStorage.getItem(INQ_KEY) || '[]').filter(i => i.id !== id);
       localStorage.setItem(INQ_KEY, JSON.stringify(all));
@@ -182,18 +187,14 @@ window.AURA_DB = (function () {
   async function uploadImage(file, folder = 'misc') {
     try {
       await waitReady();
-      const ext = file.name.split('.').pop();
-      const filename = `${folder}/${Date.now()}.${ext}`;
-      const { data, error } = await window.sb.storage
-        .from('aura-images')
-        .upload(filename, file, { cacheControl: '3600', upsert: false });
+      const ext = file.name.split('.').pop() || 'jpg';
+      const filename = folder + '/' + Date.now() + '.' + ext;
+      const { error } = await window.sb.storage.from('aura-images').upload(filename, file, { cacheControl: '3600', upsert: false });
       if (error) throw error;
-      /* get public URL */
       const { data: urlData } = window.sb.storage.from('aura-images').getPublicUrl(filename);
       return urlData.publicUrl;
     } catch (e) {
-      console.warn('[AURA DB] Image upload fallback to Base64:', e.message);
-      /* fallback: Base64 compression */
+      console.warn('[AURA DB] uploadImage fallback to Base64:', e.message);
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -213,16 +214,29 @@ window.AURA_DB = (function () {
     }
   }
 
+  /* ---------- HOTSPOTS ---------- */
+  async function saveHotspots(projectId, hotspots) {
+    /* hotspots are part of project data, so we just save the project */
+    try {
+      await waitReady();
+      /* load existing project, merge hotspots, save */
+      const { data, error } = await window.sb.from('projects').select('data').eq('id', projectId).single();
+      if (error) throw error;
+      if (data && data.data) {
+        data.data.hotspots = hotspots;
+        await window.sb.from('projects').upsert({
+          id: projectId, data: data.data, updated_at: new Date().toISOString()
+        });
+      }
+      return true;
+    } catch (e) { console.warn('[AURA DB] saveHotspots:', e.message); return false; }
+  }
+
   return {
-    isReady,
-    loadProjects,
-    saveProject,
-    loadSiteContent,
-    saveSiteContent,
-    loadInquiries,
-    saveInquiry,
-    updateInquiryStatus,
-    deleteInquiry,
-    uploadImage
+    isReady, loadAll, saveAll,
+    loadProjects, saveProject,
+    loadSiteContent, saveSiteContent,
+    loadInquiries, saveInquiry, updateInquiryStatus, deleteInquiry,
+    uploadImage, saveHotspots
   };
 })();
