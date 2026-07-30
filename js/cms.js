@@ -31,7 +31,10 @@ const VILLA_SOLARA = {
     snap: true, touch: true, keyboard: true, sensitivity: 1.0
   },
   playback: { fpsExt: 9, fpsInt: 6, pauseExplore: 5, pauseRoom: 2.5, autoplay: true },
-  sequence: { path: 'assets/seq/', prefix: 'frame', digits: 3, ext: '.webp', count: 97 },
+  sequence: { path: 'assets/seq/', prefix: 'frame', digits: 3, ext: '.webp', count: 97,
+    /* per-project custom images (if empty, falls back to path/prefix) */
+    images: []
+  },
   stages: [
     { id:'excavation', name:'Excavation',  ar:'الحفر',        from:1,  to:16, color:'#b08d5f', icon:'◧', desc:'Site survey, excavation pit and foundation set-out.',
       pausePoints:[
@@ -489,6 +492,11 @@ window.AURA = (function(){
 
   function frameSrc(project, n){
     const s = project.sequence;
+    /* if project has custom images array, use it (index 0-based) */
+    if(s.images && s.images.length > 0 && n <= s.images.length){
+      return s.images[n - 1];
+    }
+    /* fallback to path/prefix */
     return s.path + s.prefix + String(n).padStart(s.digits, '0') + s.ext;
   }
   function applyTheme(project, rootEl){

@@ -823,16 +823,22 @@ function resetAll(){AURA.reset();CFG=AURA.load();PROJ=AURA.getCurrent(CFG);boot(
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){
   const g=document.getElementById('framesGrid');g.innerHTML='';
-  document.getElementById('seqCount').textContent=PROJ.sequence.count;
-  for(let n=1;n<=PROJ.sequence.count;n++){
+  const imgs=PROJ.sequence.images||[];
+  const count=imgs.length>0?imgs.length:PROJ.sequence.count;
+  document.getElementById('seqCount').textContent=count;
+  const useCustom=imgs.length>0;
+
+  for(let n=1;n<=count;n++){
     const d=document.createElement('div');d.className='frame';d.draggable=true;d.dataset.n=n;
-    d.innerHTML=`<img loading="lazy" src="assets/seq/thumbs/frame${String(n).padStart(3,'0')}.webp">
+    const src=useCustom?imgs[n-1]:('assets/seq/thumbs/frame'+String(n).padStart(3,'0')+'.webp');
+    d.innerHTML=`<img loading="lazy" src="${src}" onerror="this.style.opacity=0.2">
       <span class="n">${String(n).padStart(3,'0')}</span><span class="q" title="Quality check passed"></span>
-      <div class="ops"><button onclick="toast('Frame ${n} — replace dialog (demo)')">Replace</button>
+      <div class="ops">
+      <button onclick="replaceFrame(${n})">Replace</button>
       <button onclick="toast('Frame ${n} duplicated')">Dup</button>
-      <button onclick="toast('Frame ${n} deleted (demo)')">Del</button></div>`;
+      <button onclick="deleteFrame(${n})">Del</button></div>`;
     d.addEventListener('dragstart',()=>d.classList.add('dragging'));
-    d.addEventListener('dragend',()=>{d.classList.remove('dragging');renumber();toast('Frames renumbered automatically')});
+    d.addEventListener('dragend',()=>{d.classList.remove('dragging');renumberFrames();saveFrameOrder();});
     d.addEventListener('dragover',e=>{
       e.preventDefault();
       const dr=g.querySelector('.dragging');if(!dr||dr===d)return;
@@ -841,17 +847,118 @@ function buildFrames(){
     });
     g.appendChild(d);
   }
+  /* show upload zone info */
+  const dz=document.getElementById('dz');
+  if(dz){
+    dz.querySelector('b').textContent=useCustom?
+      (isAr?'عندك '+count+' صورة مخصصة — ارفع المزيد':'You have '+count+' custom images — upload more'):
+      (isAr?'اسحب الصور أو انقر للاختيار':'Drag images or click to browse');
+  }
 }
-function renumber(){[...document.querySelectorAll('#framesGrid .frame .n')].forEach((el,i)=>el.textContent=String(i+1).padStart(3,'0'))}
+function renumberFrames(){
+  [...document.querySelectorAll('#framesGrid .frame .n')].forEach((el,i)=>el.textContent=String(i+1).padStart(3,'0'));
+}
+function saveFrameOrder(){
+  /* if using custom images, save the new order */
+  const imgs=PROJ.sequence.images||[];
+  if(imgs.length===0)return;
+  const newOrder=[];
+  document.querySelectorAll('#framesGrid .frame').forEach(f=>{
+    const n=+f.dataset.n;
+    if(imgs[n-1])newOrder.push(imgs[n-1]);
+  });
+  PROJ.sequence.images=newOrder;
+  PROJ.sequence.count=newOrder.length;
+  AURA.save(CFG);
+}
+async function replaceFrame(n){
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
+  fi.onchange=async ()=>{
+    const file=fi.files[0];if(!file)return;
+    toast('Uploading frame '+n+'...');
+    let url;
+    if(window.AURA_DB&&AURA_DB.isReady()){
+      try{url=await AURA_DB.uploadImage(file,'project-'+PROJ.id+'-seq');}catch(e){}
+    }
+    if(!url){
+      /* Base64 fallback */
+      url=await new Promise(res=>{
+        const reader=new FileReader();
+        reader.onload=e=>{const img=new Image();img.onload=()=>{
+          const canvas=document.createElement('canvas');const maxW=1408;let w=img.width,h=img.height;
+          if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          res(canvas.toDataURL('image/jpeg',0.85));
+        };img.src=e.target.result;};
+        reader.readAsDataURL(file);
+      });
+    }
+    /* store in images array */
+    if(!PROJ.sequence.images)PROJ.sequence.images=[];
+    while(PROJ.sequence.images.length<n)PROJ.sequence.images.push('');
+    PROJ.sequence.images[n-1]=url;
+    PROJ.sequence.count=PROJ.sequence.images.length;
+    AURA.save(CFG);
+    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+    buildFrames();
+    toast('Frame '+n+' replaced ✓');
+  };
+  document.body.appendChild(fi);fi.click();document.body.removeChild(fi);
+}
+function deleteFrame(n){
+  if(!PROJ.sequence.images||PROJ.sequence.images.length===0){
+    toast('Cannot delete default frames — upload custom images first');
+    return;
+  }
+  if(!confirm('Delete frame '+n+'?'))return;
+  PROJ.sequence.images.splice(n-1,1);
+  PROJ.sequence.count=PROJ.sequence.images.length;
+  /* adjust stage ranges if needed */
+  AURA.save(CFG);
+  buildFrames();
+  toast('Frame '+n+' deleted');
+}
 
-/* dropzone */
+/* dropzone — upload multiple images as sequence */
 const dz=document.getElementById('dz');
 dz.onclick=()=>dzInput.click();
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('hover')});
 dz.addEventListener('dragleave',()=>dz.classList.remove('hover'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('hover');
-  toast(`${e.dataTransfer.files.length} file(s) queued — converting to WebP…`)});
-dzInput.addEventListener('change',()=>toast(`${dzInput.files.length} file(s) queued — converting to WebP…`));
+  handleFrameUpload(e.dataTransfer.files);
+});
+dzInput.addEventListener('change',()=>handleFrameUpload(dzInput.files));
+
+async function handleFrameUpload(fileList){
+  const files=Array.from(fileList).filter(f=>f.type.startsWith('image/'));
+  if(!files.length)return;
+  toast('Uploading '+files.length+' images...');
+  if(!PROJ.sequence.images)PROJ.sequence.images=[];
+  for(const file of files){
+    let url;
+    if(window.AURA_DB&&AURA_DB.isReady()){
+      try{url=await AURA_DB.uploadImage(file,'project-'+PROJ.id+'-seq');}catch(e){}
+    }
+    if(!url){
+      url=await new Promise(res=>{
+        const reader=new FileReader();
+        reader.onload=e=>{const img=new Image();img.onload=()=>{
+          const canvas=document.createElement('canvas');const maxW=1408;let w=img.width,h=img.height;
+          if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          res(canvas.toDataURL('image/jpeg',0.85));
+        };img.src=e.target.result;};
+        reader.readAsDataURL(file);
+      });
+    }
+    PROJ.sequence.images.push(url);
+  }
+  PROJ.sequence.count=PROJ.sequence.images.length;
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  buildFrames();
+  toast(files.length+' images uploaded ✓ (total: '+PROJ.sequence.images.length+')');
+}
 
 /* ---------------- stages editor ---------------- */
 function buildStages(){
