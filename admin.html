@@ -616,6 +616,10 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     </div>
 
   </main>
+  <!-- Floating preview button (always visible) -->
+  <a href="index.html" target="_blank" id="floatPreview" style="position:fixed;bottom:20px;right:20px;z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:100px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 12px 32px -8px rgba(60,130,246,.5);transition:.3s">
+    <span>↗</span><span>معاينة الموقع · Preview</span>
+  </a>
 </div>
 
 <div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved</span></div>
@@ -764,6 +768,39 @@ async function handleUpload(fileInput, targetId){
   reader.readAsDataURL(file);
 }
 function $(id){return document.getElementById(id);}
+
+/* ============================================================
+   AUTO-SAVE + beforeunload warning
+   ============================================================ */
+let _unsavedChanges=false;
+const _origAdminSave=AURA.save;
+AURA.save=function(cfg){
+  _origAdminSave(cfg);
+  _unsavedChanges=false;
+  /* visual indicator */
+  const btn=document.getElementById('floatPreview');
+  if(btn)btn.style.opacity='1';
+};
+/* mark changed on any input in admin */
+document.addEventListener('input',()=>{_unsavedChanges=true;});
+document.addEventListener('change',()=>{_unsavedChanges=true;});
+/* warn before leaving with unsaved changes */
+window.addEventListener('beforeunload',e=>{
+  if(_unsavedChanges){
+    e.preventDefault();
+    e.returnValue='';
+  }
+});
+/* auto-save every 30s if there are changes */
+setInterval(()=>{
+  if(_unsavedChanges){
+    AURA.save(CFG);
+    /* subtle toast */
+    const t=document.getElementById('toast');
+    if(t){document.getElementById('toastMsg').textContent='Auto-saved · حفظ تلقائي';t.classList.add('show');
+      clearTimeout(window._autoSaveT);window._autoSaveT=setTimeout(()=>t.classList.remove('show'),1500);}
+  }
+},30000);
 ['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
 function fmtT(s){const m=Math.floor(s/60),r=Math.round(s%60);return m?`${m}m ${r}s`:`${r}s`;}
 function updPb(){
