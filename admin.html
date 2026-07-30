@@ -850,9 +850,10 @@ function buildFrames(){
   /* show upload zone info */
   const dz=document.getElementById('dz');
   if(dz){
+    const ar=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
     dz.querySelector('b').textContent=useCustom?
-      (isAr?'عندك '+count+' صورة مخصصة — ارفع المزيد':'You have '+count+' custom images — upload more'):
-      (isAr?'اسحب الصور أو انقر للاختيار':'Drag images or click to browse');
+      (ar?'عندك '+count+' صورة مخصصة — ارفع المزيد':'You have '+count+' custom images — upload more'):
+      (ar?'اسحب الصور أو انقر للاختيار':'Drag images or click to browse');
   }
 }
 function renumberFrames(){
@@ -963,17 +964,18 @@ async function handleFrameUpload(fileList){
 /* ---------------- stages editor ---------------- */
 function buildStages(){
   const p=document.getElementById('stagesPanel');
-  p.innerHTML='<h3>المراحل · Stages</h3>';
+  p.innerHTML='<h3>المراحل · Stages — اسحب للترتيب</h3>';
   PROJ.stages.forEach((s,i)=>{
-    const r=document.createElement('div');r.className='stage-row';r.draggable=true;
-    r.innerHTML=`<span class="drag">⋮⋮</span>
-      <input type="text" value="${s.name}" data-i="${i}" data-k="name">
-      <span class="range">frames ${s.from}–${s.to}</span>
-      <span class="sw-color"><input type="color" value="${s.color}" data-i="${i}" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">${s.icon}</span>
-      <span class="range">${Math.round((s.to-s.from+1)/PROJ.sequence.count*100)}%</span>
-      <button class="btn sm ghost" onclick="togglePausePoints(${i})">نقاط التوقف</button>`;
+    const r=document.createElement('div');r.className='stage-row';r.draggable=true;r.dataset.idx=i;
+    r.innerHTML='<span class="drag">⋮⋮</span>'+
+      '<input type="text" value="'+(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="اسم المرحلة">'+
+      '<input type="text" value="'+(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="عربي">'+
+      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
+      '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+(s.icon||'◆')+'</span>'+
+      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">نقاط التوقف</button>'+
+      '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
     r.addEventListener('dragstart',()=>r.classList.add('dragging'));
-    r.addEventListener('dragend',()=>r.classList.remove('dragging'));
+    r.addEventListener('dragend',()=>{r.classList.remove('dragging');saveStageOrder();});
     r.addEventListener('dragover',e=>{e.preventDefault();
       const dr=p.querySelector('.dragging');if(!dr||dr===r)return;
       const rect=r.getBoundingClientRect();
@@ -987,12 +989,55 @@ function buildStages(){
   });
   p.addEventListener('input',e=>{
     const i=e.target.dataset.i,k=e.target.dataset.k;
-    if(i!==undefined&&k)PROJ.stages[i][k]=e.target.value;
+    if(i!==undefined&&k){
+      if(k==='from'||k==='to')PROJ.stages[+i][k]=+e.target.value;
+      else PROJ.stages[+i][k]=e.target.value;
+    }
   });
+  /* add stage button */
+  const addBtn=document.createElement('button');
+  addBtn.className='btn sm ghost';addBtn.style.cssText='margin-top:12px;width:100%';
+  addBtn.textContent='+ إضافة مرحلة · Add Stage';
+  addBtn.onclick=addStage;
+  p.appendChild(addBtn);
 }
 function togglePausePoints(i){
   const el=document.getElementById('pp-'+i);
   if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function addStage(){
+  const lastStage=PROJ.stages[PROJ.stages.length-1];
+  const newFrom=(lastStage?lastStage.to+1:1);
+  const newTo=newFrom+15;
+  PROJ.stages.push({
+    id:'stage-'+Date.now(),name:'New Stage',ar:'مرحلة جديدة',
+    from:newFrom,to:newTo,color:'#BFA76A',icon:'◆',desc:'',
+    pausePoints:[]
+  });
+  AURA.save(CFG);
+  buildStages();
+  toast('Stage added · تمت إضافة مرحلة');
+}
+function deleteStage(i){
+  if(PROJ.stages.length<=1){toast('Cannot delete the only stage');return;}
+  if(!confirm('Delete stage "'+PROJ.stages[i].name+'"?'))return;
+  PROJ.stages.splice(i,1);
+  AURA.save(CFG);
+  buildStages();
+  toast('Stage deleted · تم حذف المرحلة');
+}
+function saveStageOrder(){
+  /* read DOM order and reorder PROJ.stages */
+  const newOrder=[];
+  document.querySelectorAll('#stagesPanel .stage-row').forEach(row=>{
+    const idx=+row.dataset.idx;
+    if(!isNaN(idx)&&PROJ.stages[idx])newOrder.push(PROJ.stages[idx]);
+  });
+  if(newOrder.length===PROJ.stages.length){
+    PROJ.stages=newOrder;
+    AURA.save(CFG);
+    toast('Stage order saved · تم حفظ الترتيب');
+  }
 }
 function buildPausePointsHTML(stage,stageIdx){
   const pps=stage.pausePoints||[];
@@ -1028,7 +1073,11 @@ document.addEventListener('input',e=>{
     else if(k==='widget')pp.widget=e.target.value;
   }
 });
-function saveStages(){AURA.save(CFG);toast('Stages published — timeline updated on site')}
+function saveStages(){
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  toast('Stages saved · تم حفظ المراحل والنقاط');
+}
 
 /* ---------------- gallery manager ---------------- */
 function buildGalleryTabs(){
