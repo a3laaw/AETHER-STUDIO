@@ -515,15 +515,15 @@ footer p .ar{font-family:var(--font-ar)}
     </div>
   </div>
 
-  <!-- Experience buttons (bottom-left, horizontal) -->
-  <div id="expButtons" style="position:absolute;bottom:70px;left:24px;z-index:13;display:flex;gap:6px;pointer-events:auto">
-    <button id="btn360" onclick="openExp360()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+  <!-- Experience buttons (right side, vertical, below glass-hud with gap) -->
+  <div id="expButtons" style="position:absolute;top:300px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:auto">
+    <button id="btn360" onclick="openExp360()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
       ⟲ <span>360°</span>
     </button>
-    <button id="btnWalk" onclick="openExpWalk()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+    <button id="btnWalk" onclick="openExpWalk()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
       ◎ <span>جولة حرة</span>
     </button>
-    <button id="btnBA" onclick="openExpBA()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
+    <button id="btnBA" onclick="openExpBA()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
       ⇆ <span>قبل/بعد</span>
     </button>
   </div>
