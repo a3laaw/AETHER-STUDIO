@@ -198,19 +198,13 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
     <div class="mi on" data-p="dash"><span class="ic">◧</span>Dashboard · الرئيسية</div>
     <div class="sep">Content · المحتوى</div>
-    <div class="mi" data-p="projects"><span class="ic">▤</span>Projects · المشاريع</div>
-    <div class="mi" data-p="project"><span class="ic">◆</span>Project · المشروع الحالي</div>
-    <div class="mi" data-p="widgets"><span class="ic">◫</span>Widgets · الويدجات</div>
-    <div class="mi" data-p="beforeafter"><span class="ic">⇆</span>Before/After · قبل وبعد</div>
-    <div class="mi" data-p="sequence"><span class="ic">◫</span>Sequence · تسلسل الصور</div>
-    <div class="mi" data-p="stages"><span class="ic">≡</span>Stages · المراحل</div>
-    <div class="mi" data-p="gallery"><span class="ic">▦</span>Galleries · المعارض</div>
-    <div class="mi" data-p="interior"><span class="ic">⌂</span>Interior · الداخلي</div>
-    <div class="mi" data-p="hotspots"><span class="ic">◎</span>Hotspots · محرر النقاط</div>
-    <div class="mi" data-p="materials"><span class="ic">◨</span>Materials · المواد</div>
-    <div class="mi" data-p="contact"><span class="ic">✆</span>Contact · التواصل</div>
-    <div class="mi" data-p="site"><span class="ic">⚙</span>Site Settings · إعدادات الموقع</div>
-    <div class="mi" data-p="inquiries"><span class="ic">✉</span>Inquiries · الطلبات <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
+    <div class="mi" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
+    <div class="mi" data-p="widgets"><span class="ic">◫</span>الويدجات · Widgets</div>
+    <div class="mi" data-p="beforeafter"><span class="ic">⇆</span>قبل وبعد · Before/After</div>
+    <div class="mi" data-p="hotspots"><span class="ic">◎</span>محرر النقاط · Hotspots</div>
+    <div class="mi" data-p="materials"><span class="ic">◨</span>المواد · Materials</div>
+    <div class="mi" data-p="site"><span class="ic">⚙</span>إعدادات الموقع · Site</div>
+    <div class="mi" data-p="inquiries"><span class="ic">✉</span>الطلبات · Inquiries <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
     <div class="sep">Configuration · الإعدادات</div>
     <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
     <div class="mi" data-p="ui"><span class="ic">◐</span>UI · تخصيص الواجهة</div>
@@ -257,242 +251,192 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     </div>
 
     <!-- ========== PROJECTS MANAGER ========== -->
+    <!-- ========== UNIFIED PROJECTS MANAGER ========== -->
     <div class="page" id="p-projects">
-      <h1 class="pt">Projects Manager · إدارة المشاريع</h1>
-      <div class="ps">إضافة / حذف / تعديل / ترتيب المشاريع — وتعيين المشروع الافتراضي للموقع</div>
-      <div class="panel">
-        <h3><span>All Projects · كل المشاريع</span> <span class="badge" id="pmCount">0</span></h3>
+      <h1 class="pt">إدارة المشاريع · Projects Manager</h1>
+      <div class="ps" id="projSub">كل ما يخص المشروع في مكان واحد — بيانات، مراحل، تسلسل، معارض، داخلي، تواصل</div>
+
+      <!-- Project list + add -->
+      <div class="panel" style="margin-bottom:20px">
+        <h3><span>كل المشاريع · All Projects</span> <span class="badge" id="pmCount">0</span></h3>
         <div id="pmList"></div>
         <div class="btnrow">
-          <button class="btn" onclick="pmAdd()">+ Add Project · إضافة مشروع</button>
-          <button class="btn ghost" onclick="pmSave()">Save Order · حفظ الترتيب</button>
+          <button class="btn sm" onclick="pmAdd()">+ إضافة مشروع · Add Project</button>
+          <button class="btn sm ghost" onclick="pmSave()">حفظ الترتيب · Save Order</button>
         </div>
       </div>
-    </div>
 
-    <!-- ========== CURRENT PROJECT EDITOR ========== -->
-    <div class="page" id="p-project">
-      <h1 class="pt">Project Editor · تعديل المشروع الحالي</h1>
-      <div class="ps" id="projSub">Editing: —</div>
-      <div class="panel">
-        <h3><span>Identity · الهوية</span> <span class="badge" id="pIdBadge">—</span></h3>
-        <div class="grid2">
-          <div class="f"><label>Project ID · معرّف المشروع</label><input type="text" id="fId" disabled></div>
-          <div class="f"><label>Cover Image · صورة الغلاف</label><input type="text" id="fCover"></div>
-          <div class="f"><label>Title · اسم المشروع</label><input type="text" id="fTitle"></div>
-          <div class="f"><label>Location · الموقع</label><input type="text" id="fLoc"></div>
-          <div class="f"><label>Area · المساحة</label><input type="text" id="fArea"></div>
-          <div class="f"><label>Year · السنة</label><input type="text" id="fYear"></div>
-          <div class="f"><label>Status · الحالة</label>
-            <select id="fStatus"><option value="completed">Completed · مكتمل</option><option value="in-progress">In Progress · قيد التنفيذ</option><option value="concept">Concept · تصور</option></select></div>
-          <div class="f"><label>Progress · النسبة المئوية</label><input type="number" id="fProgress" min="0" max="100"></div>
+      <!-- Internal tabs for current project -->
+      <div class="gal-tabs" id="projTabs" style="margin-bottom:20px">
+        <div class="gtab on" data-pt="identity">البيانات · Identity</div>
+        <div class="gtab" data-pt="stages">المراحل · Stages</div>
+        <div class="gtab" data-pt="sequence">التسلسل · Sequence</div>
+        <div class="gtab" data-pt="gallery">المعارض · Galleries</div>
+        <div class="gtab" data-pt="interior">الداخلي · Interior</div>
+        <div class="gtab" data-pt="contact">تواصل · Contact</div>
+      </div>
+
+      <!-- Tab: Identity -->
+      <div class="proj-tab" id="pt-identity">
+        <div class="panel">
+          <h3><span>الهوية · Identity</span> <span class="badge" id="pIdBadge">—</span></h3>
+          <div class="grid2">
+            <div class="f"><label>Project ID</label><input type="text" id="fId" disabled></div>
+            <div class="f"><label>Cover Image (URL or upload)</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="fCover" style="flex:1">
+                <button class="btn sm ghost" onclick="uploadImage('fCover')">رفع · Upload</button>
+                <input type="file" id="fCoverFile" accept="image/*" style="display:none" onchange="handleUpload(this,'fCover')">
+              </div>
+            </div>
+            <div class="f"><label>العنوان · Title</label><input type="text" id="fTitle"></div>
+            <div class="f"><label>الموقع · Location</label><input type="text" id="fLoc"></div>
+            <div class="f"><label>المساحة · Area</label><input type="text" id="fArea"></div>
+            <div class="f"><label>السنة · Year</label><input type="text" id="fYear"></div>
+            <div class="f"><label>الحالة · Status</label>
+              <select id="fStatus"><option value="completed">مكتمل · Completed</option><option value="in-progress">قيد التنفيذ · In Progress</option><option value="concept">تصور · Concept</option></select></div>
+            <div class="f"><label>النسبة · Progress %</label><input type="number" id="fProgress" min="0" max="100"></div>
+          </div>
+          <div class="btnrow">
+            <button class="btn" onclick="saveProject()">حفظ · Save</button>
+            <button class="btn ghost" onclick="switchToProject()">تعيين كافتراضي · Set Default</button>
+            <button class="btn ghost" onclick="window.open('index.html')">معاينة · Preview ↗</button>
+            <button class="btn danger" onclick="pmDeleteCurrent()">حذف · Delete</button>
+          </div>
         </div>
+      </div>
+
+      <!-- Tab: Stages -->
+      <div class="proj-tab" id="pt-stages" style="display:none">
+        <div class="panel" id="stagesPanel"></div>
         <div class="btnrow">
-          <button class="btn" onclick="saveProject()">Save · حفظ</button>
-          <button class="btn ghost" onclick="switchToProject()">Set as Default · تعيين كافتراضي</button>
-          <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
-          <button class="btn danger" onclick="pmDeleteCurrent()">Delete · حذف</button>
+          <button class="btn" onclick="saveStages()">حفظ ونشر · Save</button>
+          <button class="btn ghost" onclick="toast('New stage added')">+ إضافة مرحلة · Add Stage</button>
+        </div>
+      </div>
+
+      <!-- Tab: Sequence -->
+      <div class="proj-tab" id="pt-sequence" style="display:none">
+        <div class="dropzone" id="dz">⬆ اسحب الصور هنا أو <b>انقر للاختيار</b><br>
+          <span style="font-size:11px">97 إطار · WebP · اسحب لإعادة الترتيب</span>
+          <input type="file" id="dzInput" multiple accept="image/*" style="display:none">
+        </div>
+        <div class="panel">
+          <h3><span>التسلسل — <span id="seqCount"></span> إطار</span></h3>
+          <div class="frames" id="framesGrid"></div>
+        </div>
+      </div>
+
+      <!-- Tab: Galleries -->
+      <div class="proj-tab" id="pt-gallery" style="display:none">
+        <div class="gal-tabs" id="galTabs"></div>
+        <div class="dropzone" style="padding:22px" onclick="toast('Drag images to add')">⬆ اسحب الصور لإضافتها · Drop images here</div>
+        <div class="gal-grid" id="galGrid"></div>
+      </div>
+
+      <!-- Tab: Interior -->
+      <div class="proj-tab" id="pt-interior" style="display:none">
+        <div class="panel"><h3><span>الثيم · Theme</span></h3>
+          <div class="gal-tabs" id="themeTabs"></div>
+        </div>
+        <div class="panel"><h3><span>الغرف — <span id="roomCount"></span></span></h3>
+          <div id="roomRows"></div>
+          <div class="btnrow">
+            <button class="btn" onclick="saveInterior()">حفظ · Save</button>
+            <button class="btn ghost" onclick="toast('New room added')">+ إضافة غرفة · Add Room</button>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel"><h3>الأثاث · Furniture</h3><div id="furnRows"></div></div>
+          <div class="panel"><h3>المسارات · Paths</h3>
+            <div class="frow"><div><div class="fl">Door hotspots</div><div class="fs">Auto-generated</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+            <div class="frow"><div><div class="fl">Walkthrough</div><div class="fs">Free look + doors</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Contact (per-project) -->
+      <div class="proj-tab" id="pt-contact" style="display:none">
+        <div class="panel">
+          <h3><span>تواصل المشروع · Project Contact</span></h3>
+          <div class="grid2">
+            <div class="f"><label>الشركة · Company (EN)</label><input type="text" id="cCompany"></div>
+            <div class="f"><label>اسم الشركة (AR)</label><input type="text" id="cCompanyAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>الهاتف · Phone</label><input type="text" id="cPhone"></div>
+            <div class="f"><label>واتساب · WhatsApp</label><input type="text" id="cWhatsapp"></div>
+            <div class="f"><label>البريد · Email</label><input type="text" id="cEmail"></div>
+            <div class="f"><label>الموقع · Location</label><input type="text" id="cLocation"></div>
+          </div>
+          <div class="btnrow"><button class="btn" onclick="saveContact()">حفظ · Save</button></div>
         </div>
       </div>
     </div>
 
-    <!-- ========== WIDGETS EDITOR ========== -->
+    <!-- ========== WIDGETS EDITOR (now includes widget content) ========== -->
     <div class="page" id="p-widgets">
-      <h1 class="pt">Widgets Editor · محرر الويدجات</h1>
-      <div class="ps">لكل ويدجت: عنوان، وصف، معرض صور، نقاط معلومات — الضغط عليها في الموقع بيفتح modal</div>
+      <h1 class="pt">الويدجات · Widgets Editor</h1>
+      <div class="ps">تحكم كامل في محتوى كل ويدجت — العنوان، الوصف، النقاط، الصور، والقيم التي تظهر على الموقع</div>
       <div class="gal-tabs" id="wTabs"></div>
       <div class="panel" id="wPanel"></div>
       <div class="btnrow">
-        <button class="btn" onclick="saveWidgets()">Save & Publish · حفظ ونشر</button>
-        <button class="btn ghost" onclick="addWidget()">+ Add Widget · إضافة ويدجت</button>
+        <button class="btn" onclick="saveWidgets()">حفظ ونشر · Save</button>
+        <button class="btn ghost" onclick="addWidget()">+ إضافة ويدجت · Add Widget</button>
       </div>
     </div>
 
     <!-- ========== BEFORE/AFTER EDITOR ========== -->
     <div class="page" id="p-beforeafter">
-      <h1 class="pt">Before/After Editor · محرر قبل وبعد</h1>
-      <div class="ps">4 بنود، كل بند زوج صور (قبل / بعد) = 8 صور إجمالاً. تظهر في قسم Compare في الموقع</div>
+      <h1 class="pt">قبل وبعد · Before/After Editor</h1>
+      <div class="ps">4 بنود × زوج صور = 8 صور. تظهر في الـ overlay widget والصفحة التفصيلية</div>
       <div class="panel" id="baPanel"></div>
       <div class="btnrow">
-        <button class="btn" onclick="saveBA()">Save & Publish · حفظ ونشر</button>
-        <button class="btn ghost" onclick="window.open('index.html#baSec')">Preview · معاينة ↗</button>
-      </div>
-    </div>
-
-    <!-- ========== CONTACT EDITOR ========== -->
-    <div class="page" id="p-contact">
-      <h1 class="pt">Contact · بيانات التواصل</h1>
-      <div class="ps">تظهر في كل widget modal (نموذج العميل + زر WhatsApp)</div>
-      <div class="panel">
-        <div class="grid2">
-          <div class="f"><label>Company · اسم الشركة (EN)</label><input type="text" id="cCompany"></div>
-          <div class="f"><label>اسم الشركة (AR)</label><input type="text" id="cCompanyAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>Phone · الهاتف</label><input type="text" id="cPhone"></div>
-          <div class="f"><label>WhatsApp (with country code, no +)</label><input type="text" id="cWhatsapp"></div>
-          <div class="f"><label>Email · البريد</label><input type="text" id="cEmail"></div>
-          <div class="f"><label>Instagram</label><input type="text" id="cInstagram"></div>
-          <div class="f"><label>Location · الموقع</label><input type="text" id="cLocation"></div>
-        </div>
-        <div class="btnrow"><button class="btn" onclick="saveContact()">Save & Publish · حفظ ونشر</button></div>
-      </div>
-    </div>
-
-    <!-- ========== SITE SETTINGS ========== -->
-    <div class="page" id="p-site">
-      <h1 class="pt">Site Settings · إعدادات الموقع</h1>
-      <div class="ps">كل التعديلات هنا تنعكس على الموقع فور الحفظ — واتساب، لوكيشن، نصوص الهيرو، من نحن، العملاء</div>
-
-      <!-- Contact -->
-      <div class="panel">
-        <h3><span>Contact Info · بيانات التواصل</span> <span class="badge">LIVE</span></h3>
-        <div class="grid2">
-          <div class="f"><label>WhatsApp (digits only, no +)</label><input type="text" id="scWa" placeholder="96522223333" dir="ltr"></div>
-          <div class="f"><label>Phone · الهاتف</label><input type="text" id="scPhone" placeholder="+965 2222 3333" dir="ltr"></div>
-          <div class="f"><label>Email · البريد</label><input type="text" id="scEmail" placeholder="studio@aura-arch.com" dir="ltr"></div>
-          <div class="f"><label>Location (EN)</label><input type="text" id="scLoc" placeholder="Kuwait City, Kuwait"></div>
-          <div class="f"><label>الموقع (AR)</label><input type="text" id="scLocAr" placeholder="مدينة الكويت، الكويت" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>Map Embed URL</label><input type="text" id="scMap" placeholder="https://www.openstreetmap.org/..." dir="ltr"></div>
-        </div>
-      </div>
-
-      <!-- Hero -->
-      <div class="panel">
-        <h3><span>Hero Text · نصوص الواجهة</span></h3>
-        <div class="grid2">
-          <div class="f"><label>العنوان 1 (AR)</label><input type="text" id="scH1Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان 2 (AR)</label><input type="text" id="scH2Ar" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scHSubAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>الوصف (AR)</label><input type="text" id="scHLineAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-        </div>
-      </div>
-
-      <!-- About -->
-      <div class="panel">
-        <h3><span>About Us · من نحن</span></h3>
-        <div class="grid2">
-          <div class="f"><label>العنوان الرئيسي (AR)</label><input type="text" id="scAHead" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>العنوان الفرعي (AR)</label><input type="text" id="scATitle" dir="rtl" style="font-family:var(--font-ar)"></div>
-        </div>
-        <div class="f" style="margin-top:14px"><label>الفقرة 1 (AR)</label><textarea id="scAP1" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
-        <div class="f" style="margin-top:14px"><label>الفقرة 2 (AR)</label><textarea id="scAP2" rows="3" dir="rtl" style="font-family:var(--font-ar)"></textarea></div>
-        <div class="grid3" style="margin-top:14px">
-          <div class="f"><label>اقتباس (AR)</label><input type="text" id="scAQuote" dir="rtl" style="font-family:var(--font-ar)"></div>
-          <div class="f"><label>إحصائية 1 — قيمة</label><input type="text" id="scS1V" dir="ltr"></div>
-          <div class="f"><label>إحصائية 1 — وصف (AR)</label><input type="text" id="scS1L" dir="rtl" style="font-family:var(--font-ar)"></div>
-        </div>
-      </div>
-
-      <!-- Clients -->
-      <div class="panel">
-        <h3><span>Clients · العملاء</span> <span class="badge" id="scClientCount">0</span></h3>
-        <div id="scClientList"></div>
-        <div class="btnrow">
-          <button class="btn sm ghost" onclick="scAddClient()">+ Add Client · إضافة عميل</button>
-        </div>
-      </div>
-
-      <div class="btnrow">
-        <button class="btn" onclick="saveSiteContent()">Save & Publish · حفظ ونشر</button>
-        <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
-      </div>
-    </div>
-
-    <!-- ========== INQUIRIES ========== -->
-    <div class="page" id="p-inquiries">
-      <h1 class="pt">Inquiries · طلبات العملاء <span class="badge" id="inqCount" style="margin-inline-start:10px">0</span></h1>
-      <div class="ps">الطلبات الواردة من نموذج العميل في الـ widget modal — مخزنة في المتصفح (localStorage)</div>
-      <div class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn sm ghost" onclick="filterInquiries('all')" id="inqFAll">All · الكل</button>
-            <button class="btn sm ghost" onclick="filterInquiries('new')" id="inqFNew">New · جديد</button>
-            <button class="btn sm ghost" onclick="filterInquiries('contacted')" id="inqFCont">Contacted · تم التواصل</button>
-            <button class="btn sm ghost" onclick="filterInquiries('closed')" id="inqFClosed">Closed · مغلق</button>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn sm ghost" onclick="exportInquiries()">Export CSV · تصدير</button>
-            <button class="btn sm danger" onclick="clearInquiries()">Clear All · حذف الكل</button>
-          </div>
-        </div>
-        <div id="inqList"></div>
-      </div>
-    </div>
-
-    <!-- ========== SEQUENCE ========== -->
-    <div class="page" id="p-sequence">
-      <h1 class="pt">Sequence Manager · إدارة تسلسل الصور</h1>
-      <div class="ps">تسلسل صور الفيلم الرئيسي — اسحب الإطارات لإعادة الترتيب والترقيم يتحدث تلقائيًا</div>
-      <div class="dropzone" id="dz">⬆ &nbsp;اسحب الصور أو ملف ZIP هنا — أو <b>انقر للاختيار · click to browse</b><br>
-        <span style="font-size:11px">Auto-sort by filename · WebP/AVIF conversion · quality check · batch upload</span>
-        <input type="file" id="dzInput" multiple accept="image/*,.zip" style="display:none">
-      </div>
-      <div class="panel">
-        <h3><span>Sequence — <span id="seqCount"></span> frames</span> <span class="badge" id="seqBadge">ALL FRAMES PASS QUALITY CHECK</span></h3>
-        <div class="frames" id="framesGrid"></div>
-      </div>
-    </div>
-
-    <!-- ========== STAGES ========== -->
-    <div class="page" id="p-stages">
-      <h1 class="pt">Stage Manager · إدارة المراحل</h1>
-      <div class="ps">أعد تسمية المراحل وعدّل النطاقات والألوان — التغييرات تُنشر فورًا</div>
-      <div class="panel" id="stagesPanel"></div>
-      <div class="btnrow">
-        <button class="btn" onclick="saveStages()">Save & Publish · حفظ ونشر</button>
-        <button class="btn ghost" onclick="toast('New stage added (edit range to activate)')">+ Add Stage · إضافة مرحلة</button>
-      </div>
-    </div>
-
-    <!-- ========== GALLERY ========== -->
-    <div class="page" id="p-gallery">
-      <h1 class="pt">Gallery Manager · إدارة المعارض</h1>
-      <div class="ps">معارض صور لكل مرحلة — تحويل WebP ومصغرات وتحميل كسول تلقائيًا</div>
-      <div class="gal-tabs" id="galTabs"></div>
-      <div class="dropzone" style="padding:22px">⬆ &nbsp;اسحب الصور لإضافتها لهذا المعرض · Drop images here</div>
-      <div class="gal-grid" id="galGrid"></div>
-    </div>
-
-    <!-- ========== INTERIOR ========== -->
-    <div class="page" id="p-interior">
-      <h1 class="pt">Interior · إدارة القسم الداخلي</h1>
-      <div class="ps">Rooms, sequences, panoramas, themes, hotspots and furniture — the interior journey.</div>
-
-      <div class="panel"><h3><span>Theme · الثيم الداخلي</span> <span class="badge">LIVE</span></h3>
-        <div class="gal-tabs" id="themeTabs"></div>
-        <div style="font-size:11.5px;color:var(--tx3);margin-top:4px">Switching themes updates furniture, materials and lighting presets while preserving room layouts.</div>
-      </div>
-
-      <div class="panel"><h3><span>Rooms · الغرف — <span id="roomCount"></span></span></h3>
-        <div id="roomRows"></div>
-        <div class="btnrow">
-          <button class="btn" onclick="saveInterior()">Save & Publish · حفظ ونشر</button>
-          <button class="btn ghost" onclick="toast('New room added — upload a sequence to activate')">+ Add Room · إضافة غرفة</button>
-          <button class="btn ghost" onclick="toast('Floor plan upload dialog (demo)')">Floor Plan · رفع مخطط</button>
-          <button class="btn ghost" onclick="toast('360° panorama upload (demo)')">Panorama · رفع بانوراما</button>
-        </div>
-      </div>
-
-      <div class="grid2">
-        <div class="panel"><h3>Furniture DB · قاعدة الأثاث</h3>
-          <div id="furnRows"></div>
-          <button class="btn sm ghost" style="margin-top:10px" onclick="toast('Furniture editor (demo)')">+ Add Furniture Item</button>
-        </div>
-        <div class="panel"><h3>Paths · النقاط والمسارات</h3>
-          <div class="frow"><div><div class="fl">Door hotspots between rooms</div><div class="fs">Auto-generated from room adjacency</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div>
-          <div class="frow"><div><div class="fl">Entrance fly-in transition</div><div class="fs">Zoom through the main door on "Explore"</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div>
-          <div class="frow"><div><div class="fl">First-person walkthrough</div><div class="fs">Free look + door navigation + build slider</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div>
-          <div class="frow"><div><div class="fl">Furniture hotspots</div><div class="fs">Appear when room build reaches 82%</div></div>
-            <label class="switch"><input type="checkbox" checked><i></i></label></div>
-          <div class="f" style="margin-top:14px"><label>Room transition fade (ms)</label>
-            <input type="range" min="200" max="900" step="20" value="420"><div class="rv">420 ms crossfade</div></div>
-        </div>
+        <button class="btn" onclick="saveBA()">حفظ · Save</button>
       </div>
     </div>
 
     <!-- ========== HOTSPOTS EDITOR ========== -->
+    <div class="page" id="p-hotspots">
+      <h1 class="pt">محرر النقاط · Hotspots Editor</h1>
+      <div class="ps">انقر على الصورة لإضافة نقطة · اسحب لتغيير المكان · انقر نقطة لتعديلها</div>
+      <div class="gal-tabs" id="hsTabs"></div>
+      <div class="panel" style="padding:14px">
+        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none">
+          <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="panel" id="hsForm" style="display:none">
+          <h3><span>تعديل النقطة · Edit Spot</span> <span class="badge" id="hsPos">x: — · y: —</span></h3>
+          <div class="grid2">
+            <div class="f"><label>Name (EN)</label><input type="text" id="hsName"></div>
+            <div class="f"><label>الاسم (AR)</label><input type="text" id="hsNameAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Material (EN)</label><input type="text" id="hsMat"></div>
+            <div class="f"><label>الخامة (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
+            <div class="f"><label>Brand</label><input type="text" id="hsBrand"></div>
+            <div class="f"><label>Price</label><input type="text" id="hsPrice"></div>
+          </div>
+          <div class="btnrow">
+            <button class="btn" onclick="hsApply()">تطبيق · Apply</button>
+            <button class="btn danger" onclick="hsDelete()">حذف · Delete</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>نقاط الغرفة <span class="badge" id="hsCount">0</span></h3>
+          <div id="hsList"></div>
+          <div class="btnrow">
+            <button class="btn" onclick="hsSave()">حفظ · Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MATERIALS ========== -->
+    <div class="page" id="p-materials">
+      <h1 class="pt">المواد · Materials Library</h1>
+      <div class="panel" id="matPanel"></div>
+      <button class="btn" onclick="toast('Material editor opened')">+ إضافة مادة · Add Material</button>
+    </div>
+
     <div class="page" id="p-hotspots">
       <h1 class="pt">Hotspots Editor · محرر النقاط</h1>
       <div class="ps">انقر على الصورة لإضافة نقطة جديدة · اسحب النقطة لتغيير مكانها · انقر نقطة لتعديل بياناتها — والموقع يقرأ التغييرات فورًا</div>
@@ -739,7 +683,56 @@ function boot(){
   updRvUI();
   buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
   buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();buildInquiries();buildSiteContent();
+  wireProjTabs();
   document.getElementById('dFrames').textContent=PROJ.sequence.count;
+}
+/* wire internal project tabs */
+function wireProjTabs(){
+  document.querySelectorAll('#projTabs .gtab').forEach(t=>{
+    t.onclick=()=>{
+      document.querySelectorAll('#projTabs .gtab').forEach(x=>x.classList.remove('on'));
+      t.classList.add('on');
+      document.querySelectorAll('.proj-tab').forEach(pt=>pt.style.display='none');
+      const target=$('pt-'+t.dataset.pt);if(target)target.style.display='block';
+      if(t.dataset.pt==='stages')buildStages();
+      if(t.dataset.pt==='sequence')buildFrames();
+      if(t.dataset.pt==='gallery')buildGalleryTabs();
+      if(t.dataset.pt==='interior')buildInterior();
+      if(t.dataset.pt==='contact')buildContactEditor();
+    };
+  });
+}
+
+/* ============================================================
+   IMAGE UPLOAD — Base64 + canvas compression
+   Works for small images (logos, before/after, room thumbs)
+   Large sequences: keep using URL fields (link to /assets/)
+   ============================================================ */
+function uploadImage(inputId){
+  const fileInput=document.getElementById(inputId+'File');
+  if(fileInput){fileInput.click();}
+}
+function handleUpload(fileInput, targetId){
+  const file=fileInput.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      /* compress: max 1200px width, JPEG quality 0.82 */
+      const canvas=document.createElement('canvas');
+      const maxW=1200;let w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      const dataUrl=canvas.toDataURL('image/jpeg',0.82);
+      const target=document.getElementById(targetId);
+      if(target){target.value=dataUrl;toast('Image uploaded ('+Math.round(dataUrl.length/1024)+'KB)');}
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 function $(id){return document.getElementById(id);}
 ['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
@@ -1209,10 +1202,22 @@ function buildWidgets(){
 }
 function addWidgetImage(){
   const w=PROJ.widgets[_wCur];if(!w)return;
-  const url=prompt('Image URL/path:','assets/villa-clean.png');
-  if(!url)return;
-  w.gallery=w.gallery||[];w.gallery.push(url);
-  buildWidgets();
+  /* create hidden file input and trigger upload */
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
+  fi.onchange=()=>{
+    const file=fi.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=e=>{const img=new Image();img.onload=()=>{
+      const canvas=document.createElement('canvas');const maxW=1200;let iw=img.width,ih=img.height;
+      if(iw>maxW){ih=Math.round(ih*maxW/iw);iw=maxW;}canvas.width=iw;canvas.height=ih;
+      canvas.getContext('2d').drawImage(img,0,0,iw,ih);
+      const dataUrl=canvas.toDataURL('image/jpeg',0.82);
+      w.gallery=w.gallery||[];w.gallery.push(dataUrl);buildWidgets();
+      toast('Image uploaded ('+Math.round(dataUrl.length/1024)+'KB)');
+    };img.src=e.target.result;};
+    reader.readAsDataURL(file);
+  };
+  document.body.appendChild(fi);fi.click();document.body.removeChild(fi);
 }
 function removeWidgetImage(i){
   const w=PROJ.widgets[_wCur];if(!w||!w.gallery)return;
