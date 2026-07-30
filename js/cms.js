@@ -366,7 +366,7 @@ window.AURA_DEFAULTS = {
     clients: [
       {icon:'▲',name:'Al-Sabah Developments'},
       {icon:'◆',name:'Marmi Kuwait'},
-      {icon:'●',name:'Studio Forma'},
+      {icon:'●',name:'Studio Forma KW'},
       {icon:'■',name:'Gulf RMC'},
       {icon:'★',name:'Light House KW'},
       {icon:'⬢',name:'Qurain Steel'},

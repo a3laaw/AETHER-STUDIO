@@ -266,6 +266,53 @@ html[dir="rtl"] .contact-channel:hover{transform:translateX(-4px)}
 .contact-map .map-label .map-hint{margin-inline-start:auto;font-size:10.5px;color:#9A9A9F;font-weight:500}
 @media(max-width:900px){.contact-grid{grid-template-columns:1fr;gap:36px}.contact-map{margin-top:24px}.contact-map iframe{height:180px}}
 
+/* ================= DETAILS VIEW (full-screen white overlay) ================= */
+#detailsView{position:fixed;inset:0;z-index:350;display:none;background:#FAFAF7;overflow-y:auto}
+#detailsView.on{display:block;animation:dvIn .4s ease}
+@keyframes dvIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#dvContent{max-width:900px;margin:0 auto;padding:60px 6vw 80px;color:#1A1A1C}
+.dv-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px}
+.dv-ic{width:52px;height:52px;border-radius:14px;background:#1A1A1C;color:#BFA76A;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.dv-eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#BFA76A;margin-bottom:4px}
+#dvContent h2{font-size:30px;font-weight:700;letter-spacing:-.02em;color:#1A1A1C;margin-bottom:4px}
+html[dir="rtl"] #dvContent h2{font-family:var(--font-ar)}
+.dv-sub{font-size:14px;color:#6E7079;font-weight:500}
+.dv-desc{font-size:15px;color:#3A3A3E;line-height:1.8;margin-bottom:24px}
+.dv-bullets{display:flex;flex-direction:column;gap:8px;margin-bottom:32px}
+.dv-bullet{font-size:13.5px;color:#3A3A3E;padding:10px 14px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:10px}
+.dv-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.dv-stat{text-align:center;padding:20px;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:14px}
+.dv-val{font-size:36px;font-weight:700;color:#BFA76A;font-family:var(--font);line-height:1}
+.dv-lbl{font-size:12px;color:#6E7079;margin-top:6px}
+.dv-stages{margin-bottom:28px;border:1px solid rgba(0,0,0,.06);border-radius:14px;overflow:hidden}
+.dv-stage-row{display:grid;grid-template-columns:40px 1fr auto;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.04);align-items:center;font-size:13px}
+.dv-stage-row:last-child{border:none}
+.dv-stage-n{color:#BFA76A;font-weight:700;font-family:var(--font)}
+.dv-stage-name{font-weight:600;color:#1A1A1C}
+.dv-stage-w{color:#6E7079;font-size:12px;font-family:var(--font)}
+.dv-ba-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px}
+.dv-ba-item{border:1px solid rgba(0,0,0,.06);border-radius:14px;overflow:hidden}
+.dv-ba-label{padding:10px 14px;background:#1A1A1C;color:#BFA76A;font-size:12px;font-weight:700;text-align:center}
+.dv-ba-imgs{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.dv-ba-imgs img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.dv-rooms-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px}
+.dv-room{border:1px solid rgba(0,0,0,.06);border-radius:14px;overflow:hidden}
+.dv-room img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.dv-room-info{padding:12px 14px}
+.dv-room-info b{display:block;font-size:14px;font-weight:700;color:#1A1A1C}
+.dv-room-info span{font-size:12px;color:#6E7079;font-family:var(--font)}
+.dv-data-table{border:1px solid rgba(0,0,0,.06);border-radius:14px;overflow:hidden;margin-bottom:28px}
+.dv-data-row{display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.04);font-size:14px}
+.dv-data-row:last-child{border:none}
+.dv-data-l{color:#3A3A3E;font-weight:500}
+.dv-data-v{color:#1A1A1C;font-weight:700;font-family:var(--font)}
+.dv-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.dv-cta{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;background:#1A1A1C;color:#fff;font-weight:600;font-size:14px;text-decoration:none;transition:.3s}
+.dv-cta:hover{background:#000;transform:translateY(-1px)}
+.dv-back{display:inline-flex;align-items:center;padding:12px 22px;border-radius:999px;background:transparent;color:#6E7079;font-weight:600;font-size:14px;border:1px solid rgba(0,0,0,.1);cursor:pointer;transition:.3s;font-family:inherit}
+.dv-back:hover{background:rgba(0,0,0,.04);color:#1A1A1C}
+@media(max-width:700px){.dv-stats{grid-template-columns:1fr}.dv-ba-grid,.dv-rooms-grid{grid-template-columns:1fr}}
+
 /* ================= FOOTER ================= */
 footer{padding:50px 6vw 30px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px;background:var(--bg-2)}
 footer .logo{font-weight:700;letter-spacing:.28em;font-size:14px;color:var(--fg)}
@@ -513,6 +560,11 @@ footer p .ar{font-family:var(--font-ar)}
 <!-- ================= HIDDEN ADMIN GATE ================= -->
 <div id="adminGate">
   <!-- Access: 3 clicks on AURA logo within 2s, or Ctrl+Shift+A -->
+</div>
+
+<!-- ================= DETAILS VIEW (full-screen white overlay) ================= -->
+<div id="detailsView">
+  <div id="dvContent"></div>
 </div>
 
 <div id="toast"></div>
@@ -855,7 +907,7 @@ function openWidgetModal(w){
   $('mBullets').innerHTML=bullets.map(b=>`<div class="b">${b}</div>`).join('');
   $('mDetails').textContent=isAr?'عرض التفاصيل · View Details →':'View Details →';
   $('mClose2').textContent=isAr?'إغلاق · Close':'Close';
-  $('mDetails').onclick=()=>{closeModal();toast(isAr?'سيتم فتح '+T(w.mTitle.ar,w.mTitle.en)+' قريبًا':T(w.mTitle.ar,w.mTitle.en)+' — coming soon');};
+  $('mDetails').onclick=()=>{closeModal();openDetailsView(w);};
   $('modal').classList.add('on');
   document.body.style.overflow='hidden';
 }
@@ -863,7 +915,62 @@ function closeModal(){$('modal').classList.remove('on');document.body.style.over
 $('modalClose').onclick=closeModal;
 $('mClose2').onclick=closeModal;
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
-addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetails();}});
+
+/* ---------- Details View (full-screen white overlay) ---------- */
+function openDetailsView(w){
+  const dv=$('detailsView');
+  const title=T(w.mTitle.ar,w.mTitle.en);
+  const sub=T(w.mSub.ar,w.mSub.en);
+  const desc=T(w.mDesc.ar,w.mDesc.en);
+  const bullets=isAr?w.bullets.ar:w.bullets.en;
+  /* build details content based on widget type */
+  let extraHTML='';
+  if(w.id==='progress'){
+    const m=PROJ.project;
+    extraHTML=`<div class="dv-stats">
+      <div class="dv-stat"><div class="dv-val">${PROJ.project.progress||100}%</div><div class="dv-lbl">${isAr?'الإنجاز':'Completion'}</div></div>
+      <div class="dv-stat"><div class="dv-val">${PROJ.stages.length}</div><div class="dv-lbl">${isAr?'مراحل':'Stages'}</div></div>
+      <div class="dv-stat"><div class="dv-val">97</div><div class="dv-lbl">${isAr?'إطار':'Frames'}</div></div>
+    </div>
+    <div class="dv-stages">${PROJ.stages.map((s,i)=>'<div class="dv-stage-row"><span class="dv-stage-n">'+String(i+1).padStart(2,'0')+'</span><span class="dv-stage-name">'+T(s.name,s.ar)+'</span><span class="dv-stage-w">'+s.from+'-'+s.to+'</span></div>').join('')}</div>`;
+  } else if(w.id==='ba'){
+    extraHTML=`<div class="dv-ba-grid">${PROJ.beforeAfter.map((p,i)=>`
+      <div class="dv-ba-item"><div class="dv-ba-label">${T(p.label,p.labelAr)}</div>
+      <div class="dv-ba-imgs"><img src="${p.before}" alt="before"><img src="${p.after}" alt="after"></div></div>`).join('')}</div>`;
+  } else if(w.id==='rooms'){
+    const rooms=PROJ.interior.rooms.filter(r=>r.interactive);
+    extraHTML=`<div class="dv-rooms-grid">${rooms.map(r=>`
+      <div class="dv-room"><img src="assets/rooms/${r.id}-complete.png" alt="${r.name}" loading="lazy">
+      <div class="dv-room-info"><b>${T(r.name,r.ar)}</b><span>${r.area} · ${r.height}</span></div></div>`).join('')}</div>`;
+  } else if(w.id==='structural'||w.id==='materials'||w.id==='schedule'||w.id==='cost'||w.id==='qa'){
+    const data={
+      structural:[['السلامة الإنشائية','99%','Integrity'],['مسار الأحمال','Optimal','Load path'],['الترخيم','L/540','Deflection'],['الأساسات','Cured','Foundation']],
+      materials:[['التربة','OK','Soil'],['الحديد','OK','Rebar'],['الخرسانة','OK','Concrete'],['الترافرتين','OK','Travertine']],
+      schedule:[['المسار الحرج','52 أسبوع','Critical path'],['المرحلة الحالية',T(PROJ.stages[4].name,PROJ.stages[4].ar),'Current'],['المخاطر','0','Risks'],['التقدّم',PROJ.project.progress+'%','Progress']],
+      cost:[['المصروف','86%','Budget used'],['الانحراف','−1.2%','Variance'],['الاحتياطي','8.0%','Contingency'],['الفحوصات','24/24','Inspections']],
+      qa:[['الفحوصات','24/24','Inspections'],['الملاحظات','0','Open'],['السلامة','صفر حوادث','Safety'],['التسليم','✓','Handover']]
+    };
+    const rows=data[w.id]||[];
+    extraHTML=`<div class="dv-data-table">${rows.map(r=>`<div class="dv-data-row"><span class="dv-data-l">${isAr?r[0]:r[2]}</span><span class="dv-data-v">${r[1]}</span></div>`).join('')}</div>`;
+  }
+  $('dvContent').innerHTML=`
+    <div class="dv-head">
+      <div class="dv-ic">${w.icon}</div>
+      <div><div class="dv-eyebrow">${T(w.sub.ar,w.sub.en).toUpperCase()}</div>
+      <h2>${title}</h2><p class="dv-sub">${sub}</p></div>
+    </div>
+    <p class="dv-desc">${desc}</p>
+    <div class="dv-bullets">${bullets.map(b=>`<div class="dv-bullet">✓ ${b}</div>`).join('')}</div>
+    ${extraHTML}
+    <div class="dv-actions">
+      <a href="#contact" class="dv-cta" onclick="closeDetails()">${isAr?'تواصل معنا · Contact us':'Contact us'} →</a>
+      <button class="dv-back" onclick="closeDetails()">${isAr?'← رجوع':'← Back'}</button>
+    </div>`;
+  dv.classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeDetails(){$('detailsView').classList.remove('on');document.body.style.overflow='';}
 
 /* also wire services cards to open modals */
 document.querySelectorAll('.svc-card[data-wid]').forEach(c=>{
@@ -976,14 +1083,25 @@ $('contactForm').addEventListener('submit',e=>{
   const name=$('cName').value.trim(),phone=$('cPhone').value.trim(),company=$('cCompany').value.trim(),msg=$('cMsg').value.trim();
   if(!name||!phone){toast(isAr?'اكتب اسمك ورقم هاتفك':'Please enter name and phone');return;}
   const inq={id:'inq-'+Date.now(),date:new Date().toISOString(),name,phone,company,msg,status:'new',source:'contact-section'};
+  /* save to localStorage for admin panel */
   try{
     const all=JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
     all.unshift(inq);
     localStorage.setItem('aura.inquiries',JSON.stringify(all));
   }catch(err){}
+  /* open WhatsApp with prefilled message — gets the WhatsApp number from siteContent (editable in admin) */
+  const wa=CFG.siteContent?.contact?.whatsapp||'96522223333';
+  const waMsg=`*طلب جديد من موقع AURA Studio*\n\n`+
+    `👤 الاسم: ${name}\n`+
+    `📞 الهاتف: ${phone}\n`+
+    (company?`🏢 الشركة: ${company}\n`:'')+
+    (msg?`💬 الرسالة: ${msg}\n`:'')+
+    `\n— أرسل من نموذج التواصل`;
+  window.open(`https://wa.me/${wa}?text=${encodeURIComponent(waMsg)}`,'_blank');
+  $('contactMsg').textContent=isAr?'✓ تم إرسال طلبك على واتساب! سنتواصل معك قريبًا.':'✓ Request sent via WhatsApp! We will contact you soon.';
   $('contactMsg').classList.add('show');
   $('contactForm').reset();
-  setTimeout(()=>$('contactMsg').classList.remove('show'),5000);
+  setTimeout(()=>$('contactMsg').classList.remove('show'),6000);
 });
 </script>
 </body>
