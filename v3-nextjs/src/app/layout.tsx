@@ -3,6 +3,7 @@ import { Inter, Cormorant_Garamond, Tajawal, Reem_Kufi } from "next/font/google"
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/components/language-provider";
+import { ProjectProvider } from "@/components/project-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -69,7 +70,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${cormorant.variable} ${tajawal.variable} ${reemKufi.variable} antialiased`}
       >
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <ProjectProvider>{children}</ProjectProvider>
+        </LanguageProvider>
         <Toaster />
       </body>
     </html>

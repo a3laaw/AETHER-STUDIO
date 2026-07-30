@@ -1,11 +1,13 @@
 "use client";
 
 import { useLang } from "@/components/language-provider";
+import { useProject } from "@/components/project-provider";
 import { t, tr } from "@/lib/i18n";
 import { MapPin, Clock, TrendingUp, AlertCircle } from "lucide-react";
 
 export function LiveProjectProof() {
   const { lang } = useLang();
+  const { current } = useProject();
 
   return (
     <section id="projects" className="relative py-24 lg:py-32 px-6 lg:px-12">
@@ -14,12 +16,12 @@ export function LiveProjectProof() {
         <div className="text-center mb-12">
           <div className="eyebrow mb-4">{tr(t.proof.eyebrow, lang)}</div>
           <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-bold mb-3 text-[var(--fg)]">
-            {tr(t.proof.title, lang)}
+            {current.title[lang]}
           </h2>
           <div className="flex items-center justify-center gap-3 text-[13px] text-[var(--fg-muted)] flex-wrap">
             <span className="flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5" />
-              {tr(t.proof.location, lang)}
+              {current.location[lang]}
             </span>
             <span className="text-[var(--accent-gold)]">·</span>
             <span className="pill pill-gold !py-1 !px-3">
@@ -46,7 +48,8 @@ export function LiveProjectProof() {
                     strokeWidth="6"
                     strokeLinecap="round"
                     strokeDasharray={2 * Math.PI * 86}
-                    strokeDashoffset={0}
+                    strokeDashoffset={2 * Math.PI * 86 * (1 - current.completion / 100)}
+                    style={{ transition: "stroke-dashoffset 1.5s ease" }}
                   />
                   <defs>
                     <linearGradient id="goldGrad2" x1="0" y1="0" x2="1" y2="1">
@@ -56,7 +59,9 @@ export function LiveProjectProof() {
                   </defs>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="num-callout text-[64px] text-[var(--accent-gold)] leading-none">100</span>
+                  <span className="num-callout text-[64px] text-[var(--accent-gold)] leading-none">
+                    {current.completion}
+                  </span>
                   <span className="text-[12px] text-[var(--fg-muted)] tracking-[0.18em] uppercase mt-1">
                     {tr(t.proof.completion, lang)}
                   </span>
@@ -71,35 +76,35 @@ export function LiveProjectProof() {
                   {tr(t.proof.phase, lang)}
                 </div>
                 <div className="text-[26px] font-bold text-[var(--fg)] mb-1">
-                  {lang === "ar" ? "التسليم النهائي" : "Final Handover"}
+                  {current.phase[lang]}
                 </div>
                 <div className="text-[12px] text-[var(--fg-muted)] flex items-center gap-1.5">
                   <Clock className="w-3 h-3" />
-                  {tr(t.proof.lastUpdate, lang)}: {lang === "ar" ? "قبل شهرين" : "2 months ago"}
+                  {tr(t.proof.lastUpdate, lang)}: {current.lastUpdate[lang]}
                 </div>
               </div>
 
               <div className="gold-rule-solid opacity-30 mb-5" />
 
-              {/* Just 3 key metrics */}
+              {/* 3 key metrics */}
               <div className="grid grid-cols-3 gap-4">
                 <Metric
                   icon={TrendingUp}
                   label={tr(t.proof.qualityScore, lang)}
-                  value="98%"
-                  trend="+2%"
+                  value={current.metrics.quality.value}
+                  trend={current.metrics.quality.trend}
                 />
                 <Metric
                   icon={AlertCircle}
                   label={tr(t.proof.openIssues, lang)}
-                  value="0"
-                  trend={lang === "ar" ? "مغلقة" : "closed"}
+                  value={current.metrics.issues.value}
+                  trend={current.metrics.issues.trend}
                 />
                 <Metric
                   icon={TrendingUp}
                   label={tr(t.proof.budgetVariance, lang)}
-                  value="−1.2%"
-                  trend={lang === "ar" ? "ضمن الميزانية" : "on budget"}
+                  value={current.metrics.budget.value}
+                  trend={current.metrics.budget.trend}
                 />
               </div>
 

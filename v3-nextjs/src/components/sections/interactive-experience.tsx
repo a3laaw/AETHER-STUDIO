@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLang } from "@/components/language-provider";
+import { useProject } from "@/components/project-provider";
 import { t, tr } from "@/lib/i18n";
 import { Map, Eye, GitCompare } from "lucide-react";
 
@@ -9,15 +10,13 @@ type Tab = "plan" | "360" | "ba";
 
 export function InteractiveExperience() {
   const { lang } = useLang();
+  const { current } = useProject();
   const [tab, setTab] = useState<Tab>("plan");
   const [baTab, setBaTab] = useState(0);
   const [baPos, setBaPos] = useState(50);
 
-  const baPairs = [
-    { before: "/aura/villa-blueprint.png", after: "/aura/villa-wireframe.png" },
-    { before: "/aura/stages/s4-shell.png", after: "/aura/stages/s5-facade.png" },
-    { before: "/aura/villa-clean.png", after: "/aura/stages/s7-night.png" },
-  ];
+  // Use the current project's before/after pairs (4 items per project)
+  const baPairs = current.beforeAfter.map((p) => ({ before: p.before, after: p.after, label: p.label }));
 
   const tabs = [
     { id: "plan" as Tab, label: t.interactive.floorPlan, icon: Map, hint: t.interactive.floorPlanHint },
@@ -125,9 +124,9 @@ export function InteractiveExperience() {
           {/* Before/After */}
           {tab === "ba" && (
             <div>
-              {/* Discipline tabs */}
-              <div className="flex justify-center gap-2 p-4 border-b border-[var(--border)]">
-                {t.interactive.baTabs.map((bt, i) => (
+              {/* Discipline tabs — uses project's beforeAfter array (4 items) */}
+              <div className="flex justify-center gap-2 p-4 border-b border-[var(--border)] flex-wrap">
+                {baPairs.map((p, i) => (
                   <button
                     key={i}
                     onClick={() => {
@@ -140,7 +139,7 @@ export function InteractiveExperience() {
                         : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
                     }`}
                   >
-                    {tr(bt, lang)}
+                    {p.label[lang]}
                   </button>
                 ))}
               </div>

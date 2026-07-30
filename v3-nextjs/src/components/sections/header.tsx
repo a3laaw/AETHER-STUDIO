@@ -34,7 +34,7 @@ export function Header() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className={`flex items-center justify-between transition-all duration-500 ${scrolled ? "h-16" : "h-20"}`}>
           {/* Logo */}
-          <a href="#top" className="flex items-center gap-2.5 group">
+          <a href="#top" data-aura-logo="1" className="flex items-center gap-2.5 group">
             <span className="text-[19px] font-bold tracking-[0.18em] text-[var(--fg)]">
               AURA
             </span>

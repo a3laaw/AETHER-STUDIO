@@ -1,26 +1,17 @@
 "use client";
 
 import { useLang } from "@/components/language-provider";
+import { useProject } from "@/components/project-provider";
 import { t, tr } from "@/lib/i18n";
-import { CheckCircle2 } from "lucide-react";
-
-const stageImages: Record<string, string> = {
-  excavation: "/aura/stages/s1-excavation.png",
-  foundation: "/aura/stages/s2-foundation.png",
-  structure: "/aura/stages/s3-structure.png",
-  shell: "/aura/stages/s4-shell.png",
-  facade: "/aura/stages/s5-facade.png",
-  complete: "/aura/stages/s7-night.png",
-  night: "/aura/stages/s7-night.png",
-};
+import { Play, CheckCircle2, Loader2, Circle } from "lucide-react";
 
 export function ConstructionTimeline() {
   const { lang } = useLang();
+  const { current } = useProject();
 
   return (
     <section id="timeline" className="relative py-24 lg:py-32 px-6 lg:px-12">
-      <div className="max-w-[1200px] mx-auto">
-        {/* Heading */}
+      <div className="max-w-[1400px] mx-auto">
         <div className="text-center mb-14">
           <div className="eyebrow mb-4">{tr(t.timeline.eyebrow, lang)}</div>
           <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-bold mb-3 text-[var(--fg)]">
@@ -31,36 +22,93 @@ export function ConstructionTimeline() {
           </p>
         </div>
 
-        {/* SIMPLIFIED horizontal timeline — just a line + dots + labels */}
-        <div className="relative">
-          {/* The line */}
-          <div className="absolute top-5 inset-x-0 h-px bg-gradient-to-r from-transparent via-[var(--accent-gold)]/40 to-transparent" />
+        {/* Detailed stage grid — one card per stage with image, name, weeks, status, note */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {current.stages.map((stage, i) => {
+            const StatusIcon =
+              stage.status === "complete"
+                ? CheckCircle2
+                : stage.status === "current"
+                ? Loader2
+                : Circle;
+            const statusColor =
+              stage.status === "complete"
+                ? "#6FAD7F"
+                : stage.status === "current"
+                ? "#BFA76A"
+                : "#6E7079";
+            const statusLabel =
+              stage.status === "complete"
+                ? lang === "ar"
+                  ? "مكتمل"
+                  : "Complete"
+                : stage.status === "current"
+                ? lang === "ar"
+                  ? "حالي"
+                  : "Current"
+                : lang === "ar"
+                ? "قادم"
+                : "Upcoming";
 
-          {/* Stages row */}
-          <div className="relative grid grid-cols-7 gap-2">
-            {t.timeline.stages.map((stage, i) => (
-              <div key={stage.id} className="flex flex-col items-center text-center">
-                {/* Dot */}
-                <div className="w-10 h-10 rounded-full bg-[var(--bg)] border-2 border-[var(--accent-gold)] flex items-center justify-center mb-3 relative z-10">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-gold)]" />
+            return (
+              <div
+                key={stage.id}
+                className="surface-card overflow-hidden group hover:translate-y-[-2px] transition-transform"
+              >
+                <div className="relative aspect-[4/3] bg-[var(--surface-2)] overflow-hidden">
+                  <img
+                    src={stage.image}
+                    alt={stage.name[lang]}
+                    className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${
+                      stage.status === "upcoming"
+                        ? "opacity-30 grayscale group-hover:opacity-50"
+                        : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                    }`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute top-2 left-2 text-[10px] font-bold text-white/90 tracking-wider bg-black/50 px-2 py-0.5 rounded-full">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <div
+                    className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur border"
+                    style={{
+                      backgroundColor: `${statusColor}22`,
+                      borderColor: `${statusColor}66`,
+                    }}
+                  >
+                    <StatusIcon
+                      className={`w-2.5 h-2.5 ${stage.status === "current" ? "animate-spin" : ""}`}
+                      style={{ color: statusColor }}
+                    />
+                    <span
+                      className="text-[9.5px] font-bold uppercase tracking-wider"
+                      style={{ color: statusColor }}
+                    >
+                      {statusLabel}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Stage name + weeks */}
-                <div className="text-[12.5px] font-bold text-[var(--fg)] mb-1 leading-tight">
-                  {tr(stage.name, lang)}
-                </div>
-                <div className="text-[10.5px] text-[var(--fg-muted)] latin">
-                  {tr(stage.weeks, lang)}
+                <div className="p-4">
+                  <div className="text-[10px] text-[var(--accent-gold)] tracking-[0.18em] uppercase mb-1 latin">
+                    {stage.weeks[lang]}
+                  </div>
+                  <h3 className="text-[15px] font-bold text-[var(--fg)] mb-2">
+                    {stage.name[lang]}
+                  </h3>
+                  <p className="text-[11.5px] text-[var(--fg-muted)] leading-relaxed line-clamp-3">
+                    {stage.note[lang]}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Film button — only CTA on this section */}
-        <div className="text-center mt-14">
+        {/* Film button */}
+        <div className="text-center">
           <a href="#cta" className="btn-outline gap-2">
-            <span className="text-[var(--accent-gold)]">▶</span>
+            <Play className="w-4 h-4 fill-current text-[var(--accent-gold)]" />
             {tr(t.timeline.filmBtn, lang)}
           </a>
         </div>
