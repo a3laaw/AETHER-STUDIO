@@ -570,6 +570,7 @@ footer p .ar{font-family:var(--font-ar)}
 <div id="toast"></div>
 
 <script src="js/cms.js"></script>
+<script src="js/supabase.js"></script>
 <script>
 /* ============================================================
    AURA STUDIO — Single-structure cinematic experience
@@ -1078,18 +1079,22 @@ document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?
 })();
 
 /* ---------- contact form ---------- */
-$('contactForm').addEventListener('submit',e=>{
+$('contactForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const name=$('cName').value.trim(),phone=$('cPhone').value.trim(),company=$('cCompany').value.trim(),msg=$('cMsg').value.trim();
   if(!name||!phone){toast(isAr?'اكتب اسمك ورقم هاتفك':'Please enter name and phone');return;}
   const inq={id:'inq-'+Date.now(),date:new Date().toISOString(),name,phone,company,msg,status:'new',source:'contact-section'};
-  /* save to localStorage for admin panel */
-  try{
-    const all=JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
-    all.unshift(inq);
-    localStorage.setItem('aura.inquiries',JSON.stringify(all));
-  }catch(err){}
-  /* open WhatsApp with prefilled message — gets the WhatsApp number from siteContent (editable in admin) */
+  /* save to Supabase (primary) + localStorage (backup) */
+  if(window.AURA_DB){
+    await AURA_DB.saveInquiry(inq);
+  } else {
+    try{
+      const all=JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
+      all.unshift(inq);
+      localStorage.setItem('aura.inquiries',JSON.stringify(all));
+    }catch(err){}
+  }
+  /* open WhatsApp with prefilled message */
   const wa=CFG.siteContent?.contact?.whatsapp||'96522223333';
   const waMsg=`*طلب جديد من موقع AURA Studio*\n\n`+
     `👤 الاسم: ${name}\n`+

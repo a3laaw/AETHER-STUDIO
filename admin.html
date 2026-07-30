@@ -620,6 +620,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 <div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved</span></div>
 
 <script src="js/cms.js"></script>
+<script src="js/supabase.js"></script>
 <script>
 let CFG = AURA.load();
 let PROJ = AURA.getCurrent(CFG);   /* the project currently being edited */
@@ -724,28 +725,35 @@ function wireProjTabs(){
 }
 
 /* ============================================================
-   IMAGE UPLOAD — Base64 + canvas compression
-   Works for small images (logos, before/after, room thumbs)
-   Large sequences: keep using URL fields (link to /assets/)
+   IMAGE UPLOAD — Supabase Storage primary, Base64 fallback
    ============================================================ */
 function uploadImage(inputId){
   const fileInput=document.getElementById(inputId+'File');
   if(fileInput){fileInput.click();}
 }
-function handleUpload(fileInput, targetId){
+async function handleUpload(fileInput, targetId){
   const file=fileInput.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading image...');
+  /* try Supabase Storage first */
+  if(window.AURA_DB && AURA_DB.isReady()){
+    try{
+      const url=await AURA_DB.uploadImage(file, targetId.replace('f',''));
+      const target=document.getElementById(targetId);
+      if(target){target.value=url;toast('Image uploaded to Supabase ✓');}
+      return;
+    }catch(e){console.warn('Supabase upload failed, using Base64',e);}
+  }
+  /* fallback: Base64 compression */
   const reader=new FileReader();
   reader.onload=function(e){
     const img=new Image();
     img.onload=function(){
-      /* compress: max 1200px width, JPEG quality 0.82 */
       const canvas=document.createElement('canvas');
       const maxW=1200;let w=img.width,h=img.height;
       if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
       canvas.width=w;canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(img,0,0,w,h);
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
       const dataUrl=canvas.toDataURL('image/jpeg',0.82);
       const target=document.getElementById(targetId);
       if(target){target.value=dataUrl;toast('Image uploaded ('+Math.round(dataUrl.length/1024)+'KB)');}
@@ -1220,12 +1228,22 @@ function buildWidgets(){
     if(bi!==undefined&&bk!==undefined){w.bullets[+bi][+bk]=e.target.value;}
   });
 }
-function addWidgetImage(){
+async function addWidgetImage(){
   const w=PROJ.widgets[_wCur];if(!w)return;
-  /* create hidden file input and trigger upload */
   const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
-  fi.onchange=()=>{
+  fi.onchange=async ()=>{
     const file=fi.files[0];if(!file)return;
+    toast('Uploading image...');
+    /* try Supabase Storage */
+    if(window.AURA_DB && AURA_DB.isReady()){
+      try{
+        const url=await AURA_DB.uploadImage(file, 'widget-'+_wCur);
+        w.gallery=w.gallery||[];w.gallery.push(url);buildWidgets();
+        toast('Image uploaded to Supabase ✓');
+        return;
+      }catch(e){console.warn('Supabase upload failed, using Base64',e);}
+    }
+    /* fallback: Base64 */
     const reader=new FileReader();
     reader.onload=e=>{const img=new Image();img.onload=()=>{
       const canvas=document.createElement('canvas');const maxW=1200;let iw=img.width,ih=img.height;
@@ -1366,24 +1384,37 @@ function scAddClient(){CFG.siteContent.clients.push({icon:'◆',name:'New Client
 function scDelClient(i){CFG.siteContent.clients.splice(i,1);scRenderClients();}
 function saveSiteContent(){
   const sc=CFG.siteContent;
-  sc.contact.whatsapp=scWa.value;sc.contact.phone=scPhone.value;sc.contact.email=scEmail.value;
-  sc.contact.location=scLoc.value;sc.contact.locationAr=scLocAr.value;sc.contact.mapUrl=scMap.value;
-  sc.hero.title1Ar=scH1Ar.value;sc.hero.title2Ar=scH2Ar.value;sc.hero.subtitleAr=scHSubAr.value;sc.hero.sublineAr=scHLineAr.value;
-  sc.about.headingAr=scAHead.value;sc.about.titleAr=scATitle.value;sc.about.p1Ar=scAP1.value;sc.about.p2Ar=scAP2.value;
-  sc.about.quoteAr=scAQuote.value;sc.about.stat1Val=scS1V.value;sc.about.stat1LabelAr=scS1L.value;
-  AURA.save(CFG);toast('Site content published · تم نشر المحتوى — حدّث صفحة الموقع');
+  const get=id=>{const el=document.getElementById(id);return el?el.value:'';};
+  sc.contact.whatsapp=get('scWa');sc.contact.phone=get('scPhone');sc.contact.email=get('scEmail');
+  sc.contact.location=get('scLoc');sc.contact.locationAr=get('scLocAr');sc.contact.mapUrl=get('scMap');
+  sc.hero.title1Ar=get('scH1Ar');sc.hero.title2Ar=get('scH2Ar');sc.hero.subtitleAr=get('scHSubAr');sc.hero.sublineAr=get('scHLineAr');
+  sc.about.headingAr=get('scAHead');sc.about.titleAr=get('scATitle');sc.about.p1Ar=get('scAP1');sc.about.p2Ar=get('scAP2');
+  sc.about.quoteAr=get('scAQuote');sc.about.stat1Val=get('scS1V');sc.about.stat1LabelAr=get('scS1L');
+  AURA.save(CFG);
+  /* also save to Supabase */
+  if(window.AURA_DB)AURA_DB.saveSiteContent(sc);
+  toast('Site content published · تم نشر المحتوى — حدّث صفحة الموقع');
 }
 
 /* ============================================================
-   INQUIRIES (from widget modal form submissions)
+   INQUIRIES — Supabase primary, localStorage fallback
    ============================================================ */
-function loadInquiries(){
+let _inquiriesCache=[];
+async function loadInquiries(){
+  /* try Supabase first */
+  if(window.AURA_DB && AURA_DB.isReady()){
+    try{
+      _inquiriesCache=await AURA_DB.loadInquiries();
+      return _inquiriesCache;
+    }catch(e){console.warn('[Admin] Supabase inquiries failed, using localStorage',e);}
+  }
+  /* fallback: localStorage */
   try{return JSON.parse(localStorage.getItem('aura.inquiries')||'[]');}
   catch(e){return [];}
 }
 function saveInquiries(arr){localStorage.setItem('aura.inquiries',JSON.stringify(arr));}
-function buildInquiries(){
-  const all=loadInquiries();
+async function buildInquiries(){
+  const all=await loadInquiries();
   const filtered=_inqFilter==='all'?all:all.filter(i=>i.status===_inqFilter);
   /* update count badge */
   const newCount=all.filter(i=>i.status==='new').length;
@@ -1443,12 +1474,15 @@ function buildInquiries(){
 function escapeHtml(s){return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));}
 function filterInquiries(s){_inqFilter=s;buildInquiries();}
 function inqStatus(id,status){
-  const all=loadInquiries();
-  const i=all.find(x=>x.id===id);if(i){i.status=status;saveInquiries(all);buildInquiries();toast('Status updated · تم تحديث الحالة');}
+  if(window.AURA_DB)AURA_DB.updateInquiryStatus(id,status);
+  const all=_inquiriesCache.length?_inquiriesCache:JSON.parse(localStorage.getItem('aura.inquiries')||'[]');
+  const i=all.find(x=>x.id===id);if(i){i.status=status;}
+  saveInquiries(all);buildInquiries();toast('Status updated · تم تحديث الحالة');
 }
 function inqDelete(id){
   if(!confirm('Delete this inquiry?'))return;
-  const all=loadInquiries().filter(x=>x.id!==id);
+  if(window.AURA_DB)AURA_DB.deleteInquiry(id);
+  const all=(_inquiriesCache.length?_inquiriesCache:JSON.parse(localStorage.getItem('aura.inquiries')||'[]')).filter(x=>x.id!==id);
   saveInquiries(all);buildInquiries();toast('Inquiry deleted · تم الحذف');
 }
 function clearInquiries(){
