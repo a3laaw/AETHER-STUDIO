@@ -109,32 +109,108 @@ html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;fon
 .widget-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateY(20px);z-index:14;
   display:none;opacity:0;transition:opacity .5s,transform .5s;width:min(90vw,520px);max-width:520px}
 .widget-overlay.show{display:block;opacity:1;transform:translate(-50%,-50%) translateY(0)}
-.widget-overlay .ow-card{background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--border-2);border-radius:18px;padding:20px 22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.25);
+.widget-overlay .ow-card{background:rgba(255,255,255,.72);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+  border:1px solid rgba(255,255,255,.6);border-radius:20px;padding:20px 22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.8);
   display:flex;align-items:center;gap:14px;cursor:pointer;transition:.3s}
-.widget-overlay .ow-card:hover{border-color:var(--gold);box-shadow:0 24px 60px -20px rgba(191,167,106,.35);transform:translateY(-2px)}
-.widget-overlay .ow-ic{width:46px;height:46px;border-radius:12px;background:#1A1A1C;color:var(--gold);
+.widget-overlay .ow-card:hover{border-color:rgba(191,167,106,.5);box-shadow:0 24px 60px -20px rgba(191,167,106,.2),inset 0 1px 0 rgba(255,255,255,.9);transform:translateY(-2px)}
+.widget-overlay .ow-ic{width:46px;height:46px;border-radius:12px;background:rgba(26,26,28,.8);backdrop-filter:blur(10px);color:var(--gold);
   display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
 .widget-overlay .ow-tx{flex:1;min-width:0}
 .widget-overlay .ow-tx b{display:block;font-size:15px;font-weight:700;color:#1A1A1C;margin-bottom:2px}
 .widget-overlay .ow-tx span{display:block;font-size:12px;color:#6E7079;line-height:1.4}
 .widget-overlay .ow-tx .ow-val{display:inline-block;margin-top:6px;font-size:13px;font-weight:700;color:var(--gold);font-family:var(--font)}
 .widget-overlay .ow-cta{flex:none;font-size:13px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:6px;
-  padding:8px 14px;border:1px solid rgba(191,167,106,.4);border-radius:999px;background:rgba(191,167,106,.08);transition:.3s}
+  padding:8px 14px;border:1px solid rgba(191,167,106,.4);border-radius:999px;background:rgba(191,167,106,.1);transition:.3s}
 .widget-overlay .ow-card:hover .ow-cta{background:var(--gold);color:#fff}
 .widget-overlay .ow-hint{text-align:center;margin-top:10px;font-size:10.5px;color:var(--fg-2);letter-spacing:.08em;font-weight:600}
 
-/* pause indicator badge */
+/* ================= APPLE LIQUID GLASS — stage progress HUD ================= */
+.glass-hud{position:absolute;top:80px;right:24px;z-index:13;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:240px}
+.glass-hud .gh-stage{background:rgba(255,255,255,.55);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:14px 16px;box-shadow:0 12px 40px -12px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.7);
+  transition:opacity .4s,transform .4s;opacity:0;transform:translateX(20px)}
+.glass-hud .gh-stage.show{opacity:1;transform:translateX(0)}
+html[dir="rtl"] .glass-hud{right:auto;left:24px}
+html[dir="rtl"] .glass-hud .gh-stage{transform:translateX(-20px)}
+html[dir="rtl"] .glass-hud .gh-stage.show{transform:translateX(0)}
+.glass-hud .gh-stage .gh-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.glass-hud .gh-stage .gh-num{font-size:10px;font-weight:800;color:var(--gold);letter-spacing:.16em;font-family:var(--font)}
+.glass-hud .gh-stage .gh-name{font-size:13px;font-weight:700;color:#1A1A1C}
+.glass-hud .gh-stage .gh-bar-wrap{height:6px;background:rgba(26,26,28,.08);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.glass-hud .gh-stage .gh-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:6px;transition:width .8s cubic-bezier(.16,1,.3,1);box-shadow:0 0 8px rgba(191,167,106,.4)}
+.glass-hud .gh-stage .gh-pct{font-size:18px;font-weight:700;color:var(--gold);font-family:var(--font);line-height:1}
+.glass-hud .gh-stage .gh-pct-lbl{font-size:9px;color:#6E7079;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.glass-hud .gh-stage .gh-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px}
+.glass-hud .gh-stage .gh-meta .gh-frames{font-size:10px;color:#6E7079;font-family:var(--font)}
+.glass-hud .gh-stage .gh-meta .gh-status{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.glass-hud .gh-stage .gh-status.done{color:var(--green)}
+.glass-hud .gh-stage .gh-status.current{color:var(--gold)}
+.glass-hud .gh-stage .gh-status.upcoming{color:#9A9A9F}
+
+/* overall project progress (top-left glass card) */
+.glass-overall{position:absolute;top:80px;left:24px;z-index:13;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:16px 18px;box-shadow:0 12px 40px -12px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.7);
+  display:flex;align-items:center;gap:14px;transition:opacity .4s;opacity:0;pointer-events:none}
+.glass-overall.show{opacity:1}
+html[dir="rtl"] .glass-overall{left:auto;right:24px}
+.glass-overall .go-ring{position:relative;flex:none}
+.glass-overall .go-ring svg{transform:rotate(-90deg)}
+.glass-overall .go-ring .go-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:700;color:var(--gold);font-family:var(--font)}
+.glass-overall .go-info{display:flex;flex-direction:column;gap:2px}
+.glass-overall .go-info b{font-size:12px;font-weight:700;color:#1A1A1C}
+.glass-overall .go-info span{font-size:10px;color:#6E7079;font-weight:500}
+.glass-overall .go-info .go-phase{font-size:11px;font-weight:600;color:var(--gold)}
+
+/* pause indicator badge — Liquid Glass style */
 .pause-badge{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:13;
   display:flex;align-items:center;gap:8px;padding:7px 16px;border-radius:100px;
-  background:rgba(255,255,255,.9);border:1px solid var(--border-2);backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);box-shadow:0 8px 24px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
   font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:0;transition:.4s;pointer-events:none}
 .pause-badge.show{opacity:1}
 .pause-badge .pause-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 1.6s ease-in-out infinite}
 
-/* (legacy widget-rail hidden — replaced by overlay) */
+/* stage caption — Liquid Glass */
+.stage-cap{position:absolute;left:50%;bottom:130px;transform:translateX(-50%);z-index:12;
+  font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#1A1A1C;
+  display:flex;gap:12px;align-items:baseline;white-space:nowrap;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);box-shadow:0 10px 30px -14px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
+  padding:9px 22px;border-radius:100px;transition:.4s}
+.stage-cap b{color:var(--gold);font-size:13px;letter-spacing:.1em}
+.stage-cap .ar{font-size:9.5px;letter-spacing:.04em;color:#6E7079;text-transform:none;font-weight:500}
+
+/* playbar — Liquid Glass */
+.playbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:12;
+  display:flex;align-items:center;gap:14px;padding:10px 16px;width:min(74vw,860px);
+  background:rgba(255,255,255,.55);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);border-radius:22px;
+  box-shadow:0 18px 50px -18px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6)}
+.playbar .pbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--gold);color:#fff;font-size:12px;cursor:pointer;flex:none;
+  display:flex;align-items:center;justify-content:center;transition:.3s;box-shadow:0 4px 12px -4px rgba(191,167,106,.4)}
+.playbar .pbtn.ghostb{background:rgba(26,26,28,.06);color:var(--fg-2)}
+.playbar .pbtn:hover{filter:brightness(1.12)}
+.pb-wrap{flex:1;position:relative;padding-bottom:14px}
+.scrub{height:4px;background:rgba(26,26,28,.08);border-radius:4px;position:relative;cursor:pointer}
+.scrub .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:4px;box-shadow:0 0 10px rgba(191,167,106,.3)}
+.scrub .knob{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;border:2.5px solid var(--gold);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.scrub .seg{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(26,26,28,.12);border-radius:2px}
+.pb-ticks{position:absolute;left:0;right:0;top:12px;height:12px}
+.pb-ticks span{position:absolute;transform:translateX(-50%);font-size:7.5px;letter-spacing:.05em;color:var(--fg-2);cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:600}
+.pb-ticks span:hover,.pb-ticks span.on{color:var(--gold)}
+
+/* hero copy — Liquid Glass */
+.hero-copy .eyebrow{background:rgba(255,255,255,.55) !important;backdrop-filter:blur(20px) saturate(180%) !important;-webkit-backdrop-filter:blur(20px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.5) !important;box-shadow:0 8px 24px -8px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6) !important}
+
+/* (legacy widget-rail hidden) */
 .widget-rail{display:none !important}
 .widget-mobile{display:none !important}
+
+/* build-up animation (frame transition — subtle scale) */
+#cine{transition:filter .3s}
+#cine.building{filter:brightness(1.02) contrast(1.02)}
 
 /* ================= WHITE MODAL ================= */
 #modal{position:fixed;inset:0;z-index:330;display:none;align-items:center;justify-content:center;
@@ -371,6 +447,25 @@ footer p .ar{font-family:var(--font-ar)}
 
   <!-- pause badge (shows when video is paused) -->
   <div class="pause-badge" id="pauseBadge"><span class="pause-dot"></span><span id="pauseBadgeTxt">PAUSED · متوقف</span></div>
+
+  <!-- Apple Liquid Glass: overall project progress (top-left) -->
+  <div class="glass-overall" id="glassOverall">
+    <div class="go-ring">
+      <svg width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(26,26,28,.08)" stroke-width="4"/>
+        <circle id="goRingFg" cx="26" cy="26" r="22" fill="none" stroke="#BFA76A" stroke-width="4" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+      </svg>
+      <span class="go-pct" id="goPct">0%</span>
+    </div>
+    <div class="go-info">
+      <b id="goTitle">فيلا سولارا</b>
+      <span id="goPhase">الحفر</span>
+      <span id="goFrame" class="latin">Frame 1 / 97</span>
+    </div>
+  </div>
+
+  <!-- Apple Liquid Glass: stage progress HUD (top-right) -->
+  <div class="glass-hud" id="glassHud"></div>
 
   <!-- overlay widget (shows inside video on each pause) -->
   <div class="widget-overlay" id="widgetOverlay">
@@ -747,8 +842,73 @@ let lastStageId=null;
 function setExtStage(st,idx){
   if(st.id===lastStageId)return;lastStageId=st.id;
   const m=stageMeta[st.id];if(!m)return;
-  $('stageCap').innerHTML=`<b>${String(idx+1).padStart(2,'0')}</b> <span id="stageCapTxt">${isAr?st.ar:st.name.toUpperCase()}</span> <span class="ar">${isAr?(m.capAr||''):m.cap}</span>`;
+  $('stageCap').innerHTML='<b>'+String(idx+1).padStart(2,'0')+'</b> <span id="stageCapTxt">'+(isAr?st.ar:st.name.toUpperCase())+'</span> <span class="ar">'+(isAr?(m.capAr||''):m.cap)+'</span>';
   document.querySelectorAll('.pb-ticks span').forEach(t=>t.classList.toggle('on',+t.dataset.g===st.from));
+  /* build/update Apple Liquid Glass stage HUD */
+  buildGlassHud(st,idx);
+}
+
+/* ---------- Apple Liquid Glass: stage HUD ---------- */
+function buildGlassHud(currentStage,currentIdx){
+  const hud=$('glassHud');if(!hud)return;
+  hud.innerHTML='';
+  PROJ.stages.forEach((s,i)=>{
+    const isDone=i<currentIdx;
+    const isCurrent=i===currentIdx;
+    const isUpcoming=i>currentIdx;
+    let pct=0;
+    if(isDone)pct=100;
+    else if(isCurrent){
+      /* calculate progress within current stage */
+      const g=Math.round(current);
+      pct=Math.round((g-s.from)/(s.to-s.from)*100);
+      pct=Math.min(100,Math.max(0,pct));
+    }
+    const statusCls=isDone?'done':isCurrent?'current':'upcoming';
+    const statusLbl=isDone?(isAr?'مكتمل':'Done'):isCurrent?(isAr?'حالي':'Current'):(isAr?'قادم':'Upcoming');
+    const card=document.createElement('div');
+    card.className='gh-stage'+(isDone||isCurrent?' show':'');
+    card.innerHTML='<div class="gh-head"><span class="gh-num">'+String(i+1).padStart(2,'0')+'</span><span class="gh-name">'+(isAr?s.ar:s.name)+'</span></div>'+
+      '<div class="gh-bar-wrap"><div class="gh-bar" style="width:'+pct+'%"></div></div>'+
+      '<div class="gh-meta"><span class="gh-frames">'+s.from+'-'+s.to+'</span><span class="gh-status '+statusCls+'">'+statusLbl+'</span></div>';
+    hud.appendChild(card);
+  });
+  /* show overall progress */
+  const overall=$('glassOverall');if(overall){
+    overall.classList.add('show');
+    const g=Math.round(current);
+    const overallPct=Math.round((g-1)/(TOTAL-1)*100);
+    $('goPct').textContent=overallPct+'%';
+    $('goTitle').textContent=PROJ.project.title;
+    $('goPhase').textContent=isAr?currentStage.ar:currentStage.name;
+    $('goFrame').textContent='Frame '+g+' / '+TOTAL;
+    /* update ring */
+    const circumference=2*Math.PI*22;
+    const offset=circumference*(1-overallPct/100);
+    const ring=$('goRingFg');if(ring){ring.style.strokeDashoffset=offset;ring.style.transition='stroke-dashoffset .5s ease';}
+  }
+}
+
+/* ---------- update glass HUD live (in main loop) ---------- */
+function updateGlassHudLive(){
+  const st=PROJ.stages.find(s=>Math.round(current)>=s.from&&Math.round(current)<=s.to);
+  if(!st)return;
+  const idx=PROJ.stages.indexOf(st);
+  /* update current stage bar */
+  const hud=$('glassHud');if(!hud)return;
+  const cards=hud.querySelectorAll('.gh-stage');
+  if(cards[idx]){
+    const pct=Math.round((Math.round(current)-st.from)/(st.to-st.from)*100);
+    const bar=cards[idx].querySelector('.gh-bar');
+    if(bar)bar.style.width=Math.min(100,Math.max(0,pct))+'%';
+  }
+  /* update overall */
+  const overallPct=Math.round((Math.round(current)-1)/(TOTAL-1)*100);
+  const goPct=$('goPct');if(goPct)goPct.textContent=overallPct+'%';
+  const goFrame=$('goFrame');if(goFrame)goFrame.textContent='Frame '+Math.round(current)+' / '+TOTAL;
+  const circumference=2*Math.PI*22;
+  const offset=circumference*(1-overallPct/100);
+  const ring=$('goRingFg');if(ring)ring.style.strokeDashoffset=offset;
 }
 
 /* ---------- main loop ---------- */
@@ -785,6 +945,7 @@ let _pausePointTriggered=new Set();  /* track which pausePoints fired */
   $('scrubFill').style.width=pct+'%';$('scrubKnob').style.left=pct+'%';
   const st=PROJ.stages.find(s=>g>=s.from&&g<=s.to)||PROJ.stages[PROJ.stages.length-1];
   if(st){const idx=PROJ.stages.indexOf(st);setExtStage(st,idx);}
+  updateGlassHudLive();
   $('heroCopy').style.opacity=Math.max(0,1-(g-1)/6);
   requestAnimationFrame(loop);
 })();
