@@ -1591,14 +1591,35 @@ function openExp360(){
   if(!panos.length){toast(isAr?'لا توجد بانوراما متاحة':'No panoramas available');return;}
   /* build 360° viewer in details view */
   const dv=$('detailsView');
-  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⟲</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?'استكشف الغرف':'Explore Rooms')+'</h2><p class="dv-sub">'+(isAr?'اسحب للنظر حولك':'Drag to look around')+'</p></div></div>'+
-    '<div class="dv-rooms-grid" style="grid-template-columns:1fr">'+panos.map((p,i)=>'<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+p.img+'" alt="'+(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8"><div class="dv-room-info"><b>'+(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?'انقر للدخول':'Click to enter')+'</span></div></div>').join('')+'</div>'+
+  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⟲</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?'استكشف الغرف':'Explore Rooms')+'</h2><p class="dv-sub">'+(isAr?'اسحب للنظر حولك · أو افتح جولة جاهزة':'Drag to look around · or open a hosted tour')+'</p></div></div>'+
+    '<div class="dv-rooms-grid" style="grid-template-columns:1fr">'+panos.map((p,i)=>{
+      const thumb=p.img||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 10%22><rect fill=%22%23222%22 width=%2216%22 height=%2210%22/><text x=%228%22 y=%226%22 fill=%22%23fff%22 font-size=%221.4%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>360</text></svg>';
+      const isEmbed=!!p.embed;
+      const badge=isEmbed?'<span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:100px;backdrop-filter:blur(6px)">🔗 Embed</span>':'';
+      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+thumb+'" alt="'+(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
+    }).join('')+'</div>'+
     '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
   dv.classList.add('on');document.body.style.overflow='hidden';
 }
 function loadPano(i){
   const p=PROJ.experiences.panos[i];if(!p)return;
   const dv=$('detailsView');
+  /* if embed URL → render in iframe */
+  if(p.embed){
+    let src=p.embed;
+    /* auto-embed common providers that don't allow raw iframe */
+    const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    if(yt)src='https://www.youtube.com/embed/'+yt[1];
+    const vm=src.match(/vimeo\.com\/(\d+)/);
+    if(vm)src='https://player.vimeo.com/video/'+vm[1];
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
+      '<div style="position:relative;width:100%;height:70vh;overflow:hidden;border-radius:14px;background:#000">'+
+        '<iframe src="'+src+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
+      '</div>'+
+      '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
+    return;
+  }
+  /* image pano → drag viewer */
   $('dvContent').innerHTML='<div style="position:relative;width:100%;height:60vh;overflow:hidden;border-radius:14px;cursor:grab;background:#000" id="panoWrap">'+
     '<img src="'+p.img+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
     '<div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.5);padding:8px 18px;border-radius:100px;backdrop-filter:blur(8px)">'+(isAr?'اسحب للنظر حولك':'Drag to look')+'</div></div>'+
@@ -1617,9 +1638,30 @@ function loadPano(i){
 function openExpWalk(){
   const exp=PROJ.experiences||{};
   const walk=exp.walkthrough||{};
-  if(!walk.img){toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;}
-  loadPano(0); /* reuse pano viewer with walkthrough image */
-  /* override the image */
+  if(!walk.video && !walk.img){toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;}
+  const dv=$('detailsView');
+  const title=walk.title||(isAr?'جولة حرة في المشروع':'Free Walkthrough');
+  /* video mode: render <video> */
+  if(walk.video){
+    let src=walk.video;
+    const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    const vm=src.match(/vimeo\.com\/(\d+)/);
+    let videoHTML='';
+    if(yt){
+      videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://www.youtube.com/embed/'+yt[1]+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
+    }else if(vm){
+      videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
+    }else{
+      videoHTML='<video src="'+src+'" poster="'+(walk.img||'')+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
+    }
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+title+'</h2>'+(walk.desc?'<p class="dv-sub">'+walk.desc+'</p>':'')+'</div></div>'+
+      videoHTML+
+      '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
+    dv.classList.add('on');document.body.style.overflow='hidden';
+    return;
+  }
+  /* fallback: legacy pano image drag view */
+  loadPano(0);
   const img=document.querySelector('[id=panoImg]');
   if(img){img.src=walk.img;}
 }

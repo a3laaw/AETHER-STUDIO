@@ -247,6 +247,7 @@ const VILLA_SOLARA = {
     ],
     walkthrough: {
       img:'assets/rooms/pano-living.webp',
+      video:'',
       title:'جولة حرة في فيلا سولارا',
       desc:'اسحب للنظر حولك · انقر الأبواب للتنقل بين الغرف'
     },

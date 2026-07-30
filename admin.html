@@ -153,6 +153,27 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .gimg:hover .del{opacity:1}
 .gimg .del:hover{background:var(--red)}
 
+/* experiences editor */
+.exp-card{background:var(--panel2);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:12px;transition:.25s}
+.exp-card:hover{border-color:rgba(60,130,246,.35)}
+.exp-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.exp-card-head .lbl{font-size:13px;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:6px}
+.exp-card-head .ops{display:flex;gap:6px}
+.exp-media-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:780px){.exp-media-row{grid-template-columns:1fr}}
+.exp-upload{position:relative;border:1.5px dashed var(--brd);border-radius:11px;padding:12px;background:var(--panel);transition:.25s}
+.exp-upload:hover{border-color:var(--blue);background:rgba(60,130,246,.04)}
+.exp-upload .eu-label{font-size:10.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.exp-upload .eu-preview{width:100%;aspect-ratio:16/9;border-radius:8px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:11px;overflow:hidden;border:1px solid var(--brd);position:relative}
+.exp-upload .eu-preview img,.exp-upload .eu-preview video{width:100%;height:100%;object-fit:cover;display:block}
+.exp-upload .eu-url{margin-top:8px;display:flex;gap:6px;align-items:center}
+.exp-upload .eu-url input{flex:1;font-size:11px}
+.exp-upload .eu-empty{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--tx3);font-size:11px;padding:14px;text-align:center}
+.exp-upload .eu-empty .ico{font-size:24px;opacity:.5}
+.exp-mode{display:flex;gap:6px;margin-bottom:10px}
+.exp-mode .em-btn{flex:1;padding:9px;font-size:11.5px;font-weight:600;border:1px solid var(--brd);background:var(--panel);color:var(--tx3);border-radius:9px;cursor:pointer;transition:.2s;text-align:center}
+.exp-mode .em-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
 /* toast */
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);z-index:600;
   background:var(--panel);border:1px solid var(--brd);color:var(--tx);font-size:13px;font-weight:500;
@@ -362,29 +383,41 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <!-- 360° Tour -->
         <div class="panel">
           <h3><span>جولة 360° · 360° Tour</span> <span class="badge">لكل غرفة</span></h3>
+          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع صورة بانورامية (equirectangular) لكل غرفة، أو الصق رابط جولة جاهزة (Matterport / Kuula / Pano2VR)</div>
           <div id="exp360List"></div>
           <div class="btnrow">
-            <button class="btn sm ghost" onclick="expAdd360()">+ إضافة بانوراما · Add Pano</button>
+            <button class="btn sm ghost" onclick="expAdd360()">+ إضافة غرفة · Add Room</button>
           </div>
         </div>
         <!-- Free Walkthrough -->
         <div class="panel">
           <h3><span>جولة حرة · Free Walkthrough</span></h3>
-          <div class="grid2">
-            <div class="f"><label>صورة الجولة · Walkthrough Image (URL or upload)</label>
+          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع ملف فيديو (mp4 / webm) أو الصق رابط فيديو مباشر</div>
+          <div class="exp-upload">
+            <div class="eu-label">▶ ملف الفيديو · Video File</div>
+            <div class="eu-preview" id="walkVideoPreview"></div>
+            <div class="eu-url">
+              <input type="text" id="expWalkVideo" placeholder="رابط فيديو مباشر (mp4 / webm / YouTube)" dir="ltr">
+              <button class="btn sm" onclick="expUploadVideo()">رفع · Upload</button>
+              <input type="file" id="expWalkVideoFile" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'expWalkVideo')">
+            </div>
+          </div>
+          <div class="grid2" style="margin-top:14px">
+            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
+            <div class="f"><label>صورة الغلاف · Poster Image (اختياري)</label>
               <div style="display:flex;gap:8px">
                 <input type="text" id="expWalkImg" style="flex:1">
                 <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
                 <input type="file" id="expWalkImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'expWalkImg')">
               </div>
             </div>
-            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
           </div>
           <div class="f" style="margin-top:14px"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك · انقر الأبواب للتنقل"></textarea></div>
         </div>
         <!-- Before/After (per project) -->
         <div class="panel">
           <h3><span>قبل وبعد · Before/After</span> <span class="badge" id="expBACount">0</span></h3>
+          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع صورة "قبل" وصورة "بعد" لكل زوج — كلاهما مطلوب</div>
           <div id="expBAList"></div>
           <div class="btnrow">
             <button class="btn sm ghost" onclick="expAddBA()">+ إضافة زوج · Add Pair</button>
@@ -1159,56 +1192,156 @@ function saveStages(){
 
 /* ============================================================
    EXPERIENCES (360°, Walkthrough, Before/After) — per project
+   360° : upload pano image OR paste embed URL (Matterport/Kuula)
+   Walk : upload video file (mp4/webm) OR paste video URL
+   BA   : upload BEFORE image + AFTER image (both required)
    ============================================================ */
 function buildExperiences(){
-  PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{img:'',title:'',desc:''},beforeAfter:[]};
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{img:'',video:'',title:'',desc:''},beforeAfter:[]};
   const exp=PROJ.experiences;
-  /* 360° list */
+  exp.panos=exp.panos||[];
+  exp.walkthrough=exp.walkthrough||{img:'',video:'',title:'',desc:''};
+  exp.beforeAfter=exp.beforeAfter||[];
+
+  /* ---------- 360° list ---------- */
   const list360=$('exp360List');list360.innerHTML='';
-  (exp.panos||[]).forEach((p,i)=>{
-    const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 1fr 70px';
-    d.innerHTML='<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:'+(p.img?'url('+p.img+') center/cover':'var(--panel2)')+';display:flex;align-items:center;justify-content:center;color:var(--tx3)">⟲</div>'+
-      '<input type="text" value="'+(p.room||'')+'" data-p360="'+i+'" data-k="room" placeholder="اسم الغرفة">'+
-      '<input type="text" value="'+(p.img||'')+'" data-p360="'+i+'" data-k="img" placeholder="صورة URL" dir="ltr">'+
-      '<button class="btn sm danger" onclick="expDel360('+i+')">✕</button>';
-    list360.appendChild(d);
+  exp.panos.forEach((p,i)=>{
+    const hasEmbed=!!p.embed;
+    const card=document.createElement('div');card.className='exp-card';
+    card.innerHTML=
+      '<div class="exp-card-head">'+
+        '<div class="lbl">⟲ '+(isAr?'غرفة':'Room')+' #'+(i+1)+'</div>'+
+        '<div class="ops"><button class="btn sm danger" onclick="expDel360('+i+')">✕</button></div>'+
+      '</div>'+
+      '<div class="exp-mode">'+
+        '<div class="em-btn'+(!hasEmbed?' on':'')+'" data-pm="'+i+'" data-m="img">'+(isAr?'صورة بانورامية':'Pano Image')+'</div>'+
+        '<div class="em-btn'+(hasEmbed?' on':'')+'" data-pm="'+i+'" data-m="embed">'+(isAr?'رابط جولة جاهزة':'Embed URL')+'</div>'+
+      '</div>'+
+      '<div class="exp-upload" data-p360-upload="'+i+'" style="'+(hasEmbed?'display:none':'')+'">'+
+        '<div class="eu-label">⟲ '+(isAr?'صورة 360°':'360° Image')+'</div>'+
+        '<div class="eu-preview" id="p360prev'+i+'">'+(p.img?'<img src="'+p.img+'" alt="">':'<div class="eu-empty"><span class="ico">⟲</span><span>'+(isAr?'ارفع صورة 360°':'Upload pano image')+'</span></div>')+'</div>'+
+        '<div class="eu-url">'+
+          '<input type="text" value="'+(p.img||'')+'" data-p360="'+i+'" data-k="img" placeholder="'+(isAr?'أو الصق رابط صورة':'Or paste image URL')+'" dir="ltr">'+
+          '<button class="btn sm" onclick="expUploadPano('+i+')">'+(isAr?'رفع':'Upload')+'</button>'+
+        '</div>'+
+        '<input type="file" id="p360File'+i+'" accept="image/*" style="display:none" onchange="handlePanoUpload(this,'+i+')">'+
+      '</div>'+
+      '<div class="exp-upload" data-p360-embed="'+i+'" style="'+(!hasEmbed?'display:none':'')+'">'+
+        '<div class="eu-label">🔗 '+(isAr?'رابط جولة جاهزة':'Embed URL')+' (Matterport / Kuula / Pano2VR)</div>'+
+        '<input type="text" value="'+(p.embed||'')+'" data-p360="'+i+'" data-k="embed" placeholder="https://my.matterport.com/show/..." dir="ltr" style="width:100%;font-size:12px;padding:9px;border:1px solid var(--brd);border-radius:9px;background:var(--panel)">'+
+      '</div>'+
+      '<div class="grid2" style="margin-top:10px">'+
+        '<div class="f"><label>'+(isAr?'اسم الغرفة (EN)':'Room Name (EN)')+'</label><input type="text" value="'+(p.room||'')+'" data-p360="'+i+'" data-k="room" dir="ltr" placeholder="Living Room"></div>'+
+        '<div class="f"><label>'+(isAr?'اسم الغرفة (AR)':'Room Name (AR)')+'</label><input type="text" value="'+(p.roomAr||'')+'" data-p360="'+i+'" data-k="roomAr" dir="rtl" style="font-family:var(--font-ar)" placeholder="غرفة المعيشة"></div>'+
+      '</div>';
+    list360.appendChild(card);
   });
-  /* walkthrough */
+  /* wire 360 mode tabs */
+  list360.querySelectorAll('.em-btn[data-pm]').forEach(btn=>{
+    btn.onclick=()=>{
+      const i=+btn.dataset.pm,m=btn.dataset.m;
+      exp.panos[i]=exp.panos[i]||{};
+      if(m==='img'){exp.panos[i].embed='';}
+      else{exp.panos[i].img='';}
+      buildExperiences();
+    };
+  });
+  /* wire 360 inputs (delegated) */
+  list360.oninput=e=>{
+    const i=e.target.dataset.p360,k=e.target.dataset.k;
+    if(i!==undefined&&k){
+      exp.panos[+i][k]=e.target.value;
+      if(k==='img'){updateP360Preview(+i,e.target.value);}
+    }
+  };
+
+  /* ---------- Walkthrough ---------- */
   const set=(id,val)=>{const el=$(id);if(el)el.value=val||'';};
-  set('expWalkImg',exp.walkthrough?.img);set('expWalkTitle',exp.walkthrough?.title);set('expWalkDesc',exp.walkthrough?.desc);
-  /* before/after list */
+  set('expWalkImg',exp.walkthrough.img);
+  set('expWalkVideo',exp.walkthrough.video);
+  set('expWalkTitle',exp.walkthrough.title);
+  set('expWalkDesc',exp.walkthrough.desc);
+  updateWalkVideoPreview(exp.walkthrough.video||'');
+
+  /* ---------- Before/After list ---------- */
   const baList=$('expBAList');baList.innerHTML='';
-  const ba=exp.beforeAfter||PROJ.beforeAfter||[];
+  const ba=exp.beforeAfter;
   $('expBACount').textContent=ba.length;
   ba.forEach((b,i)=>{
-    const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 1fr 70px';
-    d.innerHTML='<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3)">⇆</div>'+
-      '<input type="text" value="'+(b.label||b.labelAr||'')+'" data-ba="'+i+'" data-k="label" placeholder="عنوان">'+
-      '<input type="text" value="'+(b.before||'')+'" data-ba="'+i+'" data-k="before" placeholder="قبل URL" dir="ltr">'+
-      '<button class="btn sm danger" onclick="expDelBA('+i+')">✕</button>';
-    baList.appendChild(d);
+    const card=document.createElement('div');card.className='exp-card';
+    card.innerHTML=
+      '<div class="exp-card-head">'+
+        '<div class="lbl">⇆ '+(isAr?'زوج':'Pair')+' #'+(i+1)+'</div>'+
+        '<div class="ops"><button class="btn sm danger" onclick="expDelBA('+i+')">✕</button></div>'+
+      '</div>'+
+      '<div class="f" style="margin-bottom:12px"><label>'+(isAr?'عنوان الزوج':'Pair Label')+'</label><input type="text" value="'+(b.label||b.labelAr||'')+'" data-ba="'+i+'" data-k="label" placeholder="'+(isAr?'مثال: غرفة المعيشة':'e.g. Living Room')+'"></div>'+
+      '<div class="exp-media-row">'+
+        '<div class="exp-upload">'+
+          '<div class="eu-label" style="color:#d97757">⬅ '+(isAr?'قبل · BEFORE':'BEFORE')+'</div>'+
+          '<div class="eu-preview" id="baBeforePrev'+i+'">'+(b.before?'<img src="'+b.before+'" alt="">':'<div class="eu-empty"><span class="ico">⬅</span><span>'+(isAr?'ارفع صورة قبل':'Upload before image')+'</span></div>')+'</div>'+
+          '<div class="eu-url">'+
+            '<input type="text" value="'+(b.before||'')+'" data-ba="'+i+'" data-k="before" placeholder="'+(isAr?'أو رابط':'Or URL')+'" dir="ltr">'+
+            '<button class="btn sm" onclick="expUploadBA('+i+',\'before\')">'+(isAr?'رفع':'Upload')+'</button>'+
+          '</div>'+
+          '<input type="file" id="baBeforeFile'+i+'" accept="image/*" style="display:none" onchange="handleBAUpload(this,'+i+',\'before\')">'+
+        '</div>'+
+        '<div class="exp-upload">'+
+          '<div class="eu-label" style="color:#3b9b6e">'+(isAr?'بعد · AFTER':'AFTER')+' ➡</div>'+
+          '<div class="eu-preview" id="baAfterPrev'+i+'">'+(b.after?'<img src="'+b.after+'" alt="">':'<div class="eu-empty"><span class="ico">➡</span><span>'+(isAr?'ارفع صورة بعد':'Upload after image')+'</span></div>')+'</div>'+
+          '<div class="eu-url">'+
+            '<input type="text" value="'+(b.after||'')+'" data-ba="'+i+'" data-k="after" placeholder="'+(isAr?'أو رابط':'Or URL')+'" dir="ltr">'+
+            '<button class="btn sm" onclick="expUploadBA('+i+',\'after\')">'+(isAr?'رفع':'Upload')+'</button>'+
+          '</div>'+
+          '<input type="file" id="baAfterFile'+i+'" accept="image/*" style="display:none" onchange="handleBAUpload(this,'+i+',\'after\')">'+
+        '</div>'+
+      '</div>';
+    baList.appendChild(card);
   });
-  /* wire inputs */
-  list360.addEventListener('input',e=>{
-    const i=e.target.dataset.p360,k=e.target.dataset.k;
-    if(i!==undefined&&k){exp.panos[+i][k]=e.target.value;}
-  });
-  baList.addEventListener('input',e=>{
+  /* wire BA inputs (delegated) */
+  baList.oninput=e=>{
     const i=e.target.dataset.ba,k=e.target.dataset.k;
     if(i!==undefined&&k){
-      if(!exp.beforeAfter)exp.beforeAfter=PROJ.beforeAfter||[];
       exp.beforeAfter[+i]=exp.beforeAfter[+i]||{};
       exp.beforeAfter[+i][k]=e.target.value;
+      if(k==='before'){updateBAPreview(+i,'before',e.target.value);}
+      else if(k==='after'){updateBAPreview(+i,'after',e.target.value);}
     }
-  });
+  };
 }
+/* preview updaters */
+function updateP360Preview(i,val){
+  const el=$('p360prev'+i);if(!el)return;
+  el.innerHTML=val?'<img src="'+val+'" alt="">':'<div class="eu-empty"><span class="ico">⟲</span><span>'+(AURA_I18N?.lang==='ar'?'ارفع صورة 360°':'Upload pano image')+'</span></div>';
+}
+function updateBAPreview(i,side,val){
+  const el=$(side+'Prev'+i);if(!el)return;
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  el.innerHTML=val?'<img src="'+val+'" alt="">':'<div class="eu-empty"><span class="ico">'+(side==='before'?'⬅':'➡')+'</span><span>'+(isAr?'ارفع صورة':'Upload image')+'</span></div>';
+}
+function updateWalkVideoPreview(val){
+  const el=$('walkVideoPreview');if(!el)return;
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  if(!val){
+    el.innerHTML='<div class="eu-empty"><span class="ico">▶</span><span>'+(isAr?'لم يتم اختيار فيديو':'No video selected')+'</span></div>';
+    return;
+  }
+  const isVideoFile=val.startsWith('data:video')||/\.mp4(\?|$)/i.test(val)||/\.webm(\?|$)/i.test(val)||/\.mov(\?|$)/i.test(val);
+  if(isVideoFile){
+    el.innerHTML='<video src="'+val+'" controls muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video>';
+  }else{
+    el.innerHTML='<div class="eu-empty" style="color:var(--blue)"><span class="ico">🔗</span><span>'+(isAr?'رابط فيديو خارجي':'External video URL')+'</span></div>';
+  }
+}
+
 function expAdd360(){
   PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
   PROJ.experiences.panos=PROJ.experiences.panos||[];
-  PROJ.experiences.panos.push({room:'New Room',img:''});
+  PROJ.experiences.panos.push({room:'New Room',roomAr:'غرفة جديدة',img:'',embed:''});
   buildExperiences();
 }
 function expDel360(i){
+  if(!confirm('Delete this 360° room?'))return;
   PROJ.experiences.panos.splice(i,1);
   buildExperiences();
 }
@@ -1219,13 +1352,72 @@ function expAddBA(){
   buildExperiences();
 }
 function expDelBA(i){
+  if(!confirm('Delete this before/after pair?'))return;
   PROJ.experiences.beforeAfter.splice(i,1);
   buildExperiences();
 }
+
+/* upload handlers — 360 pano */
+function expUploadPano(i){
+  const f=$('p360File'+i);if(f)f.click();
+}
+async function handlePanoUpload(input,i){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading pano image...');
+  try{
+    const url=await AURA_DB.uploadMedia(file,'pano-'+PROJ.id);
+    PROJ.experiences.panos[i].img=url;
+    PROJ.experiences.panos[i].embed='';
+    buildExperiences();
+    toast('Pano uploaded ✓');
+  }catch(e){toast(e.message||'Upload failed');}
+  input.value='';
+}
+
+/* upload handlers — Before/After */
+function expUploadBA(i,side){
+  const f=$(side+'File'+i);if(f)f.click();
+}
+async function handleBAUpload(input,i,side){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading '+side+' image...');
+  try{
+    const url=await AURA_DB.uploadMedia(file,'ba-'+PROJ.id);
+    if(!PROJ.experiences.beforeAfter)PROJ.experiences.beforeAfter=PROJ.beforeAfter||[];
+    PROJ.experiences.beforeAfter[i]=PROJ.experiences.beforeAfter[i]||{};
+    PROJ.experiences.beforeAfter[i][side]=url;
+    buildExperiences();
+    toast(side+' image uploaded ✓');
+  }catch(e){toast(e.message||'Upload failed');}
+  input.value='';
+}
+
+/* upload handler — Walkthrough video */
+function expUploadVideo(){
+  const f=$('expWalkVideoFile');if(f)f.click();
+}
+async function handleVideoUpload(input,targetId){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('video/')){toast('Please select a video file');return;}
+  const sizeMB=(file.size/1024/1024).toFixed(1);
+  toast('Uploading video ('+sizeMB+'MB) — may take a minute...');
+  try{
+    const url=await AURA_DB.uploadMedia(file,'walk-'+PROJ.id);
+    const target=document.getElementById(targetId);
+    if(target){target.value=url;}
+    updateWalkVideoPreview(url);
+    toast('Video uploaded ✓');
+  }catch(e){toast(e.message||'Upload failed');}
+  input.value='';
+}
+
 function saveExperiences(){
   PROJ.experiences=PROJ.experiences||{};
   PROJ.experiences.walkthrough={
     img:$('expWalkImg')?.value||'',
+    video:$('expWalkVideo')?.value||'',
     title:$('expWalkTitle')?.value||'',
     desc:$('expWalkDesc')?.value||''
   };
@@ -1613,6 +1805,18 @@ function pmDuplicate(){
   }
   if(clone.beforeAfter){
     clone.beforeAfter=clone.beforeAfter.map(ba=>({...ba,before:'',after:''}));
+  }
+  /* also clear experiences media (360 panos, walkthrough video, before/after) */
+  if(clone.experiences){
+    if(clone.experiences.panos){
+      clone.experiences.panos=clone.experiences.panos.map(p=>({...p,img:'',embed:''}));
+    }
+    if(clone.experiences.walkthrough){
+      clone.experiences.walkthrough={...clone.experiences.walkthrough,img:'',video:''};
+    }
+    if(clone.experiences.beforeAfter){
+      clone.experiences.beforeAfter=clone.experiences.beforeAfter.map(ba=>({...ba,before:'',after:''}));
+    }
   }
   if(clone.widgets){
     Object.keys(clone.widgets).forEach(wid=>{

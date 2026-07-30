@@ -183,36 +183,57 @@ window.AURA_DB = (function () {
     } catch (e) {}
   }
 
-  /* ---------- IMAGE UPLOAD ---------- */
-  async function uploadImage(file, folder = 'misc') {
+  /* ---------- MEDIA UPLOAD (images + videos) ---------- */
+  async function uploadMedia(file, folder = 'misc') {
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    /* try Supabase Storage first */
     try {
       await waitReady();
-      const ext = file.name.split('.').pop() || 'jpg';
+      const ext = file.name.split('.').pop() || (isImage ? 'jpg' : isVideo ? 'mp4' : 'bin');
       const filename = folder + '/' + Date.now() + '.' + ext;
       const { error } = await window.sb.storage.from('aura-images').upload(filename, file, { cacheControl: '3600', upsert: false });
       if (error) throw error;
       const { data: urlData } = window.sb.storage.from('aura-images').getPublicUrl(filename);
       return urlData.publicUrl;
     } catch (e) {
-      console.warn('[AURA DB] uploadImage fallback to Base64:', e.message);
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const maxW = 1200; let w = img.width, h = img.height;
-            if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-            canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
+      console.warn('[AURA DB] uploadMedia Supabase failed, using fallback:', e.message);
+      /* image fallback: compress to Base64 JPEG */
+      if (isImage) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const maxW = 1600; let w = img.width, h = img.height;
+              if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.85));
+            };
+            img.src = e.target.result;
           };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
+          reader.readAsDataURL(file);
+        });
+      }
+      /* video fallback: Base64 only for small files (<15MB), else throw */
+      if (isVideo) {
+        if (file.size > 15 * 1024 * 1024) {
+          throw new Error('الفيديو كبير جداً للتخزين المحلي. استخدم رابط فيديو مباشر، أو فعّل Supabase. · Video too large for offline storage. Use a direct URL or enable Supabase.');
+        }
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = () => reject(new Error('Failed to read video file'));
+          reader.readAsDataURL(file);
+        });
+      }
+      throw new Error('Unsupported file type');
     }
   }
+  /* alias kept for backwards compatibility */
+  const uploadImage = uploadMedia;
 
   /* ---------- HOTSPOTS ---------- */
   async function saveHotspots(projectId, hotspots) {
@@ -237,6 +258,6 @@ window.AURA_DB = (function () {
     loadProjects, saveProject,
     loadSiteContent, saveSiteContent,
     loadInquiries, saveInquiry, updateInquiryStatus, deleteInquiry,
-    uploadImage, saveHotspots
+    uploadImage, uploadMedia, saveHotspots
   };
 })();
