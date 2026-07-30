@@ -177,7 +177,7 @@ html[dir="rtl"] .glass-overall{left:auto;right:24px}
   display:flex;gap:12px;align-items:baseline;white-space:nowrap;
   background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
   border:1px solid rgba(255,255,255,.5);box-shadow:0 10px 30px -14px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
-  padding:9px 22px;border-radius:100px;transition:.4s}
+  padding:9px 22px;border-radius:100px;transition:opacity .3s ease}
 .stage-cap b{color:var(--gold);font-size:13px;letter-spacing:.1em}
 .stage-cap .ar{font-size:9.5px;letter-spacing:.04em;color:#6E7079;text-transform:none;font-weight:500}
 
@@ -1031,9 +1031,9 @@ function scheduleStagePause(stage){
   $('owSub').textContent=T(desc.ar,desc.en);
   $('owVal').textContent=w.val();
   $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
-  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
   $('widgetOverlay').classList.add('show');
   $('pauseBadge').classList.add('show');
+  $('stageCap').style.opacity='0';
   /* start widget sequence auto-play if available */
   const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
   if(seq&&seq.images&&seq.images.length>1){
@@ -1057,8 +1057,8 @@ function showOverlayWidgetForPause(w,pp){
   $('owSub').textContent=T(pp.desc.ar,pp.desc.en);
   $('owVal').textContent=w.val();
   $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
-  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
   $('widgetOverlay').classList.add('show');
+  $('stageCap').style.opacity='0';
   /* start widget sequence auto-play if available */
   const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
   if(seq&&seq.images&&seq.images.length>1){
@@ -1185,21 +1185,22 @@ function buildWidgets(){
 let currentOverlayWidget=null;
 let _overlayIdx=0;
 function showOverlayWidget(){
-  /* cycle through widgets so each pause shows a different one */
   const w=widgets[_overlayIdx % widgets.length];
   _overlayIdx++;
   currentOverlayWidget=w;
   $('owIcon').textContent=w.icon;
   $('owTitle').textContent=T(w.title.ar,w.title.en);
-  $('owSub').textContent=T(w.sub.ar,w.sub.en);
   $('owVal').textContent=w.val();
   $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
-  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
   $('widgetOverlay').classList.add('show');
+  /* hide stage caption to avoid overlap */
+  $('stageCap').style.opacity='0';
 }
 function hideOverlayWidget(){
   $('widgetOverlay').classList.remove('show');
   currentOverlayWidget=null;
+  /* restore stage caption */
+  $('stageCap').style.opacity='1';
 }
 
 function openWidgetModal(w){
