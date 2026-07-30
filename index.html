@@ -802,7 +802,7 @@ $('pbRestart').onclick=()=>{
   clearTimeout(holdT);pauseHold=false;
   hideOverlayWidget();$('pauseBadge').classList.remove('show');
   stopWidgetSequence();
-  pausesDone.clear();_pausePointTriggered.clear();
+  pausesDone.clear();_stagePauseTriggered.clear();
   target=current=1;playing=true;$('pbPlay').textContent='❚❚';
 };
 $('scrub').addEventListener('pointerdown',e=>{
@@ -811,7 +811,7 @@ $('scrub').addEventListener('pointerdown',e=>{
   clearTimeout(holdT);pauseHold=false;
   hideOverlayWidget();$('pauseBadge').classList.remove('show');
   stopWidgetSequence();
-  _pausePointTriggered.clear();
+  _stagePauseTriggered.clear();
   target=current=1+p*(TOTAL-1);
 });
 
@@ -913,7 +913,7 @@ function updateGlassHudLive(){
 
 /* ---------- main loop ---------- */
 let widgetPauseUntil=0;
-let _pausePointTriggered=new Set();  /* track which pausePoints fired */
+let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 (function loop(now){
   now=now||performance.now();
   if(!SEGS||!SEGS.length){requestAnimationFrame(loop);return;}
@@ -922,15 +922,15 @@ let _pausePointTriggered=new Set();  /* track which pausePoints fired */
   const segNow=SEGS[siNow];
   if(playing&&!pauseHold&&now>widgetPauseUntil){
     target+=FPS*dt;
-    /* check for pausePoints at current frame */
     const g=Math.round(target);
-    const pp=findPausePoint(g);
-    if(pp&&!_pausePointTriggered.has(pp.frame)){
-      _pausePointTriggered.add(pp.frame);
-      target=pp.frame;
-      schedulePausePoint(pp);
+    /* pause at the START of each stage (not at specific frame numbers) */
+    const enteringStage=PROJ.stages.find(s=>s.from===g&&!_stagePauseTriggered.has(s.id));
+    if(enteringStage){
+      _stagePauseTriggered.add(enteringStage.id);
+      target=g;
+      scheduleStagePause(enteringStage);
     }
-    /* stage end pause */
+    /* also pause at end of last stage */
     else if(target>=segNow.end&&!pausesDone.has(siNow)){
       target=segNow.end;pausesDone.add(siNow);schedulePause(segNow);
     }
@@ -951,29 +951,40 @@ let _pausePointTriggered=new Set();  /* track which pausePoints fired */
   requestAnimationFrame(loop);
 })();
 
-/* find pausePoint at a given frame */
-function findPausePoint(frame){
-  for(const stage of PROJ.stages){
-    if(frame>=stage.from&&frame<=stage.to){
-      if(stage.pausePoints){
-        const pp=stage.pausePoints.find(p=>p.frame===frame);
-        if(pp)return pp;
-      }
-    }
-  }
-  return null;
-}
-
-/* schedule a pause at a pausePoint */
-function schedulePausePoint(pp){
+/* schedule a pause at the start of a stage */
+function scheduleStagePause(stage){
   playing=true;pauseHold=true;
   clearTimeout(holdT);
-  /* show the specific widget for this pausePoint */
-  const w=widgets.find(x=>x.id===pp.widget)||widgets[0];
+  /* find the widget for this stage (from pausePoints or default) */
+  let widget='progress';
+  let title={ar:stage.ar,en:stage.name};
+  let desc={ar:stage.desc||'',en:stage.desc||''};
+  /* check if this stage has pausePoints with custom data */
+  if(stage.pausePoints&&stage.pausePoints.length>0){
+    const pp=stage.pausePoints[0]; /* use first pausePoint's data */
+    if(pp.widget)widget=pp.widget;
+    if(pp.title)title=pp.title;
+    if(pp.desc)desc=pp.desc;
+  }
+  const w=widgets.find(x=>x.id===widget)||widgets[0];
   currentOverlayWidget=w;
   _overlayIdx=widgets.indexOf(w);
-  showOverlayWidgetForPause(w,pp);
+  /* show overlay with stage info */
+  $('owIcon').textContent=w.icon;
+  $('owTitle').textContent=T(title.ar,title.en);
+  $('owSub').textContent=T(desc.ar,desc.en);
+  $('owVal').textContent=w.val();
+  $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
+  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
+  $('widgetOverlay').classList.add('show');
   $('pauseBadge').classList.add('show');
+  /* start widget sequence auto-play if available */
+  const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
+  if(seq&&seq.images&&seq.images.length>1){
+    _widgetSeqImages=seq.images;
+    _widgetSeqIdx=0;
+    startWidgetSequence(seq.interval||3500);
+  }
   holdT=setTimeout(()=>{
     pauseHold=false;
     hideOverlayWidget();
@@ -1410,7 +1421,7 @@ $('contactForm').addEventListener('submit',async e=>{
 let _fullTour=false;
 function startFullTour(){
   _fullTour=true;
-  pausesDone.clear();_pausePointTriggered.clear();
+  pausesDone.clear();_stagePauseTriggered.clear();
   target=current=1;playing=true;
   $('pbPlay').textContent='❚❚';
   /* extend pause durations to 3s for tour */
@@ -1443,7 +1454,7 @@ function buildBuildTimeline(){
       clearTimeout(holdT);pauseHold=false;
       hideOverlayWidget();$('pauseBadge').classList.remove('show');
       stopWidgetSequence();
-      _pausePointTriggered.clear();
+      _stagePauseTriggered.clear();
       target=current=s.from;
     };
     tl.appendChild(seg);
