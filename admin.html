@@ -262,6 +262,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div id="pmList"></div>
         <div class="btnrow">
           <button class="btn sm" onclick="pmAdd()">+ إضافة مشروع · Add Project</button>
+          <button class="btn sm ghost" onclick="pmDuplicate()">📋 نسخ المشروع · Duplicate</button>
           <button class="btn sm ghost" onclick="pmSave()">حفظ الترتيب · Save Order</button>
         </div>
       </div>
@@ -1425,7 +1426,6 @@ function pmEdit(id){
   toast('Loaded: '+(PROJ.project?.title||PROJ.id));
 }
 function pmAdd(){
-  /* create new project with a fresh id */
   let i=CFG.projects.length+1;
   while(CFG.projects.find(p=>p.id==='project-'+i))i++;
   const id='project-'+i;
@@ -1437,7 +1437,62 @@ function pmAdd(){
   AURA.addProject(CFG,np);
   buildProjectManager();
   pmEdit(id);
-  toast('New project created · تم إنشاء مشروع جديد — عدّل بياناته');
+  toast('New project created · تم إنشاء مشروع جديد');
+}
+function pmDuplicate(){
+  /* duplicate current project structure WITHOUT images */
+  const src=PROJ;
+  let i=1;
+  while(CFG.projects.find(p=>p.id===src.id+'-copy'+i))i++;
+  const newId=src.id+'-copy'+i;
+  /* deep clone structure */
+  const clone=JSON.parse(JSON.stringify(src));
+  clone.id=newId;
+  clone.project.title=(src.project.title||'Project')+' (نسخة)';
+  clone.project.progress=0;
+  clone.status='concept';
+  /* clear all images — keep structure only */
+  if(clone.sequence){
+    clone.sequence.images=[];
+    clone.sequence.count=0;
+  }
+  if(clone.beforeAfter){
+    clone.beforeAfter=clone.beforeAfter.map(ba=>({...ba,before:'',after:''}));
+  }
+  if(clone.widgets){
+    Object.keys(clone.widgets).forEach(wid=>{
+      if(clone.widgets[wid].gallery)clone.widgets[wid].gallery=[];
+    });
+  }
+  if(clone.widgetSequences){
+    Object.keys(clone.widgetSequences).forEach(wid=>{
+      clone.widgetSequences[wid].images=[];
+    });
+  }
+  if(clone.interior&&clone.interior.furniture){
+    Object.keys(clone.interior.furniture).forEach(rid=>{
+      clone.interior.furniture[rid]=clone.interior.furniture[rid].map(f=>({...f}));
+    });
+  }
+  if(clone.hotspots){
+    Object.keys(clone.hotspots).forEach(cat=>{
+      Object.keys(clone.hotspots[cat]).forEach(key=>{
+        clone.hotspots[cat][key]=clone.hotspots[cat][key].map(h=>({...h}));
+      });
+    });
+  }
+  /* clear pausePoint images */
+  if(clone.stages){
+    clone.stages.forEach(s=>{
+      if(s.pausePoints){
+        s.pausePoints.forEach(pp=>{pp.images=[];});
+      }
+    });
+  }
+  AURA.addProject(CFG,clone);
+  buildProjectManager();
+  pmEdit(newId);
+  toast('Project duplicated (structure only, no images) · تم نسخ الهيكل بدون الصور');
 }
 function pmDeleteCurrent(){
   if(CFG.projects.length<=1){toast('Cannot delete the only remaining project');return;}
