@@ -7,11 +7,11 @@
 <meta name="description" content="منصة توثيق وبناء متواصل — من أول حجر حتى آخر غرفة. One continuous living record of your construction project.">
 <style>
 :root{
-  --bg:#0E0E10; --bg-2:#161619; --bg-3:#1E1E22;
-  --fg:#F5F1EA; --fg-2:#8A8579; --fg-3:#5A574F;
+  --bg:#FAFAF7; --bg-2:#F2F1EC; --bg-3:#E8E6DF;
+  --fg:#1A1A1C; --fg-2:#6E7079; --fg-3:#9A9A9F;
   --gold:#BFA76A; --gold-2:#8C7B5B; --sand:#C9B89A;
   --green:#6FAD7F; --cool:#6E7079;
-  --border:rgba(245,241,234,0.08); --border-2:rgba(245,241,234,0.18);
+  --border:rgba(26,26,28,0.08); --border-2:rgba(26,26,28,0.18);
   --font-ar:"Tajawal","SF Arabic","Segoe UI",Tahoma,sans-serif;
   --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --font-display:"Cormorant Garamond",Georgia,serif;
@@ -27,12 +27,12 @@ button{font-family:inherit}
 
 /* ================= TOP BAR (project switcher) ================= */
 #projBar{position:fixed;top:0;left:0;right:0;z-index:101;display:flex;align-items:center;gap:14px;
-  padding:8px 16px;background:rgba(14,14,16,.78);backdrop-filter:blur(22px) saturate(180%);
+  padding:8px 16px;background:rgba(250,250,247,.85);backdrop-filter:blur(22px) saturate(180%);
   -webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid var(--border);max-height:54px;overflow-x:auto;scrollbar-width:none}
 #projBar::-webkit-scrollbar{display:none}
 #projBar .pb-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2);flex:none;padding-inline-end:8px;border-inline-end:1px solid var(--border);margin-inline-end:4px}
 .pcard{flex:none;display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:100px;
-  background:rgba(245,241,234,.04);border:1px solid var(--border);cursor:pointer;transition:.35s;font-size:12px;min-width:max-content}
+  background:rgba(26,26,28,.04);border:1px solid var(--border);cursor:pointer;transition:.35s;font-size:12px;min-width:max-content}
 .pcard:hover{border-color:var(--gold);background:rgba(191,167,106,.08)}
 .pcard.on{background:rgba(191,167,106,.14);border-color:var(--gold)}
 .pcard img{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none}
@@ -47,7 +47,7 @@ button{font-family:inherit}
 
 /* ================= NAV ================= */
 .nav{position:fixed;top:54px;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:13px 40px;transition:.4s}
-.nav.scrolled{background:rgba(14,14,16,.65);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border)}
+.nav.scrolled{background:rgba(250,250,247,.75);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border)}
 .nav .logo{font-weight:700;letter-spacing:.28em;font-size:14px;cursor:pointer;color:var(--fg);text-decoration:none}
 .nav .logo b{color:var(--gold)}
 .nav .links{display:flex;gap:24px;align-items:center}
@@ -57,23 +57,23 @@ button{font-family:inherit}
   background:rgba(191,167,106,.1);border:1px solid rgba(191,167,106,.4);border-radius:100px;padding:9px 16px;cursor:pointer;transition:.3s;font-family:inherit}
 .lang-btn:hover{background:rgba(191,167,106,.2)}
 .cta-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:999px;
-  background:var(--gold);color:var(--bg);font-weight:700;font-size:13.5px;transition:.3s;border:1px solid var(--gold);text-decoration:none;
+  background:var(--gold);color:#fff;font-weight:700;font-size:13.5px;transition:.3s;border:1px solid var(--gold);text-decoration:none;
   box-shadow:0 8px 24px -8px rgba(191,167,106,.5)}
 .cta-btn:hover{background:#d4ba80;border-color:#d4ba80;transform:translateY(-1px)}
 
 /* ================= HERO (cinematic) ================= */
-#hero{position:relative;height:calc(100vh - 54px);min-height:600px;overflow:hidden;background:var(--bg)}
+#hero{position:relative;height:calc(100vh - 54px);min-height:600px;overflow:hidden;background:#fff}
 #cine{position:absolute;inset:0;width:100%;height:100%;display:block;background:#fff}
-#heroFade{position:absolute;inset:0;background:var(--bg);opacity:0;pointer-events:none;transition:opacity .45s;z-index:7}
+#heroFade{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .45s;z-index:7}
 
 /* hero copy (top center) */
 .hero-copy{position:absolute;z-index:11;left:50%;top:6%;transform:translateX(-50%);text-align:center;width:min(92vw,760px);transition:.6s;pointer-events:none}
 .hero-copy .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
-  background:rgba(245,241,234,.06);border:1px solid var(--border-2);backdrop-filter:blur(20px);padding:8px 18px;border-radius:100px;margin-bottom:14px}
+  background:rgba(255,255,255,.7);border:1px solid var(--border-2);backdrop-filter:blur(20px);padding:8px 18px;border-radius:100px;margin-bottom:14px}
 .hero-copy .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2.4s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 .hero-copy h1{font-size:clamp(26px,4vw,52px);font-weight:700;letter-spacing:-.02em;line-height:1.1;
-  background:linear-gradient(180deg,#F5F1EA 30%,#8A8579);-webkit-background-clip:text;background-clip:text;color:transparent}
+  background:linear-gradient(180deg,#1A1A1C 30%,#6E7079);-webkit-background-clip:text;background-clip:text;color:transparent}
 html[dir="ltr"] .hero-copy h1{font-family:var(--font-display);font-weight:600}
 .hero-copy .sub{font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--fg-2);margin-top:8px;font-weight:400}
 html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;font-weight:500}
@@ -82,63 +82,59 @@ html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;fon
 .stage-cap{position:absolute;left:50%;bottom:130px;transform:translateX(-50%);z-index:12;
   font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--fg);
   display:flex;gap:12px;align-items:baseline;white-space:nowrap;
-  background:rgba(14,14,16,.7);backdrop-filter:blur(16px);border:1px solid var(--border-2);
-  padding:9px 22px;border-radius:100px;box-shadow:0 10px 30px -14px rgba(0,0,0,.5);transition:.4s}
+  background:rgba(255,255,255,.7);backdrop-filter:blur(16px);border:1px solid var(--border-2);
+  padding:9px 22px;border-radius:100px;box-shadow:0 10px 30px -14px rgba(0,0,0,.15);transition:.4s}
 .stage-cap b{color:var(--gold);font-size:13px;letter-spacing:.1em}
 .stage-cap .ar{font-size:9.5px;letter-spacing:.04em;color:var(--fg-2);text-transform:none;font-weight:500}
 
 /* playbar (bottom) */
 .playbar{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:12;
   display:flex;align-items:center;gap:14px;padding:10px 16px;width:min(74vw,860px);
-  background:rgba(245,241,234,.06);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
-  border:1px solid var(--border-2);border-radius:22px;box-shadow:0 18px 50px -18px rgba(0,0,0,.5)}
-.playbar .pbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--gold);color:var(--bg);font-size:12px;cursor:pointer;flex:none;
+  background:rgba(255,255,255,.7);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--border-2);border-radius:22px;box-shadow:0 18px 50px -18px rgba(0,0,0,.15)}
+.playbar .pbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--gold);color:#fff;font-size:12px;cursor:pointer;flex:none;
   display:flex;align-items:center;justify-content:center;transition:.3s}
-.playbar .pbtn.ghostb{background:rgba(245,241,234,.06);color:var(--fg-2)}
+.playbar .pbtn.ghostb{background:rgba(26,26,28,.06);color:var(--fg-2)}
 .playbar .pbtn:hover{filter:brightness(1.12)}
 .pb-wrap{flex:1;position:relative;padding-bottom:14px}
-.scrub{height:4px;background:rgba(245,241,234,.08);border-radius:4px;position:relative;cursor:pointer}
-.scrub .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);border-radius:4px;box-shadow:0 0 10px rgba(191,167,106,.5)}
-.scrub .knob{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;border:2.5px solid var(--gold);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.scrub .seg{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(245,241,234,.18);border-radius:2px}
+.scrub{height:4px;background:rgba(26,26,28,.1);border-radius:4px;position:relative;cursor:pointer}
+.scrub .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);border-radius:4px;box-shadow:0 0 10px rgba(191,167,106,.4)}
+.scrub .knob{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;border:2.5px solid var(--gold);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.scrub .seg{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(26,26,28,.15);border-radius:2px}
 .pb-ticks{position:absolute;left:0;right:0;top:12px;height:12px}
 .pb-ticks span{position:absolute;transform:translateX(-50%);font-size:7.5px;letter-spacing:.05em;color:var(--fg-2);cursor:pointer;white-space:nowrap;text-transform:uppercase;font-weight:600}
 .pb-ticks span:hover,.pb-ticks span.on{color:var(--gold)}
 
-/* ================= FLOATING WIDGETS ================= */
-.widget-rail{position:absolute;top:50%;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;gap:10px}
-.widget-rail.left{left:24px}
-.widget-rail.right{right:24px}
-.widget{display:flex;align-items:center;gap:10px;padding:10px 14px 10px 12px;border-radius:14px;cursor:pointer;
-  background:rgba(245,241,234,.06);backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);
-  border:1px solid var(--border);transition:.35s;min-width:180px;color:var(--fg);font-family:inherit;text-align:start}
-.widget:hover{background:rgba(245,241,234,.12);border-color:var(--gold);transform:translateX(0)}
-.widget-rail.left .widget:hover{transform:translateX(4px)}
-.widget-rail.right .widget:hover{transform:translateX(-4px)}
-.widget .w-ic{width:32px;height:32px;border-radius:10px;background:rgba(191,167,106,.14);border:1px solid rgba(191,167,106,.3);
-  display:flex;align-items:center;justify-content:center;flex:none;color:var(--gold);font-size:15px}
-.widget .w-tx{display:flex;flex-direction:column;line-height:1.25;min-width:0;flex:1}
-.widget .w-tx b{font-size:12px;font-weight:700;color:var(--fg);white-space:nowrap}
-.widget .w-tx span{font-size:9.5px;color:var(--fg-2);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
-.widget .w-val{font-size:13px;font-weight:700;color:var(--gold);flex:none}
-.widget .w-arrow{font-size:14px;color:var(--fg-2);opacity:0;transition:.3s;flex:none}
-.widget:hover .w-arrow{opacity:1;color:var(--gold)}
+/* ================= OVERLAY WIDGETS (inside video, show on pause) ================= */
+.widget-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateY(20px);z-index:14;
+  display:none;opacity:0;transition:opacity .5s,transform .5s;width:min(90vw,520px);max-width:520px}
+.widget-overlay.show{display:block;opacity:1;transform:translate(-50%,-50%) translateY(0)}
+.widget-overlay .ow-card{background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border-2);border-radius:18px;padding:20px 22px;box-shadow:0 24px 60px -20px rgba(0,0,0,.25);
+  display:flex;align-items:center;gap:14px;cursor:pointer;transition:.3s}
+.widget-overlay .ow-card:hover{border-color:var(--gold);box-shadow:0 24px 60px -20px rgba(191,167,106,.35);transform:translateY(-2px)}
+.widget-overlay .ow-ic{width:46px;height:46px;border-radius:12px;background:#1A1A1C;color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.widget-overlay .ow-tx{flex:1;min-width:0}
+.widget-overlay .ow-tx b{display:block;font-size:15px;font-weight:700;color:#1A1A1C;margin-bottom:2px}
+.widget-overlay .ow-tx span{display:block;font-size:12px;color:#6E7079;line-height:1.4}
+.widget-overlay .ow-tx .ow-val{display:inline-block;margin-top:6px;font-size:13px;font-weight:700;color:var(--gold);font-family:var(--font)}
+.widget-overlay .ow-cta{flex:none;font-size:13px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border:1px solid rgba(191,167,106,.4);border-radius:999px;background:rgba(191,167,106,.08);transition:.3s}
+.widget-overlay .ow-card:hover .ow-cta{background:var(--gold);color:#fff}
+.widget-overlay .ow-hint{text-align:center;margin-top:10px;font-size:10.5px;color:var(--fg-2);letter-spacing:.08em;font-weight:600}
 
-/* mobile widgets grid (below playbar on small screens) */
-.widget-mobile{display:none;position:absolute;left:16px;right:16px;bottom:80px;z-index:14;
-  grid-template-columns:repeat(2,1fr);gap:8px}
-.widget-mobile .widget{min-width:0;padding:8px 10px}
-.widget-mobile .widget .w-tx b{font-size:11px}
-.widget-mobile .widget .w-tx span{font-size:8.5px}
-.widget-mobile .widget .w-val{font-size:11px}
-@media(max-width:920px){
-  .widget-rail{display:none}
-  .widget-mobile{display:grid}
-  .hero-copy{top:5%}
-  .hero-copy h1{font-size:24px}
-  .playbar{width:94vw;padding:8px 12px}
-  .stage-cap{bottom:200px;font-size:10px;padding:7px 16px}
-}
+/* pause indicator badge */
+.pause-badge{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:13;
+  display:flex;align-items:center;gap:8px;padding:7px 16px;border-radius:100px;
+  background:rgba(255,255,255,.9);border:1px solid var(--border-2);backdrop-filter:blur(10px);
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);opacity:0;transition:.4s;pointer-events:none}
+.pause-badge.show{opacity:1}
+.pause-badge .pause-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 1.6s ease-in-out infinite}
+
+/* (legacy widget-rail hidden — replaced by overlay) */
+.widget-rail{display:none !important}
+.widget-mobile{display:none !important}
 
 /* ================= WHITE MODAL ================= */
 #modal{position:fixed;inset:0;z-index:330;display:none;align-items:center;justify-content:center;
@@ -221,16 +217,20 @@ html[dir="rtl"] .about-text .w-quote{font-family:var(--font-ar);font-style:norma
 .about-stats .stat .l{font-size:11.5px;color:#6E7079;margin-top:6px;font-weight:500}
 @media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:36px}.about-visual{aspect-ratio:4/3;max-height:400px}}
 
-/* Clients */
-#clients{background:#F2F1EC}
-.clients-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;max-width:1200px;margin:0 auto}
-.client-logo{aspect-ratio:5/3;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:14px;display:flex;align-items:center;justify-content:center;
+/* Clients — auto-scrolling marquee */
+#clients{background:#F2F1EC;overflow:hidden;padding:90px 0}
+#clients .w-head{padding:0 6vw}
+.clients-marquee{position:relative;display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.clients-track{display:flex;gap:16px;padding:0 8px;animation:clientsScroll 40s linear infinite;flex-shrink:0}
+.clients-track:hover{animation-play-state:paused}
+.client-logo{aspect-ratio:5/3;width:200px;flex:none;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:14px;display:flex;align-items:center;justify-content:center;
   padding:18px;transition:.4s;font-family:var(--font);font-weight:700;color:#3A3A3E;font-size:13px;letter-spacing:.04em;text-align:center;
   filter:grayscale(1) opacity(.55)}
 .client-logo:hover{filter:grayscale(0) opacity(1);transform:translateY(-2px);box-shadow:0 14px 38px -14px rgba(0,0,0,.18);border-color:rgba(191,167,106,.3)}
 .client-logo .c-ic{font-size:24px;color:#BFA76A;margin-bottom:6px;display:block}
-@media(max-width:900px){.clients-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:560px){.clients-grid{grid-template-columns:repeat(2,1fr)}}
+@keyframes clientsScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+html[dir="rtl"] .clients-track{animation-direction:reverse}
+@media(max-width:560px){.client-logo{width:160px}}
 
 /* Contact */
 #contact{background:#FAFAF7}
@@ -257,10 +257,15 @@ html[dir="rtl"] .contact-channel:hover{transform:translateX(-4px)}
 .contact-form .submit:hover{background:#000;transform:translateY(-1px);box-shadow:0 14px 38px -10px rgba(0,0,0,.3)}
 .contact-form .f-msg{font-size:12.5px;color:#6FAD7F;font-weight:600;margin-top:10px;display:none;text-align:center}
 .contact-form .f-msg.show{display:block}
-@media(max-width:900px){.contact-grid{grid-template-columns:1fr;gap:36px}}
+/* Map */
+.contact-map{margin-top:40px;border-radius:18px;overflow:hidden;box-shadow:0 24px 60px -20px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.06);max-width:1200px;margin-left:auto;margin-right:auto}
+.contact-map iframe{width:100%;height:340px;border:0;display:block;filter:grayscale(.3) contrast(.95)}
+.contact-map .map-label{padding:14px 20px;background:#fff;display:flex;align-items:center;gap:10px;font-size:13px;color:#3A3A3E;font-weight:600}
+.contact-map .map-label .c-ic{width:30px;height:30px;border-radius:8px;background:#1A1A1C;color:#BFA76A;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr;gap:36px}.contact-map{margin-top:28px}.contact-map iframe{height:260px}}
 
 /* ================= FOOTER ================= */
-footer{padding:50px 6vw 30px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px;background:var(--bg)}
+footer{padding:50px 6vw 30px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:16px;background:var(--bg-2)}
 footer .logo{font-weight:700;letter-spacing:.28em;font-size:14px;color:var(--fg)}
 footer .logo b{color:var(--gold)}
 footer p{font-size:12px;color:var(--fg-2)}
@@ -268,8 +273,8 @@ footer p .ar{font-family:var(--font-ar)}
 
 /* ================= TOAST ================= */
 #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);z-index:340;
-  background:rgba(245,241,234,.95);color:#1A1A1C;font-size:13px;font-weight:500;padding:13px 26px;border-radius:100px;transition:.4s;
-  box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  background:#1A1A1C;color:#fff;font-size:13px;font-weight:500;padding:13px 26px;border-radius:100px;transition:.4s;
+  box-shadow:0 20px 60px rgba(0,0,0,.3)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ================= HIDDEN ADMIN GATE ================= */
@@ -315,14 +320,22 @@ footer p .ar{font-family:var(--font-ar)}
     <div class="sub">From the first stone to the last room — one continuous living record.</div>
   </div>
 
-  <!-- LEFT widgets -->
-  <div class="widget-rail left" id="widgetsLeft"></div>
+  <!-- pause badge (shows when video is paused) -->
+  <div class="pause-badge" id="pauseBadge"><span class="pause-dot"></span><span id="pauseBadgeTxt">PAUSED · متوقف</span></div>
 
-  <!-- RIGHT widgets -->
-  <div class="widget-rail right" id="widgetsRight"></div>
-
-  <!-- MOBILE widgets grid -->
-  <div class="widget-mobile" id="widgetsMobile"></div>
+  <!-- overlay widget (shows inside video on each pause) -->
+  <div class="widget-overlay" id="widgetOverlay">
+    <div class="ow-card" id="owCard">
+      <div class="ow-ic" id="owIcon">◉</div>
+      <div class="ow-tx">
+        <b id="owTitle">Progress</b>
+        <span id="owSub">Overall completion</span>
+        <span class="ow-val" id="owVal">100%</span>
+      </div>
+      <div class="ow-cta"><span id="owCtaTxt">عرض التفاصيل</span> →</div>
+    </div>
+    <div class="ow-hint" id="owHint">انقر لعرض التفاصيل · Click to view details</div>
+  </div>
 
   <div class="stage-cap" id="stageCap"><b>01</b> <span id="stageCapTxt">EXCAVATION</span> <span class="ar" id="stageCapAr">الحفر</span></div>
 
@@ -403,19 +416,8 @@ footer p .ar{font-family:var(--font-ar)}
     <h2>ثقة رواد البناء في الخليج</h2>
     <p>نفخر بشراكاتنا مع نخبة من المطورين والمقاولين وشركات التشطيب في الكويت والمنطقة.</p>
   </div>
-  <div class="clients-grid">
-    <div class="client-logo"><span class="c-ic">▲</span>Al-Sabah Developments</div>
-    <div class="client-logo"><span class="c-ic">◆</span>Marmi Kuwait</div>
-    <div class="client-logo"><span class="c-ic">●</span>Studio Forma</div>
-    <div class="client-logo"><span class="c-ic">■</span>Gulf RMC</div>
-    <div class="client-logo"><span class="c-ic">★</span>Light House KW</div>
-    <div class="client-logo"><span class="c-ic">⬢</span>Qurain Steel</div>
-    <div class="client-logo"><span class="c-ic">◐</span>Joinery Works</div>
-    <div class="client-logo"><span class="c-ic">◈</span>Dar Gallery</div>
-    <div class="client-logo"><span class="c-ic">◇</span>Green Studio</div>
-    <div class="client-logo"><span class="c-ic">▼</span>Apparatus KW</div>
-    <div class="client-logo"><span class="c-ic">▣</span>Flexform Gulf</div>
-    <div class="client-logo"><span class="c-ic">◉</span>Agape Interiors</div>
+  <div class="clients-marquee">
+    <div class="clients-track" id="clientsTrack"></div>
   </div>
 </section>
 
@@ -469,6 +471,13 @@ footer p .ar{font-family:var(--font-ar)}
       <button type="submit" class="submit">أرسل الطلب · Submit →</button>
       <div class="f-msg" id="contactMsg">✓ تم استلام طلبك. سنتواصل معك خلال 24 ساعة.</div>
     </form>
+  </div>
+  <div class="contact-map">
+    <div class="map-label"><div class="c-ic">⌖</div><span>مدينة الكويت، الكويت · Kuwait City, Kuwait</span></div>
+    <iframe
+      src="https://www.openstreetmap.org/export/embed.html?bbox=47.95%2C29.34%2C48.05%2C29.40&layer=mapnik&marker=29.3702%2C48.0083"
+      loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="AURA Studio location">
+    </iframe>
   </div>
 </section>
 
@@ -618,18 +627,33 @@ function schedulePause(seg){
   playing=true;pauseHold=true;
   let left=PB.pauseExplore||5;
   clearTimeout(holdT);
+  /* show overlay widget + pause badge when video pauses */
+  showOverlayWidget();
+  $('pauseBadge').classList.add('show');
   holdT=setTimeout(()=>{
     pauseHold=false;
+    hideOverlayWidget();
+    $('pauseBadge').classList.remove('show');
     if(seg.end>=TOTAL){target=current=1;pausesDone.clear();cinFadeSwap();}
     else{target=seg.end+1;current=target;cinFadeSwap();}
   },(PB.pauseExplore||5)*1000);
 }
-$('pbPlay').onclick=()=>{playing=!playing;if(!playing)clearTimeout(holdT);$('pbPlay').textContent=playing?'❚❚':'▶';};
-$('pbRestart').onclick=()=>{clearTimeout(holdT);pauseHold=false;pausesDone.clear();target=current=1;playing=true;$('pbPlay').textContent='❚❚';};
+$('pbPlay').onclick=()=>{
+  playing=!playing;
+  if(!playing){clearTimeout(holdT);showOverlayWidget();$('pauseBadge').classList.add('show');}
+  else{hideOverlayWidget();$('pauseBadge').classList.remove('show');}
+  $('pbPlay').textContent=playing?'❚❚':'▶';
+};
+$('pbRestart').onclick=()=>{
+  clearTimeout(holdT);pauseHold=false;
+  hideOverlayWidget();$('pauseBadge').classList.remove('show');
+  pausesDone.clear();target=current=1;playing=true;$('pbPlay').textContent='❚❚';
+};
 $('scrub').addEventListener('pointerdown',e=>{
   const r=$('scrub').getBoundingClientRect();
   const p=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
   clearTimeout(holdT);pauseHold=false;
+  hideOverlayWidget();$('pauseBadge').classList.remove('show');
   target=current=1+p*(TOTAL-1);
 });
 
@@ -788,44 +812,46 @@ const widgets=[
 ];
 
 function buildWidgets(){
-  const left=$('widgetsLeft'),right=$('widgetsRight'),mobile=$('widgetsMobile');
-  left.innerHTML='';right.innerHTML='';mobile.innerHTML='';
-  widgets.forEach(w=>{
-    const el=makeWidgetEl(w);
-    (w.side==='left'?left:right).appendChild(el);
-    const mel=makeWidgetEl(w,true);
-    mobile.appendChild(mel);
-  });
-}
-function makeWidgetEl(w,mobile){
-  const el=document.createElement('button');
-  el.className='widget';el.dataset.wid=w.id;
-  el.innerHTML=`<span class="w-ic">${w.icon}</span>
-    <span class="w-tx"><b>${T(w.title.ar,w.title.en)}</b><span>${T(w.sub.ar,w.sub.en)}</span></span>
-    <span class="w-val">${w.val()}</span>
-    <span class="w-arrow">→</span>`;
-  el.onclick=()=>openWidget(w);
-  return el;
+  /* pick a widget based on current stage (cycle through relevant ones) */
+  /* the overlay shows ONE widget at a time, picked from the widgets array
+     based on the current stage index — gives variety at each pause */
+  $('owCard').onclick=()=>{const w=currentOverlayWidget;if(w)openWidgetModal(w);};
 }
 
-function openWidget(w){
-  /* pause main cinematic for 2.5s, then open modal */
-  widgetPauseUntil=performance.now()+2500;
-  clearTimeout(holdT);pauseHold=true;
-  setTimeout(()=>{
-    $('mIcon').textContent=w.icon;
-    $('mEyebrow').textContent=T(w.sub.ar,w.sub.en).toUpperCase();
-    $('mTitle').textContent=T(w.mTitle.ar,w.mTitle.en);
-    $('mSub').textContent=T(w.mSub.ar,w.mSub.en);
-    $('mDesc').textContent=T(w.mDesc.ar,w.mDesc.en);
-    const bullets=isAr?w.bullets.ar:w.bullets.en;
-    $('mBullets').innerHTML=bullets.map(b=>`<div class="b">${b}</div>`).join('');
-    $('mDetails').textContent=isAr?'عرض التفاصيل · View Details →':'View Details →';
-    $('mClose2').textContent=isAr?'إغلاق · Close':'Close';
-    $('mDetails').onclick=()=>{closeModal();toast(isAr?'سيتم فتح '+T(w.mTitle.ar,w.mTitle.en)+' قريبًا':T(w.mTitle.ar,w.mTitle.en)+' — coming soon');};
-    $('modal').classList.add('on');
-    document.body.style.overflow='hidden';
-  },2500);
+let currentOverlayWidget=null;
+let _overlayIdx=0;
+function showOverlayWidget(){
+  /* cycle through widgets so each pause shows a different one */
+  const w=widgets[_overlayIdx % widgets.length];
+  _overlayIdx++;
+  currentOverlayWidget=w;
+  $('owIcon').textContent=w.icon;
+  $('owTitle').textContent=T(w.title.ar,w.title.en);
+  $('owSub').textContent=T(w.sub.ar,w.sub.en);
+  $('owVal').textContent=w.val();
+  $('owCtaTxt').textContent=isAr?'عرض التفاصيل':'View Details';
+  $('owHint').textContent=isAr?'انقر لعرض التفاصيل · Click to view details':'Click to view details';
+  $('widgetOverlay').classList.add('show');
+}
+function hideOverlayWidget(){
+  $('widgetOverlay').classList.remove('show');
+  currentOverlayWidget=null;
+}
+
+function openWidgetModal(w){
+  /* open the modal directly (no 2.5s pause since video is already paused) */
+  $('mIcon').textContent=w.icon;
+  $('mEyebrow').textContent=T(w.sub.ar,w.sub.en).toUpperCase();
+  $('mTitle').textContent=T(w.mTitle.ar,w.mTitle.en);
+  $('mSub').textContent=T(w.mSub.ar,w.mSub.en);
+  $('mDesc').textContent=T(w.mDesc.ar,w.mDesc.en);
+  const bullets=isAr?w.bullets.ar:w.bullets.en;
+  $('mBullets').innerHTML=bullets.map(b=>`<div class="b">${b}</div>`).join('');
+  $('mDetails').textContent=isAr?'عرض التفاصيل · View Details →':'View Details →';
+  $('mClose2').textContent=isAr?'إغلاق · Close':'Close';
+  $('mDetails').onclick=()=>{closeModal();toast(isAr?'سيتم فتح '+T(w.mTitle.ar,w.mTitle.en)+' قريبًا':T(w.mTitle.ar,w.mTitle.en)+' — coming soon');};
+  $('modal').classList.add('on');
+  document.body.style.overflow='hidden';
 }
 function closeModal(){$('modal').classList.remove('on');document.body.style.overflow='';}
 $('modalClose').onclick=closeModal;
@@ -840,7 +866,7 @@ document.querySelectorAll('.svc-card[data-wid]').forEach(c=>{
     const map={design:'progress',execution:'structural',finishing:'materials',management:'cost'};
     const targetWid=map[wid]||wid;
     const w=widgets.find(x=>x.id===targetWid);
-    if(w)openWidget(w);
+    if(w)openWidgetModal(w);
   };
 });
 
@@ -878,6 +904,21 @@ bootFrames();
 
 /* ---------- cta ---------- */
 document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?'اطلب تجربتك الحية عبر واتساب: +965 2222 3333':'Request your live demo via WhatsApp: +965 2222 3333'));
+
+/* ---------- clients marquee (auto-scroll, duplicated for seamless loop) ---------- */
+(function(){
+  const names=['Al-Sabah Developments','Marmi Kuwait','Studio Forma','Gulf RMC','Light House KW','Qurain Steel','Joinery Works','Dar Gallery','Green Studio','Apparatus KW','Flexform Gulf','Agape Interiors'];
+  const icons=['▲','◆','●','■','★','⬢','◐','◈','◇','▼','▣','◉'];
+  const track=$('clientsTrack');
+  /* render twice for seamless infinite loop */
+  for(let r=0;r<2;r++){
+    names.forEach((n,i)=>{
+      const el=document.createElement('div');el.className='client-logo';
+      el.innerHTML=`<span class="c-ic">${icons[i]}</span>${n}`;
+      track.appendChild(el);
+    });
+  }
+})();
 
 /* ---------- contact form ---------- */
 $('contactForm').addEventListener('submit',e=>{
