@@ -1206,7 +1206,9 @@ function saveProject(){
 }
 function switchToProject(){
   AURA.setCurrent(CFG,PROJ.id);
-  toast('Set as default · تم تعيينه المشروع الافتراضي');
+  AURA.save(CFG);  /* persist + trigger _lastUpdate so site picks it up */
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  toast('Set as default · تم تعيينه المشروع الافتراضي — افتح الموقع أو حدّثه');
 }
 function saveUI(){
   PROJ.brand.name=uName.value;PROJ.brand.accent=uAccent.value;
@@ -2029,7 +2031,8 @@ function buildProjectManager(){
 }
 function pmSetDefault(id){
   AURA.setCurrent(CFG,id);
-  toast('Default project set · تم تعيين المشروع الافتراضي');
+  AURA.save(CFG);  /* persist + trigger _lastUpdate so site picks it up */
+  toast('Default project set · تم تعيين المشروع الافتراضي — افتح الموقع أو حدّثه');
   buildProjectManager();
 }
 function pmEdit(id){
@@ -2070,6 +2073,10 @@ function pmAdd(){
     id,cover:'assets/villa-clean.png',status:'concept',
     project:{title:'New Project '+i,location:'—',area:'—',year:String(new Date().getFullYear()),status:'Concept',progress:0}
   });
+  /* clear inherited sequence images — new project starts fresh */
+  np.sequence=np.sequence||{};
+  np.sequence.images=[];
+  np.sequence.count=0;
   AURA.addProject(CFG,np);
   buildProjectManager();
   pmEdit(id);

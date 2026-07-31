@@ -847,6 +847,7 @@ let PB=PROJ.playback||{fpsExt:9,pauseExplore:5,pauseRoom:2.5};
 let FPS=+PB.fpsExt||9;
 let lastT=performance.now();
 const pausesDone=new Set();
+let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 let widgetPauseT=null;  /* pause when widget clicked */
 
 function cinFadeSwap(){$('heroFade').style.opacity=1;setTimeout(()=>$('heroFade').style.opacity=0,450);}
@@ -989,7 +990,6 @@ function updateGlassHudLive(){
 
 /* ---------- main loop ---------- */
 let widgetPauseUntil=0;
-let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 (function loop(now){
   now=now||performance.now();
   if(!SEGS||!SEGS.length){requestAnimationFrame(loop);return;}
@@ -1401,6 +1401,9 @@ function applyPlayback(){
   if(typeof PB!=='undefined'){PB.fpsExt=+pb.fpsExt||9;PB.pauseExplore=+pb.pauseExplore||5;}
 }
 function applyAllFromStorage(){
+  const oldId=PROJ?.id;
+  const oldCount=SEGS?.[0]?.count;
+  const oldImgLen=PROJ?.sequence?.images?.length||0;
   CFG=AURA.load();
   PROJ=AURA.getCurrent(CFG);
   AURA.applyTheme(PROJ);
@@ -1413,6 +1416,28 @@ function applyAllFromStorage(){
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */
   if(lastStageId){lastStageId=null;}
+  /* CRITICAL: rebuild timeline + clear cache when sequence changes
+     (otherwise site shows old frame count / wrong frame sources).
+     Always rebuild if: project switched, frame count changed, or
+     custom images array length changed (covers upload/replace/delete). */
+  const newCount=PROJ.sequence?.count||97;
+  const newImgLen=PROJ.sequence?.images?.length||0;
+  const projChanged=oldId!==PROJ.id;
+  const countChanged=oldCount!==newCount;
+  const imgsChanged=oldImgLen!==newImgLen;
+  if(projChanged||countChanged||imgsChanged){
+    buildTimeline();
+    cache={};  /* clear image cache so new URLs are fetched */
+    target=current=1;
+    pausesDone.clear();
+    if(typeof _stagePauseTriggered!=='undefined')_stagePauseTriggered.clear();
+    bootFrames();
+    if(projChanged){
+      toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    }else{
+      toast(isAr?'تم تحديث الإطارات':'Frames updated');
+    }
+  }
 }
 window.addEventListener('storage',e=>{
   if(e.key==='aura.cms'||e.key==='aura.lang'){
