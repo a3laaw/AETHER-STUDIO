@@ -22,7 +22,7 @@ function _deepMerge(a, b){
 /* ---------- DEFAULT PROJECT (Villa Solara — full data, as before) ---------- */
 const VILLA_SOLARA = {
   id: 'villa-solara',
-  cover: 'assets/villa-clean.png',
+  cover: 'assets/villa-clean.webp',
   status: 'completed', /* 'completed' | 'in-progress' | 'concept' */
   brand: { name: 'AURA', accent: '#3c82f6', tagline: 'Future Architecture Studio' },
   ui: { glassOpacity: 0.55, blur: 28, radius: 22, glow: 0.6, animSpeed: 1, theme: 'light' },
@@ -67,7 +67,7 @@ const VILLA_SOLARA = {
       ]},
     { id:'night',      name:'Night View',  ar:'المشهد الليلي', from:97, to:97, color:'#f0a54c', icon:'☾', desc:'Evening scene — the villa fully alive.',
       pausePoints:[
-        {frame:97,title:{ar:'التسليم النهائي',en:'Final handover'},desc:{ar:'إضاءة ليلية + تسليم المشروع',en:'Night lighting + project handover'},images:['assets/stages/s7-night.png'],widget:'progress'}
+        {frame:97,title:{ar:'التسليم النهائي',en:'Final handover'},desc:{ar:'إضاءة ليلية + تسليم المشروع',en:'Night lighting + project handover'},images:['assets/stages/s7-night.webp'],widget:'progress'}
       ]}
   ],
   project: {
@@ -128,7 +128,7 @@ const VILLA_SOLARA = {
       title: 'Design', titleAr: 'التصميم',
       kicker: '01', desc: 'Parametric concept design, photoreal visualization and generative optioning.',
       descAr: 'تصميم بارامتري وإخراج واقعي وخيارات توليدية قبل وضع أول حجر.',
-      gallery: ['assets/villa-clean.png', 'assets/villa-blueprint.png', 'assets/villa-wireframe.png'],
+      gallery: ['assets/villa-clean.webp', 'assets/villa-blueprint.webp', 'assets/villa-wireframe.webp'],
       bullets: [
         ['Concept', 'المفهوم', 'Parametric massing + climate response'],
         ['Visualization', 'الإخراج البصري', 'Photoreal stills + cinematic flythrough'],
@@ -139,7 +139,7 @@ const VILLA_SOLARA = {
       title: 'Execution', titleAr: 'التنفيذ',
       kicker: '02', desc: 'Robotic surveying, laser-guided structure, millimetre tolerances — monitored live.',
       descAr: 'مساحة روبوتية وهيكل موجّه بالليزر بدقة مليمترية — بمراقبة حية.',
-      gallery: ['assets/stages/s2-foundation.png', 'assets/stages/s3-structure.png', 'assets/stages/s4-shell.png'],
+      gallery: ['assets/stages/s2-foundation.webp', 'assets/stages/s3-structure.webp', 'assets/stages/s4-shell.webp'],
       bullets: [
         ['Survey', 'المساحة', 'Robotic total station ±2 mm'],
         ['Structure', 'الهيكل', 'Laser-guided rebar + concrete'],
@@ -150,7 +150,7 @@ const VILLA_SOLARA = {
       title: 'Finishing', titleAr: 'التشطيبات',
       kicker: '03', desc: 'Book-matched travertine, low-E glazing, bronze detailing — every material traced.',
       descAr: 'ترافرتين متطابق وزجاج عازل وتفاصيل برونزية — كل خامة موثقة.',
-      gallery: ['assets/stages/s5-facade.png', 'assets/stages/s6-complete.png', 'assets/stages/s7-night.png'],
+      gallery: ['assets/stages/s5-facade.webp', 'assets/stages/s6-complete.webp', 'assets/stages/s7-night.webp'],
       bullets: [
         ['Stone', 'الحجر', 'Travertine Navona — book-matched'],
         ['Glazing', 'الزجاج', 'Low-E triple, U-value 0.6'],
@@ -161,7 +161,7 @@ const VILLA_SOLARA = {
       title: 'Project Management', titleAr: 'إدارة المشاريع',
       kicker: '04', desc: 'One live dashboard for cost, schedule and quality. AI flags risk early.',
       descAr: 'لوحة واحدة حية للتكلفة والجدول والجودة — والذكاء الاصطناعي ينذر مبكرًا.',
-      gallery: ['assets/villa-clean.png', 'assets/stages/s1-excavation.png', 'assets/stages/s7-night.png'],
+      gallery: ['assets/villa-clean.webp', 'assets/stages/s1-excavation.webp', 'assets/stages/s7-night.webp'],
       bullets: [
         ['Cost', 'التكلفة', 'Real-time burn-down vs budget'],
         ['Schedule', 'الجدول', 'CPM critical path with AI risk flags'],
@@ -173,7 +173,7 @@ const VILLA_SOLARA = {
       title: 'Build Progress', titleAr: 'تقدم البناء',
       kicker: 'AI', desc: 'Real-time build progress with discipline breakdown and quality scoring.',
       descAr: 'تقدم البناء لحظيًا مع تفصيل المراحل وتقييم الجودة.',
-      gallery: ['assets/stages/s3-structure.png', 'assets/stages/s5-facade.png', 'assets/stages/s7-night.png'],
+      gallery: ['assets/stages/s3-structure.webp', 'assets/stages/s5-facade.webp', 'assets/stages/s7-night.webp'],
       bullets: [
         ['Overall', 'الإجمالي', 'Composite of 5 disciplines'],
         ['Quality', 'الجودة', 'AI-scored from inspections'],
@@ -184,7 +184,7 @@ const VILLA_SOLARA = {
       title: 'Structural Analysis', titleAr: 'الحسابات الإنشائية',
       kicker: 'FEA', desc: 'Finite-element analysis of integrity, load paths and deflection.',
       descAr: 'تحليل بالعناصر المحدودة للسلامة ومسار الأحمال والترخيم.',
-      gallery: ['assets/villa-wireframe.png', 'assets/stages/s3-structure.png'],
+      gallery: ['assets/villa-wireframe.webp', 'assets/stages/s3-structure.webp'],
       bullets: [
         ['Integrity', 'السلامة', '99% at completion'],
         ['Deflection', 'الترخيم', 'L/540 — within tolerance'],
@@ -195,7 +195,7 @@ const VILLA_SOLARA = {
       title: 'Materials Scan', titleAr: 'فحص المواد',
       kicker: 'SCAN', desc: 'Every material QR-traced from source to installation.',
       descAr: 'كل خامة موثقة بـ QR من المصدر حتى التركيب.',
-      gallery: ['assets/stages/s5-facade.png'],
+      gallery: ['assets/stages/s5-facade.webp'],
       bullets: [
         ['Soil', 'التربة', 'Engineered fill, 95% compaction'],
         ['Rebar', 'الحديد', 'B500B Ø16 @ 150 mm'],
@@ -207,7 +207,7 @@ const VILLA_SOLARA = {
       title: 'Schedule (CPM)', titleAr: 'الجدول الزمني',
       kicker: 'CPM', desc: 'Critical-path schedule with AI risk flags and live progress.',
       descAr: 'جدول المسار الحرج مع تنبيهات الذكاء الاصطناعي وتقدم حي.',
-      gallery: ['assets/stages/s1-excavation.png', 'assets/stages/s7-night.png'],
+      gallery: ['assets/stages/s1-excavation.webp', 'assets/stages/s7-night.webp'],
       bullets: [
         ['Critical Path', 'المسار الحرج', '52 weeks total'],
         ['Current Stage', 'المرحلة الحالية', 'On track'],
@@ -218,7 +218,7 @@ const VILLA_SOLARA = {
       title: 'Cost Analysis', titleAr: 'تحليل التكلفة',
       kicker: 'AI', desc: 'Live budget burn-down with variance and contingency tracking.',
       descAr: 'متابعة حية للميزانية مع الانحراف والاحتياطي.',
-      gallery: ['assets/villa-clean.png'],
+      gallery: ['assets/villa-clean.webp'],
       bullets: [
         ['Budget Used', 'المصروف', '86% at 100% progress'],
         ['Variance', 'الانحراف', '−1.2% (under budget)'],
@@ -229,7 +229,7 @@ const VILLA_SOLARA = {
       title: 'QA / Safety', titleAr: 'الجودة والسلامة',
       kicker: 'QA', desc: 'Inspection log with zero open issues at handover.',
       descAr: 'سجل الفحوصات بدون ملاحظات مفتوحة عند التسليم.',
-      gallery: ['assets/stages/s5-facade.png', 'assets/stages/s6-complete.png'],
+      gallery: ['assets/stages/s5-facade.webp', 'assets/stages/s6-complete.webp'],
       bullets: [
         ['Inspections', 'الفحوصات', '24/24 passed'],
         ['Open Issues', 'ملاحظات', '0 open'],
@@ -252,27 +252,27 @@ const VILLA_SOLARA = {
       desc:'اسحب للنظر حولك · انقر الأبواب للتنقل بين الغرف'
     },
     beforeAfter: [
-      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.png',after:'assets/villa-wireframe.png'},
-      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s3-structure.png',after:'assets/stages/s4-shell.png'},
-      {label:'Finishing',labelAr:'التشطيبات',before:'assets/stages/s4-shell.png',after:'assets/stages/s5-facade.png'},
-      {label:'Handover',labelAr:'التسليم',before:'assets/villa-clean.png',after:'assets/stages/s7-night.png'}
+      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.webp',after:'assets/villa-wireframe.webp'},
+      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s3-structure.webp',after:'assets/stages/s4-shell.webp'},
+      {label:'Finishing',labelAr:'التشطيبات',before:'assets/stages/s4-shell.webp',after:'assets/stages/s5-facade.webp'},
+      {label:'Handover',labelAr:'التسليم',before:'assets/villa-clean.webp',after:'assets/stages/s7-night.webp'}
     ]
   },
   widgetSequences: {
-    progress: {images:['assets/stages/s1-excavation.png','assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
-    structural: {images:['assets/villa-wireframe.png','assets/stages/s3-structure.png','assets/gallery/structure-02.webp'],autoplay:true,interval:3500},
-    materials: {images:['assets/stages/s5-facade.png','assets/gallery/facade-02.webp','assets/gallery/facade-05.webp'],autoplay:true,interval:3500},
-    schedule: {images:['assets/stages/s1-excavation.png','assets/stages/s3-structure.png','assets/stages/s7-night.png'],autoplay:true,interval:3500},
-    cost: {images:['assets/villa-clean.png','assets/stages/s3-structure.png','assets/stages/s7-night.png'],autoplay:true,interval:3500},
-    qa: {images:['assets/stages/s5-facade.png','assets/gallery/complete-02.webp','assets/gallery/complete-06.webp'],autoplay:true,interval:3500},
+    progress: {images:['assets/stages/s1-excavation.webp','assets/stages/s2-foundation.webp','assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
+    structural: {images:['assets/villa-wireframe.webp','assets/stages/s3-structure.webp','assets/gallery/structure-02.webp'],autoplay:true,interval:3500},
+    materials: {images:['assets/stages/s5-facade.webp','assets/gallery/facade-02.webp','assets/gallery/facade-05.webp'],autoplay:true,interval:3500},
+    schedule: {images:['assets/stages/s1-excavation.webp','assets/stages/s3-structure.webp','assets/stages/s7-night.webp'],autoplay:true,interval:3500},
+    cost: {images:['assets/villa-clean.webp','assets/stages/s3-structure.webp','assets/stages/s7-night.webp'],autoplay:true,interval:3500},
+    qa: {images:['assets/stages/s5-facade.webp','assets/gallery/complete-02.webp','assets/gallery/complete-06.webp'],autoplay:true,interval:3500},
     rooms: {images:['assets/rooms/pano-living.webp','assets/rooms/pano-kitchen.webp','assets/rooms/pano-master.webp','assets/rooms/pano-bath.webp'],autoplay:true,interval:3500},
-    ba: {images:['assets/villa-blueprint.png','assets/villa-wireframe.png','assets/stages/s5-facade.png','assets/stages/s7-night.png'],autoplay:true,interval:3500}
+    ba: {images:['assets/villa-blueprint.webp','assets/villa-wireframe.webp','assets/stages/s5-facade.webp','assets/stages/s7-night.webp'],autoplay:true,interval:3500}
   },
   beforeAfter: [
-    { id:'design',      label:'Design',            labelAr:'التصميم',      before:'assets/villa-blueprint.png',    after:'assets/villa-wireframe.png' },
-    { id:'execution',   label:'Execution',         labelAr:'التنفيذ',       before:'assets/stages/s3-structure.png',after:'assets/stages/s4-shell.png' },
-    { id:'finishing',   label:'Finishing',         labelAr:'التشطيبات',    before:'assets/stages/s4-shell.png',    after:'assets/stages/s5-facade.png' },
-    { id:'management',  label:'Project Management',labelAr:'إدارة المشاريع',before:'assets/villa-clean.png',       after:'assets/stages/s7-night.png' }
+    { id:'design',      label:'Design',            labelAr:'التصميم',      before:'assets/villa-blueprint.webp',    after:'assets/villa-wireframe.webp' },
+    { id:'execution',   label:'Execution',         labelAr:'التنفيذ',       before:'assets/stages/s3-structure.webp',after:'assets/stages/s4-shell.webp' },
+    { id:'finishing',   label:'Finishing',         labelAr:'التشطيبات',    before:'assets/stages/s4-shell.webp',    after:'assets/stages/s5-facade.webp' },
+    { id:'management',  label:'Project Management',labelAr:'إدارة المشاريع',before:'assets/villa-clean.webp',       after:'assets/stages/s7-night.webp' }
   ],
   /* ---- NEW: comprehensive hotspots (video frames + before/after + galleries) ---- */
   hotspots: {
@@ -309,7 +309,7 @@ const VILLA_SOLARA = {
 /* ---------- DEFAULT SECOND PROJECT (placeholder — same structure, simpler content) ---------- */
 const VILLA_NAIRO = {
   id: 'villa-nairo',
-  cover: 'assets/stages/s5-facade.png',
+  cover: 'assets/stages/s5-facade.webp',
   status: 'in-progress',
   brand: { name: 'AURA', accent: '#7d5cf0', tagline: 'Future Architecture Studio' },
   ui: { glassOpacity: 0.55, blur: 28, radius: 22, glow: 0.6, animSpeed: 1, theme: 'light' },
@@ -359,42 +359,42 @@ const VILLA_NAIRO = {
   },
   widgets: {
     design:     { title:'Design',            titleAr:'التصميم',       kicker:'01', desc:'Parametric concept design — exploratory massing for a coastal villa.', descAr:'تصميم بارامتري — دراسة كتل لمشروع ساحلي.',
-                  gallery:['assets/villa-blueprint.png','assets/villa-wireframe.png'],
+                  gallery:['assets/villa-blueprint.webp','assets/villa-wireframe.webp'],
                   bullets:[['Concept','المفهوم','Coastal massing + shade study'],['Visualization','الإخراج','Real-time flythrough'],['Optioning','البدائل','Three concept variants']] },
     execution:  { title:'Execution',         titleAr:'التنفيذ',        kicker:'02', desc:'Currently at structural stage — slab pours ongoing.', descAr:'حاليًا في المرحلة الإنشائية — صب البلاطات جارية.',
-                  gallery:['assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],
+                  gallery:['assets/stages/s2-foundation.webp','assets/stages/s3-structure.webp'],
                   bullets:[['Survey','المساحة','Robotic total station'],['Structure','الهيكل','Slab pours 60% complete'],['Monitoring','المراقبة','Live IoT sensors']] },
     finishing:  { title:'Finishing',         titleAr:'التشطيبات',     kicker:'03', desc:'Material palette selected — finishing starts Q3 2026.', descAr:'تم اختيار المواد — التشطيب يبدأ الربع الثالث 2026.',
-                  gallery:['assets/stages/s5-facade.png'],
+                  gallery:['assets/stages/s5-facade.webp'],
                   bullets:[['Stone','الحجر','Travertine Navona'],['Glazing','الزجاج','Low-E triple'],['Metal','المعادن','Bronze profiles']] },
     management: { title:'Project Management',titleAr:'إدارة المشاريع',kicker:'04', desc:'On schedule — 65% complete, on budget.', descAr:'في الموعد — 65% منتهي، ضمن الميزانية.',
-                  gallery:['assets/villa-clean.png','assets/stages/s3-structure.png'],
+                  gallery:['assets/villa-clean.webp','assets/stages/s3-structure.webp'],
                   bullets:[['Cost','التكلفة','56% budget used — on track'],['Schedule','الجدول','CPM on critical path'],['Quality','الجودة','15 inspections, 0 issues']] },
     /* dashboard widgets (same ids as Villa Solara) */
     progress:   { title:'Build Progress',    titleAr:'تقدم البناء',       kicker:'AI',   desc:'Real-time build progress with discipline breakdown.', descAr:'تقدم البناء لحظيًا مع تفصيل المراحل.',
-                  gallery:['assets/stages/s3-structure.png','assets/stages/s5-facade.png'],
+                  gallery:['assets/stages/s3-structure.webp','assets/stages/s5-facade.webp'],
                   bullets:[['Overall','الإجمالي','65% complete'],['Quality','الجودة','AI-scored'],['Forecast','التوقعات','On track']] },
     structural: { title:'Structural Analysis',titleAr:'الحسابات الإنشائية',kicker:'FEA',  desc:'FEA of integrity and load paths.', descAr:'تحليل بالعناصر المحدودة.',
-                  gallery:['assets/villa-wireframe.png','assets/stages/s3-structure.png'],
+                  gallery:['assets/villa-wireframe.webp','assets/stages/s3-structure.webp'],
                   bullets:[['Integrity','السلامة','75%'],['Deflection','الترخيم','L/480'],['Foundation','الأساس','Curing']] },
     materials:  { title:'Materials Scan',    titleAr:'فحص المواد',         kicker:'SCAN', desc:'QR-tracked materials.', descAr:'مواد موثقة بـ QR.',
-                  gallery:['assets/stages/s3-structure.png'],
+                  gallery:['assets/stages/s3-structure.webp'],
                   bullets:[['Soil','التربة','OK'],['Rebar','الحديد','OK'],['Concrete','الخرسانة','OK'],['Travertine','الترافرتين','Pending']] },
     schedule:   { title:'Schedule (CPM)',    titleAr:'الجدول الزمني',     kicker:'CPM',  desc:'Critical-path schedule.', descAr:'جدول المسار الحرج.',
-                  gallery:['assets/stages/s1-excavation.png','assets/stages/s3-structure.png'],
+                  gallery:['assets/stages/s1-excavation.webp','assets/stages/s3-structure.webp'],
                   bullets:[['Critical Path','المسار الحرج','52 weeks'],['Current','الحالي','Structure'],['Risk','مخاطر','0 active']] },
     cost:       { title:'Cost Analysis',     titleAr:'تحليل التكلفة',     kicker:'AI',   desc:'Live budget burn-down.', descAr:'متابعة حية للميزانية.',
-                  gallery:['assets/villa-clean.png'],
+                  gallery:['assets/villa-clean.webp'],
                   bullets:[['Budget Used','المصروف','56%'],['Variance','الانحراف','+0.4%'],['Contingency','الاحتياطي','12.0%']] },
     qa:         { title:'QA / Safety',       titleAr:'الجودة والسلامة',  kicker:'QA',   desc:'Inspection log.', descAr:'سجل الفحوصات.',
-                  gallery:['assets/stages/s3-structure.png'],
+                  gallery:['assets/stages/s3-structure.webp'],
                   bullets:[['Inspections','الفحوصات','15/24'],['Open Issues','ملاحظات','0'],['Safety','السلامة','Zero incidents']] }
   },
   beforeAfter: [
-    { id:'design',     label:'Design',             labelAr:'التصميم',       before:'assets/villa-blueprint.png',    after:'assets/villa-wireframe.png' },
-    { id:'execution',  label:'Execution',          labelAr:'التنفيذ',        before:'assets/stages/s2-foundation.png',after:'assets/stages/s3-structure.png' },
-    { id:'finishing',  label:'Finishing',          labelAr:'التشطيبات',     before:'assets/stages/s4-shell.png',     after:'assets/stages/s5-facade.png' },
-    { id:'management', label:'Project Management', labelAr:'إدارة المشاريع',before:'assets/villa-clean.png',         after:'assets/stages/s7-night.png' }
+    { id:'design',     label:'Design',             labelAr:'التصميم',       before:'assets/villa-blueprint.webp',    after:'assets/villa-wireframe.webp' },
+    { id:'execution',  label:'Execution',          labelAr:'التنفيذ',        before:'assets/stages/s2-foundation.webp',after:'assets/stages/s3-structure.webp' },
+    { id:'finishing',  label:'Finishing',          labelAr:'التشطيبات',     before:'assets/stages/s4-shell.webp',     after:'assets/stages/s5-facade.webp' },
+    { id:'management', label:'Project Management', labelAr:'إدارة المشاريع',before:'assets/villa-clean.webp',         after:'assets/stages/s7-night.webp' }
   ],
   experiences: {
     panos: [
@@ -408,19 +408,19 @@ const VILLA_NAIRO = {
       desc:'جولة في مشروع نايرو - قيد التنفيذ'
     },
     beforeAfter: [
-      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.png',after:'assets/villa-wireframe.png'},
-      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s2-foundation.png',after:'assets/stages/s3-structure.png'}
+      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.webp',after:'assets/villa-wireframe.webp'},
+      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s2-foundation.webp',after:'assets/stages/s3-structure.webp'}
     ]
   },
   widgetSequences: {
-    progress: {images:['assets/stages/s1-excavation.png','assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
-    structural: {images:['assets/villa-wireframe.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
-    materials: {images:['assets/stages/s3-structure.png'],autoplay:true,interval:3500},
-    schedule: {images:['assets/stages/s1-excavation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
-    cost: {images:['assets/villa-clean.png'],autoplay:true,interval:3500},
-    qa: {images:['assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    progress: {images:['assets/stages/s1-excavation.webp','assets/stages/s2-foundation.webp','assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
+    structural: {images:['assets/villa-wireframe.webp','assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
+    materials: {images:['assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
+    schedule: {images:['assets/stages/s1-excavation.webp','assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
+    cost: {images:['assets/villa-clean.webp'],autoplay:true,interval:3500},
+    qa: {images:['assets/stages/s3-structure.webp'],autoplay:true,interval:3500},
     rooms: {images:['assets/rooms/pano-living.webp','assets/rooms/pano-kitchen.webp'],autoplay:true,interval:3500},
-    ba: {images:['assets/villa-blueprint.png','assets/villa-wireframe.png'],autoplay:true,interval:3500}
+    ba: {images:['assets/villa-blueprint.webp','assets/villa-wireframe.webp'],autoplay:true,interval:3500}
   },
   hotspots: {
     sequence: {},

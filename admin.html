@@ -1372,108 +1372,6 @@ function assembleSequenceFromStages(silent){
     toast(isAr?'تم دمج '+allImages.length+' صورة في الفيديو':'Assembled '+allImages.length+' images into sequence');
   }
 }
-function toggleStageImages(i){
-  const el=document.getElementById('si-'+i);
-  if(el)el.style.display=el.style.display==='none'?'block':'none';
-}
-function buildStageImagesHTML(s,i){
-  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
-  const imgs=s.images||[];
-  let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
-    '<b style="font-size:12px">'+(isAr?'صور المرحلة':'Stage Images')+' ('+imgs.length+')</b>'+
-    '<div style="display:flex;gap:6px">'+
-      '<button class="btn sm" onclick="stageImgUpload('+i+')">'+(isAr?'رفع صور':'Upload')+'</button>'+
-      '<input type="file" id="stageImgFile'+i+'" multiple accept="image/*" style="display:none" onchange="handleStageImgUpload(this,'+i+')">'+
-    '</div>'+
-  '</div>';
-  if(imgs.length===0){
-    html+='<div style="font-size:11px;color:var(--tx3);text-align:center;padding:14px">'+(isAr?'لا توجد صور — ارفع صور هذه المرحلة':'No images — upload images for this stage')+'</div>';
-  }else{
-    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;max-height:200px;overflow-y:auto">';
-    imgs.forEach((src,j)=>{
-      html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--brd);aspect-ratio:16/9">'+
-        '<img src="'+src+'" alt="" style="width:100%;height:100%;object-fit:cover" loading="lazy">'+
-        '<span style="position:absolute;top:3px;left:3px;font-size:8px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:1px 5px;border-radius:100px">'+(j+1)+'</span>'+
-        '<button class="btn sm danger" style="position:absolute;top:3px;right:3px;padding:2px 6px;font-size:9px" onclick="deleteStageImg('+i+','+j+')">✕</button>'+
-      '</div>';
-    });
-    html+='</div>';
-  }
-  return html;
-}
-function stageImgUpload(i){
-  const f=document.getElementById('stageImgFile'+i);
-  if(f)f.click();
-}
-async function handleStageImgUpload(input,i){
-  const files=Array.from(input.files).filter(f=>f.type.startsWith('image/'));
-  if(!files.length)return;
-  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
-  toast(isAr?'جاري رفع '+files.length+' صور':'Uploading '+files.length+' images');
-  if(!PROJ.stages[i].images)PROJ.stages[i].images=[];
-  for(const file of files){
-    let url;
-    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
-    if(window.AURA_DB&&AURA_DB.isReady()){
-      try{url=await uploader(file,'stage-'+PROJ.id+'-'+i);}catch(e){}
-    }
-    if(!url){
-      url=await new Promise(res=>{
-        const reader=new FileReader();
-        reader.onload=e=>{const img=new Image();img.onload=()=>{
-          const canvas=document.createElement('canvas');const maxW=1408;let w=img.width,h=img.height;
-          if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;
-          canvas.getContext('2d').drawImage(img,0,0,w,h);
-          res(canvas.toDataURL('image/jpeg',0.85));
-        };img.src=e.target.result;};
-        reader.readAsDataURL(file);
-      });
-    }
-    PROJ.stages[i].images.push(url);
-  }
-  AURA.save(CFG);
-  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  buildStages();
-  /* reopen the images section */
-  toggleStageImages(i);
-  /* auto-assemble sequence so site + preview pick up new images */
-  assembleSequenceFromStages(true);
-  toast(files.length+' images uploaded ✓');
-  input.value='';
-}
-function deleteStageImg(i,j){
-  if(!confirm('Delete this image?'))return;
-  PROJ.stages[i].images.splice(j,1);
-  AURA.save(CFG);
-  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  buildStages();
-  toggleStageImages(i);
-  /* auto-assemble after delete */
-  assembleSequenceFromStages(true);
-}
-/* assemble global sequence from per-stage images */
-function assembleSequenceFromStages(silent){
-  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
-  const allImages=[];
-  let offset=0;
-  PROJ.stages.forEach(s=>{
-    s.images=s.images||[];
-    if(s.images.length>0){
-      s.from=offset+1;
-      s.to=offset+s.images.length;
-      offset=s.to;
-      allImages.push(...s.images);
-    }
-  });
-  PROJ.sequence.images=allImages;
-  PROJ.sequence.count=allImages.length;
-  AURA.save(CFG);
-  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  try{pbLoadFrames();updPb();}catch(e){}
-  if(!silent){
-    toast(isAr?'تم دمج '+allImages.length+' صورة في الفيديو':'Assembled '+allImages.length+' images into sequence');
-  }
-}
 function togglePausePoints(i){
   const el=document.getElementById('pp-'+i);
   if(el)el.style.display=el.style.display==='none'?'block':'none';
@@ -2079,7 +1977,7 @@ function buildProjectManager(){
     row.draggable=true;row.dataset.id=p.id;
     row.innerHTML=`
       <span class="drag">⋮⋮</span>
-      <img src="${p.cover||'assets/villa-clean.png'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
+      <img src="${p.cover||'assets/villa-clean.webp'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
       <input type="text" value="${p.project?.title||p.id}" data-id="${p.id}" data-k="title">
       <span class="range">${p.project?.location||'—'}</span>
       <span class="range">${p.project?.year||'—'}</span>
@@ -2146,7 +2044,7 @@ function pmAdd(){
   const id='project-'+i;
   const tmpl=JSON.parse(JSON.stringify(CFG.projects[0]));
   const np=Object.assign(tmpl,{
-    id,cover:'assets/villa-clean.png',status:'concept',
+    id,cover:'assets/villa-clean.webp',status:'concept',
     project:{title:'New Project '+i,location:'—',area:'—',year:String(new Date().getFullYear()),status:'Concept',progress:0}
   });
   /* clear inherited sequence images — new project starts fresh */
@@ -2592,6 +2490,13 @@ async function buildInquiries(){
   });
 }
 function escapeHtml(s){return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));}
+function safeUrl(u){
+  const s=String(u||'').trim();
+  if(!s) return '';
+  if(s.startsWith('assets/') || s.startsWith('/') || s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
+  if(/^\s*javascript:/i.test(s) || /^\s*data:/i.test(s) && !s.startsWith('data:image/')) return '';
+  return s;
+}
 function filterInquiries(s){_inqFilter=s;buildInquiries();}
 function inqStatus(id,status){
   if(window.AURA_DB)AURA_DB.updateInquiryStatus(id,status);

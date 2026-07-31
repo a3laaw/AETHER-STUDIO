@@ -576,7 +576,7 @@ footer p .ar{font-family:var(--font-ar)}
   </div>
   <div class="svc-grid">
     <div class="svc-visual">
-      <img src="assets/villa-clean.png" alt="AURA Villa">
+      <img src="assets/villa-clean.webp" alt="AURA Villa">
     </div>
     <div class="svc-list">
       <div class="svc-card" data-wid="design">
@@ -622,7 +622,7 @@ footer p .ar{font-family:var(--font-ar)}
       </div>
     </div>
     <div class="about-visual">
-      <img src="assets/stages/s7-night.png" alt="AURA Studio — Villa Solara Night View">
+      <img src="assets/stages/s7-night.webp" alt="AURA Studio — Villa Solara Night View">
     </div>
   </div>
 </section>
@@ -746,6 +746,18 @@ footer p .ar{font-family:var(--font-ar)}
    Main preview + floating widgets → white modals
    ============================================================ */
 const $ = id => document.getElementById(id);
+// XSS protection - escape HTML entities
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escAttr(s){ return esc(s).replace(/`/g,'&#96;'); }
+function safeUrl(u){
+  const s=String(u||'').trim();
+  if(!s) return '';
+  // allow only relative assets/, https, http, data:image
+  if(s.startsWith('assets/') || s.startsWith('/') || s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
+  // block javascript:, vbscript:, etc
+  if(/^\s*javascript:/i.test(s) || /^\s*data:/i.test(s)) return '';
+  return s;
+}
 let CFG = AURA.load();
 let PROJ = AURA.getCurrent(CFG);
 AURA.applyTheme(PROJ);
@@ -785,7 +797,16 @@ function buildProjectBar(){
     c.className='pcard'+(p.id===PROJ.id?' on':'');c.dataset.id=p.id;
     const stat=p.status||'concept';
     const statLbl=stat==='completed'?(isAr?'مكتمل':'Completed'):stat==='in-progress'?(isAr?'جاري':'In Progress'):(isAr?'تصور':'Concept');
-    c.innerHTML=`<img src="${p.cover}" alt=""><div class="pmeta"><b>${T(p.project.title,p.project.title)}</b><span class="pstat">${statLbl}</span></div><span class="pdot ${stat}"></span>`;
+    const img=document.createElement('img');
+    img.src=safeUrl(p.cover) || 'assets/villa-clean.webp';
+    img.alt=''; img.loading='lazy';
+    img.onerror=function(){ this.style.opacity='0.5'; };
+    const meta=document.createElement('div'); meta.className='pmeta';
+    const b=document.createElement('b'); b.textContent=T(p.project.title,p.project.title);
+    const statSpan=document.createElement('span'); statSpan.className='pstat'; statSpan.textContent=statLbl;
+    meta.appendChild(b); meta.appendChild(statSpan);
+    const dot=document.createElement('span'); dot.className='pdot '+stat;
+    c.appendChild(img); c.appendChild(meta); c.appendChild(dot);
     c.onclick=()=>switchProject(p.id);
     wrap.appendChild(c);
   });
@@ -1040,9 +1061,18 @@ let lastStageId=null;
 function setExtStage(st,idx){
   if(st.id===lastStageId)return;lastStageId=st.id;
   const m=stageMeta[st.id];if(!m)return;
-  $('stageCap').innerHTML='<b>'+String(idx+1).padStart(2,'0')+'</b> <span id="stageCapTxt">'+(isAr?st.ar:st.name.toUpperCase())+'</span> <span class="ar">'+(isAr?(m.capAr||''):m.cap)+'</span>';
+  const capNum = String(idx+1).padStart(2,'0');
+  const capTxt = esc(isAr?st.ar:st.name.toUpperCase());
+  const capAr = esc(isAr?(m.capAr||''):m.cap);
+  const capEl = $('stageCap');
+  if(capEl){
+    capEl.innerHTML=''; 
+    const b=document.createElement('b'); b.textContent=capNum;
+    const spanTxt=document.createElement('span'); spanTxt.id='stageCapTxt'; spanTxt.textContent=capTxt;
+    const spanAr=document.createElement('span'); spanAr.className='ar'; spanAr.textContent=capAr;
+    capEl.appendChild(b); capEl.appendChild(document.createTextNode(' ')); capEl.appendChild(spanTxt); capEl.appendChild(document.createTextNode(' ')); capEl.appendChild(spanAr);
+  }
   document.querySelectorAll('.pb-ticks span').forEach(t=>t.classList.toggle('on',+t.dataset.g===st.from));
-  /* build/update Apple Liquid Glass stage HUD */
   buildGlassHud(st,idx);
 }
 
@@ -1053,11 +1083,9 @@ function buildGlassHud(currentStage,currentIdx){
   PROJ.stages.forEach((s,i)=>{
     const isDone=i<currentIdx;
     const isCurrent=i===currentIdx;
-    const isUpcoming=i>currentIdx;
     let pct=0;
     if(isDone)pct=100;
     else if(isCurrent){
-      /* calculate progress within current stage */
       const g=Math.round(current);
       pct=Math.round((g-s.from)/(s.to-s.from)*100);
       pct=Math.min(100,Math.max(0,pct));
@@ -1066,27 +1094,33 @@ function buildGlassHud(currentStage,currentIdx){
     const statusLbl=isDone?(isAr?'مكتمل':'Done'):isCurrent?(isAr?'حالي':'Current'):(isAr?'قادم':'Upcoming');
     const card=document.createElement('div');
     card.className='gh-stage'+(isDone||isCurrent?' show':'');
-    card.innerHTML='<div class="gh-head"><span class="gh-num">'+String(i+1).padStart(2,'0')+'</span><span class="gh-name">'+(isAr?s.ar:s.name)+'</span></div>'+
-      '<div class="gh-bar-wrap"><div class="gh-bar" style="width:'+pct+'%"></div></div>'+
-      '<div class="gh-meta"><span class="gh-frames">'+s.from+'-'+s.to+'</span><span class="gh-status '+statusCls+'">'+statusLbl+'</span></div>';
+    const head=document.createElement('div'); head.className='gh-head';
+    const num=document.createElement('span'); num.className='gh-num'; num.textContent=String(i+1).padStart(2,'0');
+    const name=document.createElement('span'); name.className='gh-name'; name.textContent=esc(isAr?s.ar:s.name);
+    head.appendChild(num); head.appendChild(name);
+    const barWrap=document.createElement('div'); barWrap.className='gh-bar-wrap';
+    const bar=document.createElement('div'); bar.className='gh-bar'; bar.style.width=pct+'%';
+    barWrap.appendChild(bar);
+    const meta=document.createElement('div'); meta.className='gh-meta';
+    const frames=document.createElement('span'); frames.className='gh-frames'; frames.textContent=esc(s.from+'-'+s.to);
+    const status=document.createElement('span'); status.className='gh-status '+statusCls; status.textContent=esc(statusLbl);
+    meta.appendChild(frames); meta.appendChild(status);
+    card.appendChild(head); card.appendChild(barWrap); card.appendChild(meta);
     hud.appendChild(card);
   });
-  /* show overall progress */
   const overall=$('glassOverall');if(overall){
     overall.classList.add('show');
     const g=Math.round(current);
     const overallPct=Math.round((g-1)/(TOTAL-1)*100);
-    $('goPct').textContent=overallPct+'%';
-    $('goTitle').textContent=PROJ.project.title;
-    $('goPhase').textContent=isAr?currentStage.ar:currentStage.name;
-    $('goFrame').textContent='Frame '+g+' / '+TOTAL;
-    /* update ring */
+    const pctEl=$('goPct'); if(pctEl) pctEl.textContent=overallPct+'%';
+    const titleEl=$('goTitle'); if(titleEl) titleEl.textContent=PROJ.project.title;
+    const phaseEl=$('goPhase'); if(phaseEl) phaseEl.textContent=esc(isAr?currentStage.ar:currentStage.name);
+    const frameEl=$('goFrame'); if(frameEl) frameEl.textContent='Frame '+g+' / '+TOTAL;
     const circumference=2*Math.PI*22;
     const offset=circumference*(1-overallPct/100);
     const ring=$('goRingFg');if(ring){ring.style.strokeDashoffset=offset;ring.style.transition='stroke-dashoffset .5s ease';}
   }
 }
-
 /* ---------- update glass HUD live (in main loop) ---------- */
 function updateGlassHudLive(){
   const st=PROJ.stages.find(s=>Math.round(current)>=s.from&&Math.round(current)<=s.to);
@@ -1355,14 +1389,20 @@ function hideOverlayWidget(){
 }
 
 function openWidgetModal(w){
-  /* open the modal directly (no 2.5s pause since video is already paused) */
   $('mIcon').textContent=w.icon;
   $('mEyebrow').textContent=T(w.sub.ar,w.sub.en).toUpperCase();
   $('mTitle').textContent=T(w.mTitle.ar,w.mTitle.en);
   $('mSub').textContent=T(w.mSub.ar,w.mSub.en);
   $('mDesc').textContent=T(w.mDesc.ar,w.mDesc.en);
   const bullets=isAr?w.bullets.ar:w.bullets.en;
-  $('mBullets').innerHTML=bullets.map(b=>`<div class="b">${b}</div>`).join('');
+  const bulletsEl=$('mBullets');
+  if(bulletsEl){
+    bulletsEl.innerHTML='';
+    bullets.forEach(b=>{
+      const div=document.createElement('div'); div.className='b'; div.textContent=b;
+      bulletsEl.appendChild(div);
+    });
+  }
   $('mDetails').textContent=isAr?'عرض التفاصيل · View Details →':'View Details →';
   $('mClose2').textContent=isAr?'إغلاق · Close':'Close';
   $('mDetails').onclick=()=>{closeModal();openDetailsView(w);};
@@ -1378,48 +1418,50 @@ addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetails();
 /* ---------- Details View (full-screen white overlay) ---------- */
 function openDetailsView(w){
   const dv=$('detailsView');
-  const title=T(w.mTitle.ar,w.mTitle.en);
-  const sub=T(w.mSub.ar,w.mSub.en);
-  const desc=T(w.mDesc.ar,w.mDesc.en);
+  const title=esc(T(w.mTitle.ar,w.mTitle.en));
+  const sub=esc(T(w.mSub.ar,w.mSub.en));
+  const desc=esc(T(w.mDesc.ar,w.mDesc.en));
   const bullets=isAr?w.bullets.ar:w.bullets.en;
-  /* build details content based on widget type */
   let extraHTML='';
   if(w.id==='progress'){
     const m=PROJ.project;
+    const progVal = esc(PROJ.project.progress||100);
+    const stagesLen = esc(PROJ.stages.length);
     extraHTML=`<div class="dv-stats">
-      <div class="dv-stat"><div class="dv-val">${PROJ.project.progress||100}%</div><div class="dv-lbl">${isAr?'الإنجاز':'Completion'}</div></div>
-      <div class="dv-stat"><div class="dv-val">${PROJ.stages.length}</div><div class="dv-lbl">${isAr?'مراحل':'Stages'}</div></div>
+      <div class="dv-stat"><div class="dv-val">${progVal}%</div><div class="dv-lbl">${isAr?'الإنجاز':'Completion'}</div></div>
+      <div class="dv-stat"><div class="dv-val">${stagesLen}</div><div class="dv-lbl">${isAr?'مراحل':'Stages'}</div></div>
       <div class="dv-stat"><div class="dv-val">97</div><div class="dv-lbl">${isAr?'إطار':'Frames'}</div></div>
     </div>
-    <div class="dv-stages">${PROJ.stages.map((s,i)=>'<div class="dv-stage-row"><span class="dv-stage-n">'+String(i+1).padStart(2,'0')+'</span><span class="dv-stage-name">'+T(s.name,s.ar)+'</span><span class="dv-stage-w">'+s.from+'-'+s.to+'</span></div>').join('')}</div>`;
+    <div class="dv-stages">${PROJ.stages.map((s,i)=>'<div class="dv-stage-row"><span class="dv-stage-n">'+esc(String(i+1).padStart(2,'0'))+'</span><span class="dv-stage-name">'+esc(T(s.name,s.ar))+'</span><span class="dv-stage-w">'+esc(s.from+'-'+s.to)+'</span></div>').join('')}</div>`;
   } else if(w.id==='ba'){
     extraHTML=`<div class="dv-ba-grid">${PROJ.beforeAfter.map((p,i)=>`
-      <div class="dv-ba-item"><div class="dv-ba-label">${T(p.label,p.labelAr)}</div>
-      <div class="dv-ba-imgs"><img src="${p.before}" alt="before"><img src="${p.after}" alt="after"></div></div>`).join('')}</div>`;
+      <div class="dv-ba-item"><div class="dv-ba-label">${esc(T(p.label,p.labelAr))}</div>
+      <div class="dv-ba-imgs"><img src="${escAttr(safeUrl(p.before))}" alt="before"><img src="${escAttr(safeUrl(p.after))}" alt="after"></div></div>`).join('')}</div>`;
   } else if(w.id==='rooms'){
     const rooms=PROJ.interior.rooms.filter(r=>r.interactive);
     extraHTML=`<div class="dv-rooms-grid">${rooms.map(r=>`
-      <div class="dv-room"><img src="assets/rooms/${r.id}-complete.png" alt="${r.name}" loading="lazy">
-      <div class="dv-room-info"><b>${T(r.name,r.ar)}</b><span>${r.area} · ${r.height}</span></div></div>`).join('')}</div>`;
+      <div class="dv-room"><img src="${escAttr(safeUrl('assets/rooms/'+r.id+'-complete.webp'))}" alt="${escAttr(r.name)}" loading="lazy">
+      <div class="dv-room-info"><b>${esc(T(r.name,r.ar))}</b><span>${esc(r.area)} · ${esc(r.height)}</span></div></div>`).join('')}</div>`;
   } else if(w.id==='structural'||w.id==='materials'||w.id==='schedule'||w.id==='cost'||w.id==='qa'){
     const data={
       structural:[['السلامة الإنشائية','99%','Integrity'],['مسار الأحمال','Optimal','Load path'],['الترخيم','L/540','Deflection'],['الأساسات','Cured','Foundation']],
       materials:[['التربة','OK','Soil'],['الحديد','OK','Rebar'],['الخرسانة','OK','Concrete'],['الترافرتين','OK','Travertine']],
-      schedule:[['المسار الحرج','52 أسبوع','Critical path'],['المرحلة الحالية',T(PROJ.stages[4].name,PROJ.stages[4].ar),'Current'],['المخاطر','0','Risks'],['التقدّم',PROJ.project.progress+'%','Progress']],
+      schedule:[['المسار الحرج','52 أسبوع','Critical path'],['المرحلة الحالية',esc(T(PROJ.stages[4].name,PROJ.stages[4].ar)),'Current'],['المخاطر','0','Risks'],['التقدّم',esc(PROJ.project.progress+'%'),'Progress']],
       cost:[['المصروف','86%','Budget used'],['الانحراف','−1.2%','Variance'],['الاحتياطي','8.0%','Contingency'],['الفحوصات','24/24','Inspections']],
       qa:[['الفحوصات','24/24','Inspections'],['الملاحظات','0','Open'],['السلامة','صفر حوادث','Safety'],['التسليم','✓','Handover']]
     };
     const rows=data[w.id]||[];
-    extraHTML=`<div class="dv-data-table">${rows.map(r=>`<div class="dv-data-row"><span class="dv-data-l">${isAr?r[0]:r[2]}</span><span class="dv-data-v">${r[1]}</span></div>`).join('')}</div>`;
+    extraHTML=`<div class="dv-data-table">${rows.map(r=>`<div class="dv-data-row"><span class="dv-data-l">${esc(isAr?r[0]:r[2])}</span><span class="dv-data-v">${esc(r[1])}</span></div>`).join('')}</div>`;
   }
+  const bulletsHTML = bullets.map(b=>`<div class="dv-bullet">✓ ${esc(b)}</div>`).join('');
   $('dvContent').innerHTML=`
     <div class="dv-head">
-      <div class="dv-ic">${w.icon}</div>
-      <div><div class="dv-eyebrow">${T(w.sub.ar,w.sub.en).toUpperCase()}</div>
+      <div class="dv-ic">${esc(w.icon)}</div>
+      <div><div class="dv-eyebrow">${esc(T(w.sub.ar,w.sub.en).toUpperCase())}</div>
       <h2>${title}</h2><p class="dv-sub">${sub}</p></div>
     </div>
     <p class="dv-desc">${desc}</p>
-    <div class="dv-bullets">${bullets.map(b=>`<div class="dv-bullet">✓ ${b}</div>`).join('')}</div>
+    <div class="dv-bullets">${bulletsHTML}</div>
     ${extraHTML}
     <div class="dv-actions">
       <a href="#contact" class="dv-cta" onclick="closeDetails()">${isAr?'تواصل معنا · Contact us':'Contact us'} →</a>
