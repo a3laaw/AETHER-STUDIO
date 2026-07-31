@@ -791,37 +791,107 @@ function buildProjectBar(){
   });
 }
 function switchProject(id){
-  if(id===PROJ.id)return;
-  $('heroFade').style.opacity=1;
+  if(id===PROJ.id) return;
+  const fadeEl = $('heroFade');
+  if(fadeEl) fadeEl.style.opacity = '1';
+  // stop any ongoing pause / overlay timers
+  try{ clearTimeout(holdT); }catch(e){}
+  try{ pauseHold = false; }catch(e){}
+  try{ hideOverlayWidget(); }catch(e){}
+  try{ const pb=$('pauseBadge'); if(pb) pb.classList.remove('show'); }catch(e){}
+  try{ stopWidgetSequence(); }catch(e){}
+
   setTimeout(()=>{
-    CFG=AURA.load();AURA.setCurrent(CFG,id);PROJ=AURA.getCurrent(CFG);
-    $('projTitle').textContent=PROJ.project.title;
-    AURA.applyTheme(PROJ);
-    buildProjectBar();buildTimeline();buildPlaybar();buildWidgets();
-    target=current=1;pausesDone.clear();visited.clear();
-    _stagePauseTriggered.clear();
-    lastStageId=null;
-    /* clear canvas immediately so old frame doesn't linger */
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
-    /* update experience buttons visibility based on new project data */
-    updateExpButtons();
-    /* if no frames, show message and fade in */
-    if(!TOTAL||!SEGS[0].count){
-      ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
-      ctx.fillText(isAr?'لا توجد صور في هذا المشروع — ارفع صور من لوحة التحكم':'No images in this project — upload from admin',cv.width/2,cv.height/2);
-      $('heroFade').style.opacity=0;
-      toast(isAr?'تم تحميل: '+PROJ.project.title+' (لا توجد صور)':'Loaded: '+PROJ.project.title+' (no images)');
-      return;
+    try{
+      CFG = AURA.load();
+      AURA.setCurrent(CFG,id);
+      PROJ = AURA.getCurrent(CFG);
+      // defensive defaults for projects like villa-nairo that may miss fields
+      PROJ.sequence = PROJ.sequence || {count:97, images:[]};
+      PROJ.stages = PROJ.stages || [];
+      PROJ.project = PROJ.project || {title: id};
+      PROJ.beforeAfter = PROJ.beforeAfter || [];
+      PROJ.experiences = PROJ.experiences || {panos:[], walkthrough:{}, beforeAfter: PROJ.beforeAfter};
+
+      const titleEl = $('projTitle');
+      if(titleEl) titleEl.textContent = PROJ.project.title || id;
+
+      AURA.applyTheme(PROJ);
+      buildProjectBar();
+      buildTimeline();
+      buildPlaybar();
+      buildWidgets();
+      if(typeof buildBuildTimeline === 'function') buildBuildTimeline();
+
+      target = 1; current = 1;
+      if(typeof pausesDone !== 'undefined') pausesDone.clear();
+      if(typeof _stagePauseTriggered !== 'undefined' && _stagePauseTriggered.clear) _stagePauseTriggered.clear();
+      lastStageId = null;
+
+      // clear canvas immediately so old frame doesn't linger
+      try{
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0,0,cv.width,cv.height);
+      }catch(e){}
+
+      updateExpButtons();
+
+      if(!TOTAL || !SEGS[0] || !SEGS[0].count){
+        try{
+          ctx.fillStyle = '#888';
+          ctx.font = 'bold 18px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(isAr?'لا توجد صور في هذا المشروع — ارفع صور من لوحة التحكم':'No images in this project — upload from admin',cv.width/2,cv.height/2);
+        }catch(e){}
+        if(fadeEl) fadeEl.style.opacity = '0';
+        toast(isAr?'تم تحميل: '+(PROJ.project.title||id)+' (لا توجد صور)':'Loaded: '+(PROJ.project.title||id)+' (no images)');
+        return;
+      }
+
+      // robust loader with retry and fallback drawing
+      const attemptLoad = (attempt=0)=>{
+        Promise.all([loadF(0,1), loadF(0,2)]).then(()=>{
+          // preload a bit more quickly for smooth fallback
+          if(!cache['0:1'] && !cache['0:2']){
+            for(let k=1;k<=Math.min(10, SEGS[0].count); k++){ try{ loadF(0,k); }catch(e){} }
+          }
+          setTimeout(()=>{
+            try{ draw(1); }catch(e){ console.error('draw(1) failed', e); }
+            // if still no cache after draw, show debug text but always remove white fade
+            if(!cache['0:1']){
+              try{
+                ctx.fillStyle = '#888';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                const srcPath = (SEGS[0] && SEGS[0].src) ? SEGS[0].src(1) : 'unknown';
+                ctx.fillText('Frame load pending: '+srcPath, cv.width/2, cv.height/2 + 24);
+              }catch(e){}
+            }
+            let i=3;
+            (function pf(){
+              if(i<=SEGS[0].count){ try{ loadF(0,i++); }catch(e){} setTimeout(pf,25); }
+            })();
+            if(fadeEl) fadeEl.style.opacity = '0';
+            toast(isAr?'تم تحميل: '+(PROJ.project.title||id) : 'Loaded: '+(PROJ.project.title||id));
+          }, 80);
+        }).catch(err=>{
+          console.error('switchProject load failed', err);
+          if(attempt < 2){
+            setTimeout(()=>attemptLoad(attempt+1), 300);
+          } else {
+            if(fadeEl) fadeEl.style.opacity = '0';
+            try{ draw(1); }catch(e){}
+          }
+        });
+      };
+      attemptLoad();
+
+    }catch(err){
+      console.error('[switchProject] error', err);
+      if(fadeEl) fadeEl.style.opacity = '0';
+      toast('خطأ في تحميل المشروع: '+(err && err.message ? err.message : ''));
     }
-    /* load first frames, THEN draw + fade in */
-    Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
-      draw(1);
-      /* preload remaining in background */
-      let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();
-      $('heroFade').style.opacity=0;
-      toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
-    });
-  },450);
+  }, 450);
 }
 
 /* ---------- timeline (frame sequence) ---------- */
@@ -1490,6 +1560,7 @@ function applyAllFromStorage(){
   const imgsChanged=oldImgLen!==newImgLen;
   if(projChanged||countChanged||imgsChanged){
     buildTimeline();
+    if(typeof buildBuildTimeline === 'function') buildBuildTimeline();
     cache={};  /* clear image cache so new URLs are fetched */
     target=current=1;
     pausesDone.clear();

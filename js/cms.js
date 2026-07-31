@@ -315,15 +315,15 @@ const VILLA_NAIRO = {
   ui: { glassOpacity: 0.55, blur: 28, radius: 22, glow: 0.6, animSpeed: 1, theme: 'light' },
   scroll: { framesPerScroll:1.6, smoothness:0.085, reverse:false, loop:false, snap:true, touch:true, keyboard:true, sensitivity:1.0 },
   playback: { fpsExt:9, fpsInt:6, pauseExplore:5, pauseRoom:2.5, autoplay:true },
-  sequence: { path:'assets/seq/', prefix:'frame', digits:3, ext:'.webp', count:97 },
+  sequence: { path:'assets/seq/', prefix:'frame', digits:3, ext:'.webp', count:97, images: [] },
   stages: [
-    { id:'excavation', name:'Excavation',  ar:'الحفر',        from:1,  to:16, color:'#b08d5f', icon:'◧', desc:'Site survey, excavation pit and foundation set-out.' },
-    { id:'foundation', name:'Foundation',  ar:'الأساسات',     from:17, to:32, color:'#8e8e93', icon:'▦', desc:'Rebar grids, concrete pour, waterproofing.' },
-    { id:'structure',  name:'Structure',   ar:'الهيكل',       from:33, to:48, color:'#7d7d82', icon:'▤', desc:'Columns, beams, slabs — the concrete skeleton.' },
-    { id:'shell',      name:'Shell',       ar:'البناء',       from:49, to:64, color:'#a4a4a8', icon:'◫', desc:'Blockwork, wall infill, window openings.' },
-    { id:'facade',     name:'Facade',      ar:'الواجهات',     from:65, to:80, color:'#cbb99a', icon:'◨', desc:'Travertine cladding, glazing, bronze frames.' },
-    { id:'complete',   name:'Completed',   ar:'الإنجاز',      from:81, to:96, color:'#7d5cf0', icon:'◆', desc:'Interiors, landscape, pool and lighting.' },
-    { id:'night',      name:'Night View',  ar:'المشهد الليلي', from:97, to:97, color:'#f0a54c', icon:'☾', desc:'Evening scene — the villa fully alive.' }
+    { id:'excavation', name:'Excavation',  ar:'الحفر',        from:1,  to:16, color:'#b08d5f', icon:'◧', desc:'Site survey, excavation pit and foundation set-out.', images:[], pausePoints:[] },
+    { id:'foundation', name:'Foundation',  ar:'الأساسات',     from:17, to:32, color:'#8e8e93', icon:'▦', desc:'Rebar grids, concrete pour, waterproofing.', images:[], pausePoints:[] },
+    { id:'structure',  name:'Structure',   ar:'الهيكل',       from:33, to:48, color:'#7d7d82', icon:'▤', desc:'Columns, beams, slabs — the concrete skeleton.', images:[], pausePoints:[] },
+    { id:'shell',      name:'Shell',       ar:'البناء',       from:49, to:64, color:'#a4a4a8', icon:'◫', desc:'Blockwork, wall infill, window openings.', images:[], pausePoints:[] },
+    { id:'facade',     name:'Facade',      ar:'الواجهات',     from:65, to:80, color:'#cbb99a', icon:'◨', desc:'Travertine cladding, glazing, bronze frames.', images:[], pausePoints:[] },
+    { id:'complete',   name:'Completed',   ar:'الإنجاز',      from:81, to:96, color:'#7d5cf0', icon:'◆', desc:'Interiors, landscape, pool and lighting.', images:[], pausePoints:[] },
+    { id:'night',      name:'Night View',  ar:'المشهد الليلي', from:97, to:97, color:'#f0a54c', icon:'☾', desc:'Evening scene — the villa fully alive.', images:[], pausePoints:[] }
   ],
   project: {
     title: 'Villa Nairo', location: 'Kuwait — Jabriya', area: '520 m²', year: '2026', status: 'In Progress', progress: 65
@@ -396,6 +396,37 @@ const VILLA_NAIRO = {
     { id:'finishing',  label:'Finishing',          labelAr:'التشطيبات',     before:'assets/stages/s4-shell.png',     after:'assets/stages/s5-facade.png' },
     { id:'management', label:'Project Management', labelAr:'إدارة المشاريع',before:'assets/villa-clean.png',         after:'assets/stages/s7-night.png' }
   ],
+  experiences: {
+    panos: [
+      {room:'Living Room',roomAr:'غرفة المعيشة',img:'assets/rooms/pano-living.webp'},
+      {room:'Kitchen',roomAr:'المطبخ',img:'assets/rooms/pano-kitchen.webp'}
+    ],
+    walkthrough: {
+      img:'assets/rooms/pano-living.webp',
+      video:'',
+      title:'جولة حرة - Villa Nairo',
+      desc:'جولة في مشروع نايرو - قيد التنفيذ'
+    },
+    beforeAfter: [
+      {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.png',after:'assets/villa-wireframe.png'},
+      {label:'Execution',labelAr:'التنفيذ',before:'assets/stages/s2-foundation.png',after:'assets/stages/s3-structure.png'}
+    ]
+  },
+  widgetSequences: {
+    progress: {images:['assets/stages/s1-excavation.png','assets/stages/s2-foundation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    structural: {images:['assets/villa-wireframe.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    materials: {images:['assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    schedule: {images:['assets/stages/s1-excavation.png','assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    cost: {images:['assets/villa-clean.png'],autoplay:true,interval:3500},
+    qa: {images:['assets/stages/s3-structure.png'],autoplay:true,interval:3500},
+    rooms: {images:['assets/rooms/pano-living.webp','assets/rooms/pano-kitchen.webp'],autoplay:true,interval:3500},
+    ba: {images:['assets/villa-blueprint.png','assets/villa-wireframe.png'],autoplay:true,interval:3500}
+  },
+  hotspots: {
+    sequence: {},
+    beforeAfter: {},
+    gallery: {}
+  },
   contact: {
     company: 'AURA Architecture Studio', companyAr: 'أورا للاستشارات المعمارية',
     phone: '+965 2222 3333', whatsapp: '96522223333', email: 'studio@aura-arch.com', instagram: '@aura.arch', location: 'Kuwait City, Kuwait'
