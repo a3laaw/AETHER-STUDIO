@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA - Build Effects Demo</title>
+<style>
+:root{ --gold:#BFA76A; --bg:#FAFAF7; --fg:#1A1A1C; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Tajawal", system-ui, sans-serif; background:var(--bg); color:var(--fg); line-height:1.6}
+header{padding:32px 6vw; border-bottom:1px solid rgba(0,0,0,.08); display:flex; justify-content:space-between; align-items:center}
+header b{letter-spacing:.3em; font-weight:700}
+header b span{color:var(--gold)}
+.wrap{max-width:1200px; margin:0 auto; padding:40px 6vw}
+h1{font-size:32px; margin-bottom:8px}
+.sub{color:#6E7079; margin-bottom:32px}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:48px}
+@media(max-width:800px){ .grid{grid-template-columns:1fr} }
+.card{background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:18px; overflow:hidden; box-shadow:0 10px 30px -18px rgba(0,0,0,.1)}
+.card .canvas-wrap{position:relative; aspect-ratio:16/9; background:#000; overflow:hidden}
+.card canvas{width:100%; height:100%; display:block}
+.card .info{padding:18px 20px}
+.card .eyebrow{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:6px}
+.card h3{font-size:18px; margin-bottom:6px}
+.card p{font-size:13px; color:#6E7079; line-height:1.6}
+.controls{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
+.btn{padding:8px 14px; border-radius:100px; border:1px solid rgba(0,0,0,.12); background:#fff; font-size:12px; font-weight:600; cursor:pointer; transition:.25s}
+.btn.on{background:#1A1A1C; color:#fff; border-color:#1A1A1C}
+.btn.gold{background:var(--gold); color:#fff; border-color:var(--gold)}
+.note{background:#F2F1EC; border-radius:14px; padding:20px; font-size:13px; color:#3A3A3E; margin-top:24px}
+.note b{color:#1A1A1C}
+.code{font-family:ui-monospace, Menlo, monospace; background:#1A1A1C; color:#E8E6DF; padding:16px; border-radius:12px; font-size:12px; overflow-x:auto; margin-top:12px; line-height:1.7}
+</style>
+</head>
+<body>
+<header>
+  <b>AU<span>R</span>A — Build Effects</b>
+  <span style="font-size:12px; color:#9A9A9F">Demo · عرض التأثيرات الأربعة</span>
+</header>
+
+<div class="wrap">
+  <h1>خلي الصورة الثابتة تبان كأنها بتتبني قدامك</h1>
+  <p class="sub">4 أفكار عملية — مع كود جاهز تقدر تحطه في AURA Studio مباشرة. كل تأثير شغال Live على الصور الحقيقية من المشروع.</p>
+
+  <div class="grid">
+    <!-- 1. Ken Burns -->
+    <div class="card">
+      <div class="canvas-wrap"><canvas id="c1"></canvas></div>
+      <div class="info">
+        <div class="eyebrow">الفكرة 1 · Ken Burns Effect</div>
+        <h3>زوم بطيء + حركة بانورامية</h3>
+        <p>نفس اللي بيستخدمه Netflix في الوثائقيات. الصورة تتنفس: زوم من 1.0 لـ 1.15 مع حركة بان خفيفة + vignette. يحسّسك إن الكاميرا بتتحرك.</p>
+        <div class="controls">
+          <button class="btn on" onclick="setEffect(0,'ken')">▶ شغّل</button>
+          <button class="btn" onclick="setEffect(0,'ken-slow')">بطيء سينمائي</button>
+          <button class="btn" onclick="setEffect(0,'ken-fast')">سريع</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Mask Reveal -->
+    <div class="card">
+      <div class="canvas-wrap"><canvas id="c2"></canvas></div>
+      <div class="info">
+        <div class="eyebrow">الفكرة 2 · Mask Reveal (البنا قدامك)</div>
+        <h3>الصورة تظهر من تحت لفوق كأنها بتتبني</h3>
+        <p>ده الأقرب لفكرة "البناء أمامك". بنكشف الصورة تدريجياً: من تحت لفوق (البنا بيرتفع)، من الشمال لليمين (المسح)، من النص لبرا. مع حافة متعرجة زي طوب + غبار.</p>
+        <div class="controls">
+          <button class="btn on" onclick="setEffect(1,'bottom-top')">من تحت لفوق</button>
+          <button class="btn" onclick="setEffect(1,'left-right')">شمال ليمين</button>
+          <button class="btn" onclick="setEffect(1,'center-out')">من النص لبرا</button>
+          <button class="btn" onclick="setEffect(1,'diagonal')">قطري</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Build-Up -->
+    <div class="card">
+      <div class="canvas-wrap"><canvas id="c3"></canvas></div>
+      <div class="info">
+        <div class="eyebrow">الفكرة 3 · Build-Up (هجين - الأقوى)</div>
+        <h3>كين بيرنز + مسح + غبار + خط سقالة</h3>
+        <p>ده اللي أنصحك تستخدمه في الموقع الرئيسي: كل فريم جديد يظهر فوق القديم بمسح متعرج + زوم خفيف + جزيئات غبار عند الحافة + خط ذهبي للسقالة. يحسّسك إن الطابق الجديد بيتعمل.</p>
+        <div class="controls">
+          <button class="btn on gold" onclick="setEffect(2,'buildup')">★ الفعلية (موصى بها)</button>
+          <button class="btn" onclick="setEffect(2,'buildup-nowavy')">بدون تعرّج</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Parallax -->
+    <div class="card">
+      <div class="canvas-wrap"><canvas id="c4"></canvas></div>
+      <div class="info">
+        <div class="eyebrow">الفكرة 4 · Parallax Depth</div>
+        <h3>عمق ثلاثي الأبعاد بحركة الماوس</h3>
+        <p>نقسم الصورة لـ 3 طبقات وهمية وكل طبقة تتحرك بسرعة مختلفة مع الماوس. يحسّسك إنك جوه المشهد. حرك الماوس فوق الصورة.</p>
+        <div class="controls">
+          <button class="btn on" onclick="setEffect(3,'parallax')">حرك الماوس هنا</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>الخلاصة - إيه اللي تستخدمه في AURA؟</b><br>
+    • <b>للفيديو الرئيسي (الـ 97 فريم):</b> استخدم <b>Build-Up</b> (رقم 3). كل انتقال بين فريمين = bottom-top wavy reveal + crossfade 0.3 ثانية + Ken Burns بطيء.<br>
+    • <b>لصور المعرض (gallery):</b> استخدم <b>Mask Reveal</b> عند الـ hover أو عند الـ scroll into view.<br>
+    • <b>للـ hero image الثابتة:</b> استخدم <b>Ken Burns</b> دائم + <b>Parallax</b> على mousemove.<br>
+    • <b>للتأثير الخارق:</b> استخدم <b>AI Interpolation</b> (RIFE/FILM) لتوليد 8 فريمات وسيطة بين كل صورتين — هتحتاج backend أو WASM.<br><br>
+
+    <b>الكود:</b> كل التأثيرات موجودة في <code>js/build-effects.js</code> — كلاس واحد <code>BuildEffects</code> جاهز للدمج.<br>
+    <b>الدمج في index.html:</b> استبدل دالة <code>draw(g)</code> بـ:
+    <div class="code">const fx = new BuildEffects(cv);
+let prev = cache[seg+':'+(n-1)], curr = cache[seg+':'+n];
+let p = current - Math.floor(current); // 0..1 داخل الفريم
+let stageP = (g - stage.from) / (stage.to - stage.from);
+fx.drawBuildUp(prev, curr, p, stageP, {
+  revealType: fx.getRevealTypeForStage(stage.id),
+  kenBurns: true, wavy: true, dust: true
+});</div>
+  </div>
+</div>
+
+<script src="js/build-effects.js"></script>
+<script>
+const imgs = [
+  'assets/seq/frame001.webp',
+  'assets/seq/frame020.webp',
+  'assets/seq/frame040.webp',
+  'assets/seq/frame070.webp',
+];
+let loaded = [];
+let effects = [];
+let states = [
+  {type:'ken', prog:0, dir:1},
+  {type:'bottom-top', prog:0, dir:1},
+  {type:'buildup', prog:0, dir:1},
+  {type:'parallax', mx:0, my:0}
+];
+
+Promise.all(imgs.map(src=> new Promise(res=>{
+  const im=new Image(); im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src;
+}))).then(arr=>{
+  loaded = arr.filter(Boolean);
+  initCanvases();
+  requestAnimationFrame(loop);
+});
+
+function initCanvases(){
+  for(let i=0;i<4;i++){
+    const cv=document.getElementById('c'+(i+1));
+    cv.width=cv.clientWidth*2;
+    cv.height=cv.clientHeight*2;
+    effects[i]=new BuildEffects(cv);
+  }
+  // parallax mousemove
+  const c4=document.getElementById('c4');
+  c4.parentElement.addEventListener('mousemove', e=>{
+    const r=c4.getBoundingClientRect();
+    const mx=(e.clientX - r.left)/r.width - 0.5;
+    const my=(e.clientY - r.top)/r.height - 0.5;
+    states[3].mx=mx; states[3].my=my;
+  });
+  // initial images
+  if(loaded[0]) effects[0].drawKenBurns(loaded[0], 0);
+  if(loaded[1]) effects[1].drawMaskReveal(loaded[1], 0.6, 'bottom-top', true);
+  if(loaded[2]) effects[2].drawBuildUp(loaded[1], loaded[2], 0.4, 0.5, {revealType:'bottom-top', wavy:true});
+  if(loaded[3]) effects[3].drawParallax(loaded[3], 0, 0, 3);
+}
+
+function setEffect(idx, type){
+  states[idx].type=type;
+  states[idx].prog=0;
+  states[idx].dir=1;
+  // تحديث أزرار
+  const card=document.getElementById('c'+(idx+1)).closest('.card');
+  card.querySelectorAll('.btn').forEach(b=>b.classList.remove('on'));
+  event.target.classList.add('on');
+  if(type==='buildup') event.target.classList.add('gold');
+}
+
+function loop(){
+  const now=performance.now();
+  // update progress 0..1..0
+  states.forEach(s=>{
+    if(s.type!=='parallax'){
+      s.prog+=0.008*s.dir;
+      if(s.prog>=1 || s.prog<=0) s.dir*=-1;
+    }
+  });
+
+  if(effects[0] && loaded[0]){
+    const s=states[0];
+    if(s.type==='ken'){
+      effects[0].drawKenBurns(loaded[0], s.prog, {fromScale:1.0, toScale:1.18, toPan:{x:-4,y:-7}});
+    } else if(s.type==='ken-slow'){
+      effects[0].drawKenBurns(loaded[0], s.prog*0.5, {fromScale:1.0, toScale:1.25, toPan:{x:-2,y:-3}});
+    } else if(s.type==='ken-fast'){
+      effects[0].drawKenBurns(loaded[0], s.prog, {fromScale:1.0, toScale:1.08, toPan:{x:-10,y:-12}});
+    }
+  }
+  if(effects[1] && loaded[1]){
+    const s=states[1];
+    const img = loaded[1];
+    if(['bottom-top','left-right','center-out','diagonal'].includes(s.type)){
+      effects[1].drawMaskReveal(img, s.prog, s.type, true);
+    }
+  }
+  if(effects[2] && loaded[1] && loaded[2]){
+    const s=states[2];
+    const p = s.prog;
+    if(s.type==='buildup'){
+      effects[2].drawBuildUp(loaded[1], loaded[2], p, p, {revealType:'bottom-top', wavy:true, dust:true});
+    } else {
+      effects[2].drawBuildUp(loaded[1], loaded[2], p, p, {revealType:'bottom-top', wavy:false, dust:false});
+    }
+  }
+  if(effects[3] && loaded[3]){
+    const s=states[3];
+    effects[3].drawParallax(loaded[3], s.mx, s.my, 3);
+  }
+
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
