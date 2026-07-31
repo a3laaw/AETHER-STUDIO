@@ -225,65 +225,26 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="logo">AU<b>R</b>A</div>
     <div class="role" id="roleTag">Signed in as Admin</div>
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
-    <div class="mi on" data-p="dash"><span class="ic">◧</span>Dashboard · الرئيسية</div>
-    <div class="sep">Content · المحتوى</div>
-    <div class="mi" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
+    <div class="mi on" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
     <div class="mi" data-p="widgets"><span class="ic">◫</span>الويدجات · Widgets</div>
     <div class="mi" data-p="beforeafter"><span class="ic">⇆</span>قبل وبعد · Before/After</div>
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>محرر النقاط · Hotspots</div>
-    <div class="mi" data-p="materials"><span class="ic">◨</span>المواد · Materials</div>
     <div class="mi" data-p="site"><span class="ic">⚙</span>إعدادات الموقع · Site</div>
     <div class="mi" data-p="inquiries"><span class="ic">✉</span>الطلبات · Inquiries <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
     <div class="sep">Configuration · الإعدادات</div>
-    <div class="mi" data-p="scroll"><span class="ic">↕</span>Playback · سرعة الفيديو</div>
-    <div class="mi" data-p="ui"><span class="ic">◐</span>UI · تخصيص الواجهة</div>
-    <div class="mi" data-p="seo"><span class="ic">⌕</span>SEO</div>
-    <div class="mi" data-p="analytics"><span class="ic">∿</span>Analytics · التحليلات</div>
+    <div class="mi" data-p="scroll"><span class="ic">↕</span>سرعة الفيديو · Playback</div>
+    <div class="mi" data-p="ui"><span class="ic">◐</span>تخصيص الواجهة · UI</div>
     <div class="mi logout" id="logout"><span class="ic">⏻</span>Sign out · خروج</div>
   </aside>
 
   <main>
 
-    <!-- ========== DASHBOARD ========== -->
-    <div class="page on" id="p-dash">
-      <h1 class="pt">Dashboard · الرئيسية</h1>
-      <div class="ps">Overview · نظرة عامة على موقعك التفاعلي</div>
-      <div class="stats">
-        <div class="stat"><div class="k">Projects · المشاريع</div><div class="v">4</div><div class="d up">+1 this month · +1 هذا الشهر</div></div>
-        <div class="stat"><div class="k">Visitors · الزوار (30ي)</div><div class="v">18,402</div><div class="d up">+22.4%</div></div>
-        <div class="stat"><div class="k">Frames · الإطارات</div><div class="v" id="dFrames">97</div><div class="d">WebP — 4.8 MB total · ٤.٨ ميجا</div></div>
-        <div class="stat"><div class="k">Storage · التخزين</div><div class="v">1.2<span style="font-size:15px;color:var(--tx3)"> GB</span></div><div class="d dn">62% of plan · ٦٢٪ من الباقة</div></div>
-        <div class="stat"><div class="k">Images · الصور</div><div class="v">483</div><div class="d up">+56 this week · +٥٦ هذا الأسبوع</div></div>
-        <div class="stat"><div class="k">View Time · مدة المشاهدة</div><div class="v">3:42</div><div class="d up">+0:31</div></div>
-      </div>
-      <div class="grid2">
-        <div class="panel"><h3><span>Recent Activity · النشاط الأخير</span> <span class="badge">LIVE</span></h3>
-          <div class="act"><span class="t">14:22</span><div><b>Hero frame 097</b> replaced — night view re-render · استبدال إطار ٠٩٧</div><span class="tag blue">SEQUENCE</span></div>
-          <div class="act"><span class="t">13:05</span><div><b>Villa Solara</b> — facade gallery +12 images · +١٢ صورة للواجهة</div><span class="tag green">GALLERY</span></div>
-          <div class="act"><span class="t">11:48</span><div>Scroll smoothness 0.10 → 0.085 · تعديل سلاسة التمرير</div><span class="tag amber">SETTINGS</span></div>
-          <div class="act"><span class="t">10:31</span><div><b>Blueprint B-204 rev 13</b> uploaded (DWG) · رفع مخطط</div><span class="tag blue">BLUEPRINT</span></div>
-          <div class="act"><span class="t">09:12</span><div>Editor <b>sara@aura.studio</b> signed in · تسجيل دخول</div><span class="tag green">AUTH</span></div>
-        </div>
-        <div class="panel"><h3>Project Status · حالة المشاريع</h3>
-          <div class="abar"><span class="lb">Villa Solara</span><div class="tr"><i style="width:100%"></i></div><span class="v">100%</span></div>
-          <div class="abar"><span class="lb">Marina Court</span><div class="tr"><i style="width:64%"></i></div><span class="v">64%</span></div>
-          <div class="abar"><span class="lb">Desert Pavilion</span><div class="tr"><i style="width:38%"></i></div><span class="v">38%</span></div>
-          <div class="abar"><span class="lb">Coastal House</span><div class="tr"><i style="width:12%"></i></div><span class="v">12%</span></div>
-          <h3 style="margin-top:22px">Quick Actions · إجراءات سريعة</h3>
-          <div class="btnrow">
-            <button class="btn sm" onclick="go('sequence')">Upload Frames · رفع إطارات</button>
-            <button class="btn sm ghost" onclick="go('scroll')">Speed · السرعة</button>
-            <button class="btn sm ghost" onclick="window.open('index.html')">Preview · معاينة الموقع ↗</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- ========== PROJECTS MANAGER ========== -->
     <!-- ========== UNIFIED PROJECTS MANAGER ========== -->
-    <div class="page" id="p-projects">
+    <div class="page on" id="p-projects">
       <h1 class="pt">إدارة المشاريع · Projects Manager</h1>
-      <div class="ps" id="projSub">كل ما يخص المشروع في مكان واحد — بيانات، مراحل، تسلسل، معارض، داخلي، تواصل</div>
+      <div class="ps" id="projSub">كل ما يخص المشروع في مكان واحد — بيانات، مراحل، تجارب</div>
 
       <!-- Project list + add -->
       <div class="panel" style="margin-bottom:20px">
@@ -300,11 +261,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <div class="gal-tabs" id="projTabs" style="margin-bottom:20px">
         <div class="gtab on" data-pt="identity">البيانات · Identity</div>
         <div class="gtab" data-pt="stages">المراحل · Stages</div>
-        <div class="gtab" data-pt="sequence">التسلسل · Sequence</div>
-        <div class="gtab" data-pt="gallery">المعارض · Galleries</div>
-        <div class="gtab" data-pt="interior">الداخلي · Interior</div>
         <div class="gtab" data-pt="experiences">تجارب · Experiences</div>
-        <div class="gtab" data-pt="contact">تواصل · Contact</div>
       </div>
 
       <!-- Tab: Identity -->
@@ -348,43 +305,10 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
       <!-- Tab: Sequence -->
       <div class="proj-tab" id="pt-sequence" style="display:none">
-        <div class="dropzone" id="dz">⬆ اسحب الصور هنا أو <b>انقر للاختيار</b><br>
-          <span style="font-size:11px">97 إطار — WebP — اسحب للترتيب</span>
-          <input type="file" id="dzInput" multiple accept="image/*" style="display:none">
-        </div>
-        <div class="panel">
-          <h3><span>التسلسل — <span id="seqCount"></span> إطار</span></h3>
-          <div class="frames" id="framesGrid"></div>
-        </div>
+        <!-- Hidden: removed, but keep div for backwards compat -->
       </div>
-
-      <!-- Tab: Galleries -->
-      <div class="proj-tab" id="pt-gallery" style="display:none">
-        <div class="gal-tabs" id="galTabs"></div>
-        <div class="dropzone" style="padding:22px" onclick="toast('Drag images to add · اسحب الصور للإضافة')">⬆ اسحب الصور لإضافتها · Drop images here</div>
-        <div class="gal-grid" id="galGrid"></div>
-      </div>
-
-      <!-- Tab: Interior -->
-      <div class="proj-tab" id="pt-interior" style="display:none">
-        <div class="panel"><h3><span>الثيم · Theme</span></h3>
-          <div class="gal-tabs" id="themeTabs"></div>
-        </div>
-        <div class="panel"><h3><span>الغرف — <span id="roomCount"></span></span></h3>
-          <div id="roomRows"></div>
-          <div class="btnrow">
-            <button class="btn" onclick="saveInterior()">حفظ · Save</button>
-            <button class="btn ghost" onclick="toast('New room added · تمت إضافة غرفة')">+ إضافة غرفة · Add Room</button>
-          </div>
-        </div>
-        <div class="grid2">
-          <div class="panel"><h3>الأثاث · Furniture</h3><div id="furnRows"></div></div>
-          <div class="panel"><h3>المسارات · Paths</h3>
-            <div class="frow"><div><div class="fl">Door hotspots</div><div class="fs">Auto-generated</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-            <div class="frow"><div><div class="fl">Walkthrough</div><div class="fs">Free look + doors</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-          </div>
-        </div>
-      </div>
+      <div class="proj-tab" id="pt-gallery" style="display:none"></div>
+      <div class="proj-tab" id="pt-interior" style="display:none"></div>
 
       <!-- Tab: Experiences (360°, Walkthrough, Before/After — per project) -->
       <div class="proj-tab" id="pt-experiences" style="display:none">
@@ -436,21 +360,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         </div>
       </div>
 
-      <!-- Tab: Contact (per-project) -->
-      <div class="proj-tab" id="pt-contact" style="display:none">
-        <div class="panel">
-          <h3><span>تواصل المشروع · Project Contact</span></h3>
-          <div class="grid2">
-            <div class="f"><label>الشركة · Company (EN)</label><input type="text" id="cCompany"></div>
-            <div class="f"><label>اسم الشركة (AR)</label><input type="text" id="cCompanyAr" dir="rtl" style="font-family:var(--font-ar)"></div>
-            <div class="f"><label>الهاتف · Phone</label><input type="text" id="cPhone"></div>
-            <div class="f"><label>واتساب · WhatsApp</label><input type="text" id="cWhatsapp"></div>
-            <div class="f"><label>البريد · Email</label><input type="text" id="cEmail"></div>
-            <div class="f"><label>الموقع · Location</label><input type="text" id="cLocation"></div>
-          </div>
-          <div class="btnrow"><button class="btn" onclick="saveContact()">حفظ · Save</button></div>
-        </div>
-      </div>
+      <div class="proj-tab" id="pt-contact" style="display:none"></div>
     </div>
 
     <!-- ========== WIDGETS EDITOR (now includes widget content) ========== -->
@@ -509,13 +419,6 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- ========== MATERIALS ========== -->
-    <div class="page" id="p-materials">
-      <h1 class="pt">المواد · Materials Library</h1>
-      <div class="panel" id="matPanel"></div>
-      <button class="btn" onclick="toast('Material editor opened · فتح محرر المواد')">+ إضافة مادة · Add Material</button>
     </div>
 
     <!-- ========== SITE SETTINGS ========== -->
@@ -592,8 +495,8 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== SCROLL / PLAYBACK SETTINGS ========== -->
     <div class="page" id="p-scroll">
-      <h1 class="pt">Playback & Speed · سرعة الفيديو</h1>
-      <div class="ps">تحكم كامل في سرعة الفيلم ومدد التوقف — يُطبَّق على الموقع فور الحفظ · Adjust frame rate, pauses, and autoplay behavior</div>
+      <h1 class="pt">سرعة الفيديو · Playback</h1>
+      <div class="ps">سرعة عرض الإطارات + مدة التوقف عند كل مرحلة — يُطبَّق على الموقع فور الحفظ</div>
 
       <!-- Live preview: actual frame strip from current project -->
       <div class="panel" style="background:linear-gradient(180deg,#fff,#FAFAF7)">
@@ -624,55 +527,43 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         </div>
       </div>
 
-      <!-- Speed controls -->
+      <!-- Speed controls (simplified) -->
       <div class="panel">
-        <h3><span>Video Speed · سرعة العرض</span> <span class="badge">LIVE</span></h3>
-        <div class="grid2">
-          <div class="f">
-            <label>Exterior speed · سرعة البناء الخارجي</label>
-            <input type="range" id="pFpsExt" min="2" max="24" step="0.5">
-            <div class="rv" id="pFpsExtV"></div>
-          </div>
-          <div class="f">
-            <label>Rooms speed · سرعة بناء الغرف</label>
-            <input type="range" id="pFpsInt" min="2" max="24" step="0.5">
-            <div class="rv" id="pFpsIntV"></div>
-          </div>
+        <h3><span>سرعة العرض · Frame Rate</span> <span class="badge">LIVE</span></h3>
+        <div class="f">
+          <label>السرعة · Speed (fps) — كل ما قلّ الرقم كان الفيديو أبطأ وأكثر سينمائية</label>
+          <input type="range" id="pFpsExt" min="2" max="24" step="0.5">
+          <div class="rv" id="pFpsExtV"></div>
         </div>
-        <div class="grid2" style="margin-top:14px">
-          <div class="f">
-            <label>Stage-start pause · توقف بداية كل مرحلة (ثوانٍ)</label>
-            <input type="range" id="pPauseExt" min="0" max="15" step="0.5">
-            <div class="rv" id="pPauseExtV"></div>
-          </div>
-          <div class="f">
-            <label>Room-end pause · توقف نهاية كل غرفة (ثوانٍ)</label>
-            <input type="range" id="pPauseRoom" min="0" max="10" step="0.5">
-            <div class="rv" id="pPauseRoomV"></div>
-          </div>
+        <div class="f" style="margin-top:14px">
+          <label>مدة التوقف عند كل مرحلة · Stage Pause (seconds)</label>
+          <input type="range" id="pPauseExt" min="0" max="15" step="0.5">
+          <div class="rv" id="pPauseExtV"></div>
         </div>
         <div class="frow" style="margin-top:8px">
           <div>
-            <div class="fl">Autoplay on load · تشغيل تلقائي عند فتح الموقع</div>
+            <div class="fl">تشغيل تلقائي · Autoplay on load</div>
             <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div>
           </div>
           <label class="switch"><input type="checkbox" id="pAuto"><i></i></label>
         </div>
         <div class="btnrow">
-          <button class="btn" onclick="savePlayback()">Save & Publish · حفظ ونشر</button>
-          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: Slow · بطيء</button>
-          <button class="btn ghost" onclick="pbPreset(9,6,5,2.5)">Preset: Default · افتراضي</button>
-          <button class="btn ghost" onclick="pbPreset(16,12,3,1.5)">Preset: Fast · سريع</button>
-          <button class="btn ghost" onclick="window.open('index.html')">Test on Site ↗ · جرّب على الموقع</button>
+          <button class="btn" onclick="savePlayback()">حفظ ونشر · Save & Publish</button>
+          <button class="btn ghost" onclick="pbPreset(4,8)">بطيء سينمائي · Slow</button>
+          <button class="btn ghost" onclick="pbPreset(9,5)">افتراضي · Default</button>
+          <button class="btn ghost" onclick="pbPreset(16,3)">سريع · Fast</button>
+          <button class="btn ghost" onclick="window.open('index.html')">جرّب على الموقع ↗</button>
         </div>
       </div>
 
       <!-- Film length breakdown -->
       <div class="panel">
-        <h3>Film length breakdown · تفصيل مدة الفيلم <span class="badge" id="pbTotal">—</span></h3>
-        <div class="krow"><span>Exterior — <span id="pbExtFrames">97</span> frames · الخارجي</span><b id="pbExtT">—</b></div>
-        <div class="krow"><span>Stage pauses — <span id="pbPauseCount">7</span> stops · توقفات</span><b id="pbPauseT">—</b></div>
-        <div class="krow" style="font-weight:600"><span>Total loop · إجمالي الفيلم</span><b id="pbLoopTotal">—</b></div>
+        <h3>مدة الفيلم · Film Length <span class="badge" id="pbTotal">—</span></h3>
+        <div class="krow"><span>عدد الإطارات · Frames</span><b id="pbExtFrames">0</b></div>
+        <div class="krow"><span>السرعة · Speed</span><b id="pbFpsBadge2">9 fps</b></div>
+        <div class="krow"><span>زمن العرض · Playback time</span><b id="pbExtT">—</b></div>
+        <div class="krow"><span>عدد التوقفات · Pauses (<span id="pbPauseCount">0</span>)</span><b id="pbPauseT">—</b></div>
+        <div class="krow" style="font-weight:600"><span>إجمالي مدة الفيلم · Total</span><b id="pbLoopTotal">—</b></div>
       </div>
     </div>
 
@@ -696,49 +587,6 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         </div>
         <div class="btnrow"><button class="btn" onclick="saveUI()">Save & Publish · حفظ ونشر</button>
         <button class="btn ghost" onclick="resetAll()">Reset · استعادة الافتراضي</button></div>
-      </div>
-    </div>
-
-    <!-- ========== SEO ========== -->
-    <div class="page" id="p-seo">
-      <h1 class="pt">SEO · تحسين محركات البحث</h1>
-      <div class="ps">إعدادات البحث والمشاركة الاجتماعية</div>
-      <div class="panel">
-        <div class="f"><label>Meta Title · العنوان للبحث</label><input type="text" value="AURA — Interactive Architecture Portfolio · Kuwait"></div>
-        <div class="f" style="margin-top:14px"><label>Meta Description · الوصف للبحث</label>
-          <textarea rows="3">Scroll through the construction of luxury villas frame by frame. Premium architecture studio in Kuwait — design, execution, finishing, project management.</textarea></div>
-        <div class="grid2" style="margin-top:14px">
-          <div class="f"><label>Canonical URL · الرابط الأساسي</label><input type="text" value="https://aura.studio/"></div>
-          <div class="f"><label>OpenGraph Image · صورة المشاركة</label><input type="text" value="/assets/villa-clean.png"></div>
-        </div>
-        <div class="frow" style="margin-top:8px"><div><div class="fl">Generate sitemap.xml · توليد خريطة الموقع</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-        <div class="frow"><div><div class="fl">Schema.org structured data · بيانات منظمة</div><div class="fs">Organization + CreativeWork per project · لكل مشروع</div></div><label class="switch"><input type="checkbox" checked><i></i></label></div>
-        <div class="btnrow"><button class="btn" onclick="toast('SEO saved · تم الحفظ')">Save · حفظ</button></div>
-      </div>
-    </div>
-
-    <!-- ========== ANALYTICS ========== -->
-    <div class="page" id="p-analytics">
-      <h1 class="pt">Analytics · التحليلات</h1>
-      <div class="ps">كيف يعيش الزوار تجربة البناء</div>
-      <div class="stats">
-        <div class="stat"><div class="k">Sessions · الجلسات (7ي)</div><div class="v">4,821</div><div class="d up">+9.1%</div></div>
-        <div class="stat"><div class="k">Completed · أكملوا الفيلم</div><div class="v">71%</div><div class="d up">reached frame 097 · وصلوا للإطار ٠٩٧</div></div>
-        <div class="stat"><div class="k">Depth · عمق المشاهدة</div><div class="v">86%</div><div class="d">of sequence · من التسلسل</div></div>
-        <div class="stat"><div class="k">Mobile · موبايل</div><div class="v">58%</div><div class="d">Desktop 39% — Tablet 3% · كمبيوتر ٣٩٪ — تابلت ٣٪</div></div>
-      </div>
-      <div class="grid2">
-        <div class="panel"><h3>Most Viewed · الأكثر مشاهدة</h3>
-          <div class="abar"><span class="lb">Facade · الواجهة</span><div class="tr"><i style="width:92%"></i></div><span class="v">92%</span></div>
-          <div class="abar"><span class="lb">Night View · الليلي</span><div class="tr"><i style="width:85%"></i></div><span class="v">85%</span></div>
-          <div class="abar"><span class="lb">Structure · الهيكل</span><div class="tr"><i style="width:66%"></i></div><span class="v">66%</span></div>
-          <div class="abar"><span class="lb">Foundation · الأساس</span><div class="tr"><i style="width:51%"></i></div><span class="v">51%</span></div>
-          <div class="abar"><span class="lb">Excavation · الحفر</span><div class="tr"><i style="width:43%"></i></div><span class="v">43%</span></div>
-        </div>
-        <div class="panel"><h3>Heatmap · خريطة التفاعل لكل إطار</h3>
-          <div class="heat" id="heat"></div>
-          <div style="font-size:10.5px;color:var(--tx3);margin-top:10px">Peaks at stage transitions — visitors pause to explore the change · قمم عند انتقال المراحل — يتوقف الزوار لاستكشاف التغيير</div>
-        </div>
       </div>
     </div>
 
@@ -846,12 +694,10 @@ function boot(){
   if(fProgress)fProgress.value=PROJ.project.progress||0;
   const pIdBadge=$('pIdBadge');if(pIdBadge)pIdBadge.textContent=PROJ.id||'—';
   const projSub=$('projSub');if(projSub)projSub.textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
-  // playback — use safe element refs
-  const pFpsExtEl=$('pFpsExt'),pFpsIntEl=$('pFpsInt'),pPauseExtEl=$('pPauseExt'),pPauseRoomEl=$('pPauseRoom'),pAutoEl=$('pAuto');
+  // playback — use safe element refs (simplified: only fpsExt + pauseExplore)
+  const pFpsExtEl=$('pFpsExt'),pPauseExtEl=$('pPauseExt'),pAutoEl=$('pAuto');
   if(pFpsExtEl)pFpsExtEl.value=PROJ.playback.fpsExt;
-  if(pFpsIntEl)pFpsIntEl.value=PROJ.playback.fpsInt;
   if(pPauseExtEl)pPauseExtEl.value=PROJ.playback.pauseExplore;
-  if(pPauseRoomEl)pPauseRoomEl.value=PROJ.playback.pauseRoom;
   if(pAutoEl)pAutoEl.checked=PROJ.playback.autoplay!==false;
   // playback preview (safe — only if canvas exists)
   if($('pbCanvas')){
@@ -873,9 +719,9 @@ function boot(){
   }
   // builders — each wrapped so one failure doesn't kill the rest
   const safeCall=(fn)=>{try{if(typeof fn==='function')fn();}catch(e){console.warn('Builder failed:',e);}};
-  safeCall(buildFrames);safeCall(buildStages);safeCall(buildGalleryTabs);safeCall(buildMaterials);
-  safeCall(buildHeat);safeCall(buildInterior);safeCall(hsInit);safeCall(buildProjectManager);
-  safeCall(buildWidgets);safeCall(buildBAEditor);safeCall(buildContactEditor);
+  safeCall(buildStages);
+  safeCall(hsInit);safeCall(buildProjectManager);
+  safeCall(buildWidgets);safeCall(buildBAEditor);
   safeCall(buildInquiries);safeCall(buildSiteContent);
   try{wireProjTabs();}catch(e){}
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
@@ -893,11 +739,7 @@ function wireProjTabs(){
       document.querySelectorAll('.proj-tab').forEach(pt=>pt.style.display='none');
       const target=$('pt-'+t.dataset.pt);if(target)target.style.display='block';
       if(t.dataset.pt==='stages')buildStages();
-      if(t.dataset.pt==='sequence')buildFrames();
-      if(t.dataset.pt==='gallery')buildGalleryTabs();
-      if(t.dataset.pt==='interior')buildInterior();
       if(t.dataset.pt==='experiences')buildExperiences();
-      if(t.dataset.pt==='contact')buildContactEditor();
     };
   });
 }
@@ -974,7 +816,7 @@ setInterval(()=>{
       clearTimeout(window._autoSaveT);window._autoSaveT=setTimeout(()=>t.classList.remove('show'),1500);}
   }
 },30000);
-['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
+['pFpsExt','pPauseExt'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
 /* ---------- playback: live preview tied to actual frames ---------- */
 let pbFrames=[];          /* array of image URLs (actual sequence) */
 let pbStages=[];          /* array of {from,to,color,name} */
@@ -1154,15 +996,11 @@ function pbPreviewReset(){
 /* update calculations + labels */
 function updPb(){
   const fe=+document.getElementById('pFpsExt').value;
-  const fi=+document.getElementById('pFpsInt').value;
   const pe=+document.getElementById('pPauseExt').value;
-  const pr=+document.getElementById('pPauseRoom').value;
   const totalFrames=pbFrames.length||0;
   const hasFrames=totalFrames>0;
-  document.getElementById('pFpsExtV').textContent=`${fe} fps — ${fe<6?'Slow · بطيء':fe<12?'Balanced · متوازن':'Fast · سريع'}`+(hasFrames?` — ${fmtTLong(totalFrames/fe)} total`:'');
-  document.getElementById('pFpsIntV').textContent=`${fi} fps — each room ≈ ${fmtTLong(31/fi)}`;
-  document.getElementById('pPauseExtV').textContent=`${pe}s · ${pe===0?'No pause · بدون توقف':'hold at every stage start · توقف عند بداية كل مرحلة'}`;
-  document.getElementById('pPauseRoomV').textContent=`${pr}s · ${pr===0?'No pause · بدون توقف':'between rooms · بين الغرف'}`;
+  document.getElementById('pFpsExtV').textContent=`${fe} fps — ${fe<6?'بطيء سينمائي · Slow cinematic':fe<12?'متوازن · Balanced':'سريع · Fast'}`+(hasFrames?` — ${fmtTLong(totalFrames/fe)} عرض`:'');
+  document.getElementById('pPauseExtV').textContent=`${pe}s · ${pe===0?'بدون توقف · No pause':'توقف عند بداية كل مرحلة · pause at each stage start'}`;
   /* film length breakdown — uses ACTUAL frame count */
   const stageCount=pbStages.length||0;
   const extT=hasFrames?totalFrames/fe:0;
@@ -1171,9 +1009,11 @@ function updPb(){
   document.getElementById('pbPauseT').textContent=fmtTLong(pauseT);
   document.getElementById('pbLoopTotal').textContent=hasFrames?fmtTLong(extT+pauseT):'—';
   document.getElementById('pbTotal').textContent=hasFrames?('≈ '+fmtT(extT+pauseT)):'—';
-  /* speed badge */
+  /* speed badge (both in preview + breakdown) */
   const fpsBadge=document.getElementById('pbFpsBadge');
   if(fpsBadge)fpsBadge.textContent=fe+' fps';
+  const fpsBadge2=document.getElementById('pbFpsBadge2');
+  if(fpsBadge2)fpsBadge2.textContent=fe+' fps';
   /* refresh preview (if not playing) */
   if(!pbPlaying){
     pbDrawFrame(Math.floor(pbCurrentFrame)||1);
@@ -1181,27 +1021,23 @@ function updPb(){
     pbUpdateTime(Math.floor(pbCurrentFrame)||1);
   }
 }
-function pbPreset(fe,fi,pe,pr){
+function pbPreset(fe,pe){
   document.getElementById('pFpsExt').value=fe;
-  document.getElementById('pFpsInt').value=fi;
   document.getElementById('pPauseExt').value=pe;
-  document.getElementById('pPauseRoom').value=pr;
   updPb();
-  toast('Preset applied · تم تطبيق الإعداد — اضغط حفظ ونشر');
+  toast('تم تطبيق الإعداد · Preset applied — اضغط حفظ ونشر');
 }
 function savePlayback(){
   const get=id=>{const el=document.getElementById(id);return el?el.value:0;};
   const cb=id=>{const el=document.getElementById(id);return el?el.checked:true;};
   PROJ.playback={
     fpsExt:+get('pFpsExt'),
-    fpsInt:+get('pFpsInt'),
     pauseExplore:+get('pPauseExt'),
-    pauseRoom:+get('pPauseRoom'),
     autoplay:cb('pAuto')
   };
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  toast('Playback speed published · تم نشر سرعة العرض');
+  toast('تم نشر سرعة العرض · Playback published');
 }
 ['uGlass','uBlur','uRadius','uGlow'].forEach(id=>document.getElementById(id).addEventListener('input',updRvUI));
 function updRvUI(){
@@ -2185,15 +2021,11 @@ function pmEdit(id){
   $('pIdBadge').textContent=PROJ.id||'—';
   $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
   /* also refresh dependent editors */
-  try{buildFrames();}catch(e){}
   try{buildStages();}catch(e){}
-  try{buildGalleryTabs();}catch(e){}
-  try{buildInterior();}catch(e){}
   try{buildExperiences();}catch(e){}
   try{hsInit();}catch(e){}
   try{buildWidgets();}catch(e){}
   try{buildBAEditor();}catch(e){}
-  try{buildContactEditor();}catch(e){}
   /* refresh playback preview with new project's frames */
   try{pbLoadFrames();updPb();}catch(e){}
   /* switch to first internal tab */
