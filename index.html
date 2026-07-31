@@ -799,14 +799,14 @@ function switchProject(id){
     AURA.applyTheme(PROJ);
     buildProjectBar();buildTimeline();buildPlaybar();buildWidgets();
     target=current=1;pausesDone.clear();visited.clear();
-    if(typeof _stagePauseTriggered!=='undefined')_stagePauseTriggered.clear();
+    _stagePauseTriggered.clear();
     lastStageId=null;
     /* clear canvas immediately so old frame doesn't linger */
     ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
     /* update experience buttons visibility based on new project data */
     updateExpButtons();
     /* if no frames, show message and fade in */
-    if(!TOTAL||!SEGS[0]||!SEGS[0].count){
+    if(!TOTAL||!SEGS[0].count){
       ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
       ctx.fillText(isAr?'لا توجد صور في هذا المشروع — ارفع صور من لوحة التحكم':'No images in this project — upload from admin',cv.width/2,cv.height/2);
       $('heroFade').style.opacity=0;
@@ -816,6 +816,7 @@ function switchProject(id){
     /* load first frames, THEN draw + fade in */
     Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
       draw(1);
+      /* preload remaining in background */
       let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();
       $('heroFade').style.opacity=0;
       toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
@@ -825,10 +826,30 @@ function switchProject(id){
 
 /* ---------- timeline (frame sequence) ---------- */
 let SEGS, TOTAL, cache={};
+
+/* show/hide experience buttons based on project data */
+function updateExpButtons(){
+  const exp=PROJ.experiences||{};
+  const panos=exp.panos||[];
+  const walk=exp.walkthrough||{};
+  const ba=exp.beforeAfter||PROJ.beforeAfter||[];
+  const b360=$('btn360'),bWalk=$('btnWalk'),bBA=$('btnBA');
+  const wrap=$('expButtons');
+  /* show button only if project has data for it */
+  const has360=panos.some(p=>p.img||p.embed);
+  const hasWalk=walk.video||walk.img;
+  const hasBA=ba.some(b=>b.before&&b.after);
+  if(b360)b360.style.display=has360?'flex':'none';
+  if(bWalk)bWalk.style.display=hasWalk?'flex':'none';
+  if(bBA)bBA.style.display=hasBA?'flex':'none';
+  /* hide entire container if none have data */
+  if(wrap)wrap.style.display=(has360||hasWalk||hasBA)?'flex':'none';
+}
+
 function buildTimeline(){
   /* use assembled images count (from sequence OR per-stage) */
   const allImgs=AURA.getAssembledImages ? AURA.getAssembledImages(PROJ) : (PROJ.sequence.images||[]);
-  const count=allImgs.length>0 ? allImgs.length : (PROJ.sequence.count||0);
+  const count=allImgs.length>0 ? allImgs.length : (PROJ.sequence.count||97);
   SEGS=[
     {type:'ext',count:count,src:n=>AURA.frameSrc(PROJ,n)}
   ];
@@ -879,6 +900,7 @@ let PB=PROJ.playback||{fpsExt:9,pauseExplore:5,pauseRoom:2.5};
 let FPS=+PB.fpsExt||9;
 let lastT=performance.now();
 const pausesDone=new Set();
+let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 let widgetPauseT=null;  /* pause when widget clicked */
 
 function cinFadeSwap(){$('heroFade').style.opacity=1;setTimeout(()=>$('heroFade').style.opacity=0,450);}
@@ -1021,7 +1043,6 @@ function updateGlassHudLive(){
 
 /* ---------- main loop ---------- */
 let widgetPauseUntil=0;
-let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 (function loop(now){
   now=now||performance.now();
   if(!SEGS||!SEGS.length||!TOTAL){requestAnimationFrame(loop);return;}
@@ -1137,7 +1158,8 @@ function bootFrames(){
     /* no frames — show placeholder on canvas */
     ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
     ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
-    ctx.fillText(isAr?'لا توجد صور — ارفع صور من لوحة التحكم':'No images — upload from admin',cv.width/2,cv.height/2);
+    const isArB=(typeof isAr!=='undefined')?isAr:false;
+    ctx.fillText(isArB?'لا توجد صور — ارفع صور من لوحة التحكم':'No images — upload from admin',cv.width/2,cv.height/2);
     return;
   }
   Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
@@ -1379,6 +1401,7 @@ buildProjectBar();
 buildTimeline();
 buildPlaybar();
 buildWidgets();
+updateExpButtons();
 bootFrames();
 
 /* ---------- site content (from admin) ---------- */
@@ -1441,8 +1464,8 @@ function applyPlayback(){
 }
 function applyAllFromStorage(){
   const oldId=PROJ?.id;
+  const oldCount=SEGS?.[0]?.count;
   const oldImgLen=PROJ?.sequence?.images?.length||0;
-  const oldStageImgLen=(PROJ?.stages||[]).reduce((n,s)=>n+((s.images||[]).length),0);
   CFG=AURA.load();
   PROJ=AURA.getCurrent(CFG);
   AURA.applyTheme(PROJ);
@@ -1456,14 +1479,16 @@ function applyAllFromStorage(){
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */
   if(lastStageId){lastStageId=null;}
-  /* CRITICAL: rebuild timeline + clear cache when sequence/stage images change.
-     Detect: project switched, OR sequence.images length changed, OR
-     total per-stage images count changed (covers upload/delete). */
+  /* CRITICAL: rebuild timeline + clear cache when sequence changes
+     (otherwise site shows old frame count / wrong frame sources).
+     Always rebuild if: project switched, frame count changed, or
+     custom images array length changed (covers upload/replace/delete). */
+  const newCount=PROJ.sequence?.count||97;
   const newImgLen=PROJ.sequence?.images?.length||0;
-  const newStageImgLen=(PROJ.stages||[]).reduce((n,s)=>n+((s.images||[]).length),0);
   const projChanged=oldId!==PROJ.id;
-  const imgsChanged=oldImgLen!==newImgLen||oldStageImgLen!==newStageImgLen;
-  if(projChanged||imgsChanged){
+  const countChanged=oldCount!==newCount;
+  const imgsChanged=oldImgLen!==newImgLen;
+  if(projChanged||countChanged||imgsChanged){
     buildTimeline();
     cache={};  /* clear image cache so new URLs are fetched */
     target=current=1;
