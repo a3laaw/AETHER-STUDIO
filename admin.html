@@ -156,6 +156,11 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .gimg:hover .del{opacity:1}
 .gimg .del:hover{background:var(--red)}
 
+/* playback krows */
+.krow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--brd);font-size:13px}
+.krow:last-child{border:none}
+.krow b{font-variant-numeric:tabular-nums;color:var(--gold-2)}
+
 /* experiences editor */
 .exp-card{background:var(--panel2);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:12px;transition:.25s}
 .exp-card:hover{border-color:rgba(60,130,246,.35)}
@@ -588,39 +593,86 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <!-- ========== SCROLL / PLAYBACK SETTINGS ========== -->
     <div class="page" id="p-scroll">
       <h1 class="pt">Playback & Speed · سرعة الفيديو</h1>
-      <div class="ps">تحكم كامل في سرعة الفيلم ومدد التوقف — يُطبَّق على الموقع فور الحفظ</div>
+      <div class="ps">تحكم كامل في سرعة الفيلم ومدد التوقف — يُطبَّق على الموقع فور الحفظ · Adjust frame rate, pauses, and autoplay behavior</div>
 
+      <!-- Live preview: actual frame strip from current project -->
+      <div class="panel" style="background:linear-gradient(180deg,#fff,#FAFAF7)">
+        <h3><span>Live Preview · معاينة حية</span> <span class="badge" id="pbProjTag">—</span></h3>
+        <div style="position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/7">
+          <!-- frame strip (canvas) -->
+          <canvas id="pbCanvas" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></canvas>
+          <!-- playhead overlay -->
+          <div id="pbPlayhead" style="position:absolute;top:0;bottom:0;width:3px;background:#BFA76A;box-shadow:0 0 14px #BFA76A;left:0;pointer-events:none"></div>
+          <!-- stage markers (bottom) -->
+          <div id="pbStageMarkers" style="position:absolute;bottom:0;left:0;right:0;height:18px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:flex-end;pointer-events:none"></div>
+          <!-- time badges -->
+          <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px;align-items:center">
+            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px)" id="pbTimeNow">0:00</span>
+            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:600;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px);opacity:.7" id="pbTimeTotal">/ 0:00</span>
+          </div>
+          <!-- speed badge -->
+          <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;align-items:center">
+            <span style="background:#BFA76A;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px" id="pbFpsBadge">9 fps</span>
+          </div>
+          <!-- pause badges overlay -->
+          <div id="pbPauseBadges" style="position:absolute;inset:0;pointer-events:none"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
+          <button class="btn sm" id="pbPreviewBtn" onclick="pbPreviewToggle()">▶ Play Preview · تشغيل</button>
+          <button class="btn sm ghost" onclick="pbPreviewReset()">↺ Reset · إعادة</button>
+          <span style="font-size:11px;color:var(--tx3)">Preview uses actual frames from <b id="pbProjTagInline">current project</b></span>
+        </div>
+      </div>
+
+      <!-- Speed controls -->
       <div class="panel">
         <h3><span>Video Speed · سرعة العرض</span> <span class="badge">LIVE</span></h3>
         <div class="grid2">
-          <div class="f"><label>Exterior speed · سرعة البناء الخارجي</label>
-            <input type="range" id="pFpsExt" min="2" max="24" step="0.5"><div class="rv" id="pFpsExtV"></div></div>
-          <div class="f"><label>Rooms speed · سرعة بناء الغرف</label>
-            <input type="range" id="pFpsInt" min="2" max="24" step="0.5"><div class="rv" id="pFpsIntV"></div></div>
+          <div class="f">
+            <label>Exterior speed · سرعة البناء الخارجي</label>
+            <input type="range" id="pFpsExt" min="2" max="24" step="0.5">
+            <div class="rv" id="pFpsExtV"></div>
+          </div>
+          <div class="f">
+            <label>Rooms speed · سرعة بناء الغرف</label>
+            <input type="range" id="pFpsInt" min="2" max="24" step="0.5">
+            <div class="rv" id="pFpsIntV"></div>
+          </div>
         </div>
         <div class="grid2" style="margin-top:14px">
-          <div class="f"><label>Explore pause · توقف زر الاستكشاف (ثوانٍ)</label>
-            <input type="range" id="pPauseExt" min="0" max="15" step="0.5"><div class="rv" id="pPauseExtV"></div></div>
-          <div class="f"><label>Room-end pause · توقف نهاية كل غرفة (ثوانٍ)</label>
-            <input type="range" id="pPauseRoom" min="0" max="10" step="0.5"><div class="rv" id="pPauseRoomV"></div></div>
+          <div class="f">
+            <label>Stage-start pause · توقف بداية كل مرحلة (ثوانٍ)</label>
+            <input type="range" id="pPauseExt" min="0" max="15" step="0.5">
+            <div class="rv" id="pPauseExtV"></div>
+          </div>
+          <div class="f">
+            <label>Room-end pause · توقف نهاية كل غرفة (ثوانٍ)</label>
+            <input type="range" id="pPauseRoom" min="0" max="10" step="0.5">
+            <div class="rv" id="pPauseRoomV"></div>
+          </div>
         </div>
-        <div class="frow" style="margin-top:8px"><div><div class="fl">Autoplay on load · تشغيل تلقائي عند فتح الموقع</div>
-          <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div></div>
-          <label class="switch"><input type="checkbox" id="pAuto"><i></i></label></div>
+        <div class="frow" style="margin-top:8px">
+          <div>
+            <div class="fl">Autoplay on load · تشغيل تلقائي عند فتح الموقع</div>
+            <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="pAuto"><i></i></label>
+        </div>
         <div class="btnrow">
           <button class="btn" onclick="savePlayback()">Save & Publish · حفظ ونشر</button>
-          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: Slow cinematic · بطيء سينمائي</button>
+          <button class="btn ghost" onclick="pbPreset(4,3,8,4)">Preset: Slow · بطيء</button>
           <button class="btn ghost" onclick="pbPreset(9,6,5,2.5)">Preset: Default · افتراضي</button>
           <button class="btn ghost" onclick="pbPreset(16,12,3,1.5)">Preset: Fast · سريع</button>
           <button class="btn ghost" onclick="window.open('index.html')">Test on Site ↗ · جرّب على الموقع</button>
         </div>
       </div>
 
+      <!-- Film length breakdown -->
       <div class="panel">
-        <h3>Estimated film length · المدة التقديرية للفيلم <span class="badge" id="pbTotal">—</span></h3>
-        <div class="krow"><span>Exterior — الخارجي (97 frames)</span><b id="pbExtT">—</b></div>
-        <div class="krow"><span>Rooms — الغرف (109 frames)</span><b id="pbIntT">—</b></div>
-        <div class="krow"><span>Pauses · التوقفات</span><b id="pbPauseT">—</b></div>
+        <h3>Film length breakdown · تفصيل مدة الفيلم <span class="badge" id="pbTotal">—</span></h3>
+        <div class="krow"><span>Exterior — <span id="pbExtFrames">97</span> frames · الخارجي</span><b id="pbExtT">—</b></div>
+        <div class="krow"><span>Stage pauses — <span id="pbPauseCount">7</span> stops · توقفات</span><b id="pbPauseT">—</b></div>
+        <div class="krow" style="font-weight:600"><span>Total loop · إجمالي الفيلم</span><b id="pbLoopTotal">—</b></div>
       </div>
     </div>
 
@@ -777,6 +829,7 @@ function boot(){
   pFpsExt.value=PROJ.playback.fpsExt;pFpsInt.value=PROJ.playback.fpsInt;
   pPauseExt.value=PROJ.playback.pauseExplore;pPauseRoom.value=PROJ.playback.pauseRoom;
   pAuto.checked=PROJ.playback.autoplay!==false;
+  pbLoadFrames();
   updPb();
   // ui
   uName.value=PROJ.brand.name;uAccent.value=PROJ.brand.accent;uTheme.value=PROJ.ui.theme;
@@ -878,27 +931,211 @@ setInterval(()=>{
   }
 },30000);
 ['pFpsExt','pFpsInt','pPauseExt','pPauseRoom'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
-function fmtT(s){const m=Math.floor(s/60),r=Math.round(s%60);return m?`${m}m ${r}s`:`${r}s`;}
+/* ---------- playback: live preview tied to actual frames ---------- */
+let pbFrames=[];          /* array of image URLs (actual sequence) */
+let pbStages=[];          /* array of {from,to,color,name} */
+let pbPlaying=false;
+let pbCurrentFrame=1;
+let pbRafId=null;
+let pbLastT=0;
+let pbPauseUntil=0;       /* timestamp until which preview is paused */
+
+function fmtT(s){
+  s=Math.max(0,Math.round(s));
+  const m=Math.floor(s/60),r=s%60;
+  return m?`${m}:${String(r).padStart(2,'0')}`:`${r}s`;
+}
+function fmtTLong(s){
+  s=Math.max(0,Math.round(s));
+  const m=Math.floor(s/60),r=s%60;
+  return m?`${m}m ${r}s`:`${r}s`;
+}
+/* load actual frames + stages from current project */
+function pbLoadFrames(){
+  pbFrames=[];
+  if(PROJ.sequence&&PROJ.sequence.images&&PROJ.sequence.images.length){
+    pbFrames=[...PROJ.sequence.images];
+  }
+  /* fallback: assume 97 frames via standard path */
+  const count=pbFrames.length||(PROJ.sequence?.count||97);
+  if(!pbFrames.length){
+    for(let i=1;i<=count;i++){
+      pbFrames.push('assets/seq/thumbs/frame'+String(i).padStart(3,'0')+'.webp');
+    }
+  }
+  pbStages=(PROJ.stages||[]).map(s=>({from:s.from||1,to:s.to||count,color:s.color||'#BFA76A',name:s.name}));
+  /* update UI labels */
+  const projTag=document.getElementById('pbProjTag');
+  if(projTag)projTag.textContent=PROJ.project?.title||PROJ.id||'—';
+  const inlineTag=document.getElementById('pbProjTagInline');
+  if(inlineTag)inlineTag.textContent=PROJ.project?.title||PROJ.id||'current project';
+  const extFramesEl=document.getElementById('pbExtFrames');
+  if(extFramesEl)extFramesEl.textContent=pbFrames.length;
+  const pauseCountEl=document.getElementById('pbPauseCount');
+  if(pauseCountEl)pauseCountEl.textContent=pbStages.length;
+  /* build stage markers */
+  const mk=document.getElementById('pbStageMarkers');
+  if(mk){
+    mk.innerHTML='';
+    pbStages.forEach(s=>{
+      const pct=s.from/pbFrames.length*100;
+      const d=document.createElement('div');
+      d.style.cssText='position:absolute;left:'+pct+'%;bottom:0;width:2px;height:14px;background:'+s.color+';box-shadow:0 0 4px '+s.color;
+      mk.appendChild(d);
+    });
+  }
+}
+/* draw a single frame to canvas */
+function pbDrawFrame(n){
+  const cv=document.getElementById('pbCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const w=cv.width=cv.clientWidth*2;  /* retina */
+  const h=cv.height=cv.clientHeight*2;
+  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  if(n<1)n=1;if(n>pbFrames.length)n=pbFrames.length;
+  const src=pbFrames[n-1];
+  if(!src)return;
+  const img=new Image();
+  img.onload=()=>{
+    /* only draw if still showing same frame */
+    if(pbCurrentFrame===n){
+      const ir=img.width/img.height;
+      const cr=w/h;
+      let dw,dh;
+      if(ir>cr){dw=w;dh=w/ir;}
+      else{dh=h;dw=h*ir;}
+      ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+    }
+  };
+  img.onerror=()=>{};
+  img.src=src;
+}
+/* main preview loop */
+function pbLoop(t){
+  if(!pbPlaying)return;
+  if(pbPauseUntil>t){pbRafId=requestAnimationFrame(pbLoop);return;}
+  if(!pbLastT)pbLastT=t;
+  const dt=(t-pbLastT)/1000;
+  pbLastT=t;
+  const fe=+document.getElementById('pFpsExt').value||9;
+  const pe=+document.getElementById('pPauseExt').value||5;
+  /* advance frame */
+  pbCurrentFrame+=fe*dt;
+  /* check stage pause */
+  const stageHit=pbStages.find(s=>Math.round(pbCurrentFrame)===s.from);
+  if(stageHit&&!pbPauseUntil){
+    pbPauseUntil=t+pe*1000;
+    pbShowPauseBadge(stageHit,t+pe*1000);
+  }
+  /* loop end */
+  if(pbCurrentFrame>=pbFrames.length){
+    pbCurrentFrame=1;
+    pbPauseUntil=0;
+  }
+  /* update UI */
+  const intN=Math.floor(pbCurrentFrame);
+  pbDrawFrame(intN);
+  pbUpdatePlayhead();
+  pbUpdateTime(intN);
+  pbRafId=requestAnimationFrame(pbLoop);
+}
+function pbUpdatePlayhead(){
+  const ph=document.getElementById('pbPlayhead');if(!ph)return;
+  const pct=pbCurrentFrame/pbFrames.length*100;
+  ph.style.left=pct+'%';
+}
+function pbUpdateTime(n){
+  const fe=+document.getElementById('pFpsExt').value||9;
+  const now=document.getElementById('pbTimeNow');
+  if(now)now.textContent=fmtT(n/fe);
+  const total=document.getElementById('pbTimeTotal');
+  if(total)total.textContent='/ '+fmtT(pbFrames.length/fe);
+}
+function pbShowPauseBadge(stage,untilT){
+  const wrap=document.getElementById('pbPauseBadges');if(!wrap)return;
+  const pct=stage.from/pbFrames.length*100;
+  const b=document.createElement('div');
+  b.style.cssText='position:absolute;left:'+pct+'%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.7);color:#fff;font-size:11px;font-weight:700;padding:6px 14px;border-radius:100px;backdrop-filter:blur(8px);border:1px solid '+stage.color;
+  b.textContent='⏸ '+stage.name;
+  wrap.appendChild(b);
+  setTimeout(()=>{if(b.parentNode)b.remove();},untilT-performance.now());
+}
+function pbPreviewToggle(){
+  const btn=document.getElementById('pbPreviewBtn');
+  if(pbPlaying){
+    pbPlaying=false;
+    cancelAnimationFrame(pbRafId);
+    if(btn)btn.textContent='▶ Play Preview · تشغيل';
+  }else{
+    pbPlaying=true;
+    pbLastT=0;
+    pbPauseUntil=0;
+    if(btn)btn.textContent='❚❚ Pause · إيقاف';
+    pbRafId=requestAnimationFrame(pbLoop);
+  }
+}
+function pbPreviewReset(){
+  pbPlaying=false;
+  cancelAnimationFrame(pbRafId);
+  pbCurrentFrame=1;
+  pbPauseUntil=0;
+  pbLastT=0;
+  const btn=document.getElementById('pbPreviewBtn');
+  if(btn)btn.textContent='▶ Play Preview · تشغيل';
+  document.getElementById('pbPauseBadges').innerHTML='';
+  pbDrawFrame(1);
+  pbUpdatePlayhead();
+  pbUpdateTime(1);
+}
+/* update calculations + labels */
 function updPb(){
-  const fe=+pFpsExt.value,fi=+pFpsInt.value,pe=+pPauseExt.value,pr=+pPauseRoom.value;
-  pFpsExtV.textContent=`${fe} fps — ${fe<6?'Slow cinematic · بطيء سينمائي':fe<12?'Balanced · متوازن':'Fast · سريع'} — exterior ${fmtT(97/fe)}`;
-  pFpsIntV.textContent=`${fi} fps — each room ≈ ${fmtT(31/fi)}`;
-  pPauseExtV.textContent=`${pe}s hold on "Explore the Villa"`;
-  pPauseRoomV.textContent=`${pr}s between rooms`;
-  const extT=97/fe, intT=109/fi, pauseT=pe+pr*4;
-  pbExtT.textContent=fmtT(extT);pbIntT.textContent=fmtT(intT);pbPauseT.textContent=fmtT(pauseT);
-  document.getElementById('pbTotal').textContent='≈ '+fmtT(extT+intT+pauseT)+' full loop';
+  const fe=+document.getElementById('pFpsExt').value;
+  const fi=+document.getElementById('pFpsInt').value;
+  const pe=+document.getElementById('pPauseExt').value;
+  const pr=+document.getElementById('pPauseRoom').value;
+  document.getElementById('pFpsExtV').textContent=`${fe} fps — ${fe<6?'Slow · بطيء':fe<12?'Balanced · متوازن':'Fast · سريع'} — ${fmtTLong((pbFrames.length||97)/fe)} exterior`;
+  document.getElementById('pFpsIntV').textContent=`${fi} fps — each room ≈ ${fmtTLong(31/fi)}`;
+  document.getElementById('pPauseExtV').textContent=`${pe}s · ${pe===0?'No pause · بدون توقف':'hold at every stage start · توقف عند بداية كل مرحلة'}`;
+  document.getElementById('pPauseRoomV').textContent=`${pr}s · ${pr===0?'No pause · بدون توقف':'between rooms · بين الغرف'}`;
+  /* film length breakdown — uses ACTUAL frame count */
+  const totalFrames=pbFrames.length||97;
+  const stageCount=pbStages.length||7;
+  const extT=totalFrames/fe;
+  const pauseT=stageCount*pe;  /* one pause per stage */
+  document.getElementById('pbExtT').textContent=fmtTLong(extT);
+  document.getElementById('pbPauseT').textContent=fmtTLong(pauseT);
+  document.getElementById('pbLoopTotal').textContent=fmtTLong(extT+pauseT);
+  document.getElementById('pbTotal').textContent='≈ '+fmtT(extT+pauseT);
+  /* speed badge */
+  const fpsBadge=document.getElementById('pbFpsBadge');
+  if(fpsBadge)fpsBadge.textContent=fe+' fps';
+  /* refresh preview (if not playing) */
+  if(!pbPlaying){
+    pbDrawFrame(Math.floor(pbCurrentFrame)||1);
+    pbUpdatePlayhead();
+    pbUpdateTime(Math.floor(pbCurrentFrame)||1);
+  }
 }
 function pbPreset(fe,fi,pe,pr){
-  pFpsExt.value=fe;pFpsInt.value=fi;pPauseExt.value=pe;pPauseRoom.value=pr;updPb();
+  document.getElementById('pFpsExt').value=fe;
+  document.getElementById('pFpsInt').value=fi;
+  document.getElementById('pPauseExt').value=pe;
+  document.getElementById('pPauseRoom').value=pr;
+  updPb();
   toast('Preset applied · تم تطبيق الإعداد — اضغط حفظ ونشر');
 }
 function savePlayback(){
   const get=id=>{const el=document.getElementById(id);return el?el.value:0;};
   const cb=id=>{const el=document.getElementById(id);return el?el.checked:true;};
-  PROJ.playback={fpsExt:+get('pFpsExt'),fpsInt:+get('pFpsInt'),
-    pauseExplore:+get('pPauseExt'),pauseRoom:+get('pPauseRoom'),autoplay:cb('pAuto')};
+  PROJ.playback={
+    fpsExt:+get('pFpsExt'),
+    fpsInt:+get('pFpsInt'),
+    pauseExplore:+get('pPauseExt'),
+    pauseRoom:+get('pPauseRoom'),
+    autoplay:cb('pAuto')
+  };
   AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   toast('Playback speed published · تم نشر سرعة العرض');
 }
 ['uGlass','uBlur','uRadius','uGlow'].forEach(id=>document.getElementById(id).addEventListener('input',updRvUI));
@@ -1772,6 +2009,8 @@ function pmEdit(id){
   try{buildWidgets();}catch(e){}
   try{buildBAEditor();}catch(e){}
   try{buildContactEditor();}catch(e){}
+  /* refresh playback preview with new project's frames */
+  try{pbLoadFrames();updPb();}catch(e){}
   /* switch to first internal tab */
   document.querySelectorAll('#projTabs .gtab').forEach((t,i)=>{t.classList.toggle('on',i===0);});
   document.querySelectorAll('.proj-tab').forEach(pt=>pt.style.display='none');

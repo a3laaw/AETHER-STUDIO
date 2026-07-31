@@ -843,8 +843,8 @@ function draw(g){
 
 /* ---------- playback ---------- */
 let target=1,current=1,playing=true,pauseHold=false,holdT=null;
-const PB=PROJ.playback||{fpsExt:9,pauseExplore:5,pauseRoom:2.5};
-const FPS=+PB.fpsExt||9;
+let PB=PROJ.playback||{fpsExt:9,pauseExplore:5,pauseRoom:2.5};
+let FPS=+PB.fpsExt||9;
 let lastT=performance.now();
 const pausesDone=new Set();
 let widgetPauseT=null;  /* pause when widget clicked */
