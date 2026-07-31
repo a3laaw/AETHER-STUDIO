@@ -754,12 +754,23 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 <script src="js/cms.js"></script>
 <script src="js/supabase.js"></script>
 <script>
+/* global error catch — surface any JS error to the user */
+window.addEventListener('error',e=>{
+  console.error('[AURA Admin] JS error:',e.message,'at',e.filename+':'+e.lineno);
+  const t=document.getElementById('toast');
+  if(t){
+    document.getElementById('toastMsg').textContent='⚠ '+e.message;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),4000);
+  }
+});
 let CFG = AURA.load();
 let PROJ = AURA.getCurrent(CFG);   /* the project currently being edited */
 let _pmOrder=[];   /* project IDs in display order (top-level to avoid TDZ) */
 let _wCur='design';
 let _inqFilter='all';
 AURA_I18N.init();const T=AURA_I18N.pick;
+console.log('[AURA Admin] Scripts loaded. CFG projects:',CFG.projects?.length,'current:',PROJ?.id);
 
 /* ---------------- auth ---------------- */
 const SESSION='aura.session';
@@ -814,31 +825,64 @@ function toast(msg){
 
 /* ---------------- boot: fill forms ---------------- */
 function boot(){
+  try{
   // sync PROJ to current default
   PROJ=AURA.getCurrent(CFG);
-  // project
-  fId.value=PROJ.id||'';
-  fCover.value=PROJ.cover||'';
-  fTitle.value=PROJ.project.title;fLoc.value=PROJ.project.location;
-  fArea.value=PROJ.project.area;fYear.value=PROJ.project.year;fStatus.value=PROJ.status||'completed';
-  fProgress.value=PROJ.project.progress||0;
-  $('pIdBadge').textContent=PROJ.id||'—';
-  $('projSub').textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
-  // playback
+  // safety: ensure nested objects exist
+  PROJ.project=PROJ.project||{title:'',location:'',area:'',year:''};
+  PROJ.brand=PROJ.brand||{name:'',accent:'#3c82f6'};
+  PROJ.ui=PROJ.ui||{theme:'light',glassOpacity:0.55,blur:28,radius:22,glow:0.6};
+  PROJ.sequence=PROJ.sequence||{count:97};
   PROJ.playback=PROJ.playback||{fpsExt:9,fpsInt:6,pauseExplore:5,pauseRoom:2.5,autoplay:true};
-  pFpsExt.value=PROJ.playback.fpsExt;pFpsInt.value=PROJ.playback.fpsInt;
-  pPauseExt.value=PROJ.playback.pauseExplore;pPauseRoom.value=PROJ.playback.pauseRoom;
-  pAuto.checked=PROJ.playback.autoplay!==false;
-  pbLoadFrames();
-  updPb();
+  PROJ.stages=PROJ.stages||[];
+  // project
+  if(fId)fId.value=PROJ.id||'';
+  if(fCover)fCover.value=PROJ.cover||'';
+  if(fTitle)fTitle.value=PROJ.project.title||'';
+  if(fLoc)fLoc.value=PROJ.project.location||'';
+  if(fArea)fArea.value=PROJ.project.area||'';
+  if(fYear)fYear.value=PROJ.project.year||'';
+  if(fStatus)fStatus.value=PROJ.status||'completed';
+  if(fProgress)fProgress.value=PROJ.project.progress||0;
+  const pIdBadge=$('pIdBadge');if(pIdBadge)pIdBadge.textContent=PROJ.id||'—';
+  const projSub=$('projSub');if(projSub)projSub.textContent='Editing: '+(PROJ.project?.title||'—')+'  —  ID: '+(PROJ.id||'—');
+  // playback — use safe element refs
+  const pFpsExtEl=$('pFpsExt'),pFpsIntEl=$('pFpsInt'),pPauseExtEl=$('pPauseExt'),pPauseRoomEl=$('pPauseRoom'),pAutoEl=$('pAuto');
+  if(pFpsExtEl)pFpsExtEl.value=PROJ.playback.fpsExt;
+  if(pFpsIntEl)pFpsIntEl.value=PROJ.playback.fpsInt;
+  if(pPauseExtEl)pPauseExtEl.value=PROJ.playback.pauseExplore;
+  if(pPauseRoomEl)pPauseRoomEl.value=PROJ.playback.pauseRoom;
+  if(pAutoEl)pAutoEl.checked=PROJ.playback.autoplay!==false;
+  // playback preview (safe — only if canvas exists)
+  if($('pbCanvas')){
+    try{pbLoadFrames();}catch(e){console.warn('pbLoadFrames failed:',e);}
+  }
+  if(typeof updPb==='function'){
+    try{updPb();}catch(e){console.warn('updPb failed:',e);}
+  }
   // ui
-  uName.value=PROJ.brand.name;uAccent.value=PROJ.brand.accent;uTheme.value=PROJ.ui.theme;
-  uGlass.value=PROJ.ui.glassOpacity;uBlur.value=PROJ.ui.blur;uRadius.value=PROJ.ui.radius;uGlow.value=PROJ.ui.glow;
-  updRvUI();
-  buildFrames();buildStages();buildGalleryTabs();buildMaterials();buildHeat();buildInterior();hsInit();
-  buildProjectManager();buildWidgets();buildBAEditor();buildContactEditor();buildInquiries();buildSiteContent();
-  wireProjTabs();
-  document.getElementById('dFrames').textContent=PROJ.sequence.count;
+  if(uName)uName.value=PROJ.brand.name||'';
+  if(uAccent)uAccent.value=PROJ.brand.accent||'#3c82f6';
+  if(uTheme)uTheme.value=PROJ.ui.theme||'light';
+  if(uGlass)uGlass.value=PROJ.ui.glassOpacity||0.55;
+  if(uBlur)uBlur.value=PROJ.ui.blur||28;
+  if(uRadius)uRadius.value=PROJ.ui.radius||22;
+  if(uGlow)uGlow.value=PROJ.ui.glow||0.6;
+  if(typeof updRvUI==='function'){
+    try{updRvUI();}catch(e){}
+  }
+  // builders — each wrapped so one failure doesn't kill the rest
+  const safeCall=(fn)=>{try{if(typeof fn==='function')fn();}catch(e){console.warn('Builder failed:',e);}};
+  safeCall(buildFrames);safeCall(buildStages);safeCall(buildGalleryTabs);safeCall(buildMaterials);
+  safeCall(buildHeat);safeCall(buildInterior);safeCall(hsInit);safeCall(buildProjectManager);
+  safeCall(buildWidgets);safeCall(buildBAEditor);safeCall(buildContactEditor);
+  safeCall(buildInquiries);safeCall(buildSiteContent);
+  try{wireProjTabs();}catch(e){}
+  const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
+  }catch(e){
+    console.error('boot() critical error:',e);
+    toast('Boot error: '+e.message);
+  }
 }
 /* wire internal project tabs */
 function wireProjTabs(){
