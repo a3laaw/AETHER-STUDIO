@@ -799,21 +799,53 @@ function switchProject(id){
     AURA.applyTheme(PROJ);
     buildProjectBar();buildTimeline();buildPlaybar();buildWidgets();
     target=current=1;pausesDone.clear();visited.clear();
+    if(typeof _stagePauseTriggered!=='undefined')_stagePauseTriggered.clear();
     lastStageId=null;
-    bootFrames();
-    $('heroFade').style.opacity=0;
-    toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    /* clear canvas immediately so old frame doesn't linger */
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    /* update experience buttons visibility based on new project data */
+    updateExpButtons();
+    /* if no frames, show message and fade in */
+    if(!TOTAL||!SEGS[0]||!SEGS[0].count){
+      ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText(isAr?'لا توجد صور في هذا المشروع — ارفع صور من لوحة التحكم':'No images in this project — upload from admin',cv.width/2,cv.height/2);
+      $('heroFade').style.opacity=0;
+      toast(isAr?'تم تحميل: '+PROJ.project.title+' (لا توجد صور)':'Loaded: '+PROJ.project.title+' (no images)');
+      return;
+    }
+    /* load first frames, THEN draw + fade in */
+    Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
+      draw(1);
+      let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();
+      $('heroFade').style.opacity=0;
+      toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    });
   },450);
 }
 
 /* ---------- timeline (frame sequence) ---------- */
 let SEGS, TOTAL, cache={};
 function buildTimeline(){
+  /* use assembled images count (from sequence OR per-stage) */
+  const allImgs=AURA.getAssembledImages ? AURA.getAssembledImages(PROJ) : (PROJ.sequence.images||[]);
+  const count=allImgs.length>0 ? allImgs.length : (PROJ.sequence.count||0);
   SEGS=[
-    {type:'ext',count:PROJ.sequence.count,src:n=>AURA.frameSrc(PROJ,n)}
+    {type:'ext',count:count,src:n=>AURA.frameSrc(PROJ,n)}
   ];
   let off=0;SEGS.forEach(s=>{s.start=off+1;off+=s.count;s.end=off;});
   TOTAL=off;cache={};
+  /* also update stage from/to ranges to match assembled count */
+  if(allImgs.length>0 && PROJ.stages){
+    let offset=0;
+    PROJ.stages.forEach(s=>{
+      const imgs=s.images||[];
+      if(imgs.length>0){
+        s.from=offset+1;
+        s.to=offset+imgs.length;
+        offset=s.to;
+      }
+    });
+  }
 }
 function loadF(si,n){
   const key=si+':'+n;
@@ -992,7 +1024,7 @@ let widgetPauseUntil=0;
 let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
 (function loop(now){
   now=now||performance.now();
-  if(!SEGS||!SEGS.length){requestAnimationFrame(loop);return;}
+  if(!SEGS||!SEGS.length||!TOTAL){requestAnimationFrame(loop);return;}
   const dt=Math.min(.1,(now-lastT)/1000);lastT=now;
   const siNow=segOf(Math.round(current));
   const segNow=SEGS[siNow];
@@ -1101,6 +1133,13 @@ function stopWidgetSequence(){
 }
 
 function bootFrames(){
+  if(!SEGS||!SEGS.length||!TOTAL){
+    /* no frames — show placeholder on canvas */
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+    ctx.fillText(isAr?'لا توجد صور — ارفع صور من لوحة التحكم':'No images — upload from admin',cv.width/2,cv.height/2);
+    return;
+  }
   Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
     draw(1);
     let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();
@@ -1401,6 +1440,9 @@ function applyPlayback(){
   if(typeof PB!=='undefined'){PB.fpsExt=+pb.fpsExt||9;PB.pauseExplore=+pb.pauseExplore||5;}
 }
 function applyAllFromStorage(){
+  const oldId=PROJ?.id;
+  const oldImgLen=PROJ?.sequence?.images?.length||0;
+  const oldStageImgLen=(PROJ?.stages||[]).reduce((n,s)=>n+((s.images||[]).length),0);
   CFG=AURA.load();
   PROJ=AURA.getCurrent(CFG);
   AURA.applyTheme(PROJ);
@@ -1409,10 +1451,31 @@ function applyAllFromStorage(){
   buildProjectBar();
   buildPlaybar();
   buildWidgets();
+  updateExpButtons();
   /* update hero title */
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */
   if(lastStageId){lastStageId=null;}
+  /* CRITICAL: rebuild timeline + clear cache when sequence/stage images change.
+     Detect: project switched, OR sequence.images length changed, OR
+     total per-stage images count changed (covers upload/delete). */
+  const newImgLen=PROJ.sequence?.images?.length||0;
+  const newStageImgLen=(PROJ.stages||[]).reduce((n,s)=>n+((s.images||[]).length),0);
+  const projChanged=oldId!==PROJ.id;
+  const imgsChanged=oldImgLen!==newImgLen||oldStageImgLen!==newStageImgLen;
+  if(projChanged||imgsChanged){
+    buildTimeline();
+    cache={};  /* clear image cache so new URLs are fetched */
+    target=current=1;
+    pausesDone.clear();
+    if(typeof _stagePauseTriggered!=='undefined')_stagePauseTriggered.clear();
+    bootFrames();
+    if(projChanged){
+      toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    }else{
+      toast(isAr?'تم تحديث الإطارات':'Frames updated');
+    }
+  }
 }
 window.addEventListener('storage',e=>{
   if(e.key==='aura.cms'||e.key==='aura.lang'){
