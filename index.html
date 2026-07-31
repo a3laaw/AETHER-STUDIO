@@ -805,6 +805,14 @@ function switchProject(id){
     ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
     /* update experience buttons visibility based on new project data */
     updateExpButtons();
+    /* if no frames, show message and fade in */
+    if(!TOTAL||!SEGS[0].count){
+      ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText(isAr?'لا توجد صور في هذا المشروع — ارفع صور من لوحة التحكم':'No images in this project — upload from admin',cv.width/2,cv.height/2);
+      $('heroFade').style.opacity=0;
+      toast(isAr?'تم تحميل: '+PROJ.project.title+' (لا توجد صور)':'Loaded: '+PROJ.project.title+' (no images)');
+      return;
+    }
     /* load first frames, THEN draw + fade in */
     Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
       draw(1);
@@ -839,11 +847,26 @@ function updateExpButtons(){
 }
 
 function buildTimeline(){
+  /* use assembled images count (from sequence OR per-stage) */
+  const allImgs=AURA.getAssembledImages ? AURA.getAssembledImages(PROJ) : (PROJ.sequence.images||[]);
+  const count=allImgs.length>0 ? allImgs.length : (PROJ.sequence.count||97);
   SEGS=[
-    {type:'ext',count:PROJ.sequence.count,src:n=>AURA.frameSrc(PROJ,n)}
+    {type:'ext',count:count,src:n=>AURA.frameSrc(PROJ,n)}
   ];
   let off=0;SEGS.forEach(s=>{s.start=off+1;off+=s.count;s.end=off;});
   TOTAL=off;cache={};
+  /* also update stage from/to ranges to match assembled count */
+  if(allImgs.length>0 && PROJ.stages){
+    let offset=0;
+    PROJ.stages.forEach(s=>{
+      const imgs=s.images||[];
+      if(imgs.length>0){
+        s.from=offset+1;
+        s.to=offset+imgs.length;
+        offset=s.to;
+      }
+    });
+  }
 }
 function loadF(si,n){
   const key=si+':'+n;
@@ -1022,7 +1045,7 @@ function updateGlassHudLive(){
 let widgetPauseUntil=0;
 (function loop(now){
   now=now||performance.now();
-  if(!SEGS||!SEGS.length){requestAnimationFrame(loop);return;}
+  if(!SEGS||!SEGS.length||!TOTAL){requestAnimationFrame(loop);return;}
   const dt=Math.min(.1,(now-lastT)/1000);lastT=now;
   const siNow=segOf(Math.round(current));
   const segNow=SEGS[siNow];
@@ -1131,6 +1154,14 @@ function stopWidgetSequence(){
 }
 
 function bootFrames(){
+  if(!SEGS||!SEGS.length||!TOTAL){
+    /* no frames — show placeholder on canvas */
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#888';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+    const isArB=(typeof isAr!=='undefined')?isAr:false;
+    ctx.fillText(isArB?'لا توجد صور — ارفع صور من لوحة التحكم':'No images — upload from admin',cv.width/2,cv.height/2);
+    return;
+  }
   Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
     draw(1);
     let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();

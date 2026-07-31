@@ -997,16 +997,24 @@ function fmtTLong(s){
 /* load actual frames + stages from current project */
 function pbLoadFrames(){
   pbFrames=[];
-  if(PROJ.sequence&&PROJ.sequence.images&&PROJ.sequence.images.length){
+  /* use AURA.getAssembledImages if available (handles per-stage fallback) */
+  if(window.AURA && AURA.getAssembledImages){
+    pbFrames=AURA.getAssembledImages(PROJ);
+  }
+  /* fallback: direct sequence.images */
+  if(!pbFrames.length && PROJ.sequence && PROJ.sequence.images && PROJ.sequence.images.length){
     pbFrames=[...PROJ.sequence.images];
   }
-  /* fallback: assume 97 frames via standard path */
-  const count=pbFrames.length||(PROJ.sequence?.count||97);
-  if(!pbFrames.length){
-    for(let i=1;i<=count;i++){
-      pbFrames.push('assets/seq/thumbs/frame'+String(i).padStart(3,'0')+'.webp');
-    }
+  /* if still empty, try per-stage images manually */
+  if(!pbFrames.length && PROJ.stages){
+    PROJ.stages.forEach(s=>{
+      if(s.images && s.images.length){
+        pbFrames.push(...s.images);
+      }
+    });
   }
+  /* if still empty, use default count (but mark as placeholder) */
+  const count=pbFrames.length||(PROJ.sequence?.count||0);
   pbStages=(PROJ.stages||[]).map(s=>({from:s.from||1,to:s.to||count,color:s.color||'#BFA76A',name:s.name}));
   /* update UI labels */
   const projTag=document.getElementById('pbProjTag');
@@ -1019,7 +1027,7 @@ function pbLoadFrames(){
   if(pauseCountEl)pauseCountEl.textContent=pbStages.length;
   /* build stage markers */
   const mk=document.getElementById('pbStageMarkers');
-  if(mk){
+  if(mk && pbFrames.length){
     mk.innerHTML='';
     pbStages.forEach(s=>{
       const pct=s.from/pbFrames.length*100;
@@ -1035,7 +1043,14 @@ function pbDrawFrame(n){
   const ctx=cv.getContext('2d');
   const w=cv.width=cv.clientWidth*2;  /* retina */
   const h=cv.height=cv.clientHeight*2;
-  ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,w,h);
+  /* if no frames, show placeholder */
+  if(!pbFrames.length){
+    ctx.fillStyle='#888';ctx.font='bold 24px sans-serif';ctx.textAlign='center';
+    const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+    ctx.fillText(isAr?'لا توجد صور — ارفع صور للمراحل':'No images — upload stage images',w/2,h/2);
+    return;
+  }
   if(n<1)n=1;if(n>pbFrames.length)n=pbFrames.length;
   const src=pbFrames[n-1];
   if(!src)return;
@@ -1057,6 +1072,11 @@ function pbDrawFrame(n){
 /* main preview loop */
 function pbLoop(t){
   if(!pbPlaying)return;
+  if(!pbFrames.length){
+    pbDrawFrame(1);  /* show placeholder */
+    pbRafId=requestAnimationFrame(pbLoop);
+    return;
+  }
   if(pbPauseUntil>t){pbRafId=requestAnimationFrame(pbLoop);return;}
   if(!pbLastT)pbLastT=t;
   const dt=(t-pbLastT)/1000;
@@ -1137,19 +1157,20 @@ function updPb(){
   const fi=+document.getElementById('pFpsInt').value;
   const pe=+document.getElementById('pPauseExt').value;
   const pr=+document.getElementById('pPauseRoom').value;
-  document.getElementById('pFpsExtV').textContent=`${fe} fps — ${fe<6?'Slow · بطيء':fe<12?'Balanced · متوازن':'Fast · سريع'} — ${fmtTLong((pbFrames.length||97)/fe)} exterior`;
+  const totalFrames=pbFrames.length||0;
+  const hasFrames=totalFrames>0;
+  document.getElementById('pFpsExtV').textContent=`${fe} fps — ${fe<6?'Slow · بطيء':fe<12?'Balanced · متوازن':'Fast · سريع'}`+(hasFrames?` — ${fmtTLong(totalFrames/fe)} total`:'');
   document.getElementById('pFpsIntV').textContent=`${fi} fps — each room ≈ ${fmtTLong(31/fi)}`;
   document.getElementById('pPauseExtV').textContent=`${pe}s · ${pe===0?'No pause · بدون توقف':'hold at every stage start · توقف عند بداية كل مرحلة'}`;
   document.getElementById('pPauseRoomV').textContent=`${pr}s · ${pr===0?'No pause · بدون توقف':'between rooms · بين الغرف'}`;
   /* film length breakdown — uses ACTUAL frame count */
-  const totalFrames=pbFrames.length||97;
-  const stageCount=pbStages.length||7;
-  const extT=totalFrames/fe;
+  const stageCount=pbStages.length||0;
+  const extT=hasFrames?totalFrames/fe:0;
   const pauseT=stageCount*pe;  /* one pause per stage */
-  document.getElementById('pbExtT').textContent=fmtTLong(extT);
+  document.getElementById('pbExtT').textContent=hasFrames?fmtTLong(extT):'—';
   document.getElementById('pbPauseT').textContent=fmtTLong(pauseT);
-  document.getElementById('pbLoopTotal').textContent=fmtTLong(extT+pauseT);
-  document.getElementById('pbTotal').textContent='≈ '+fmtT(extT+pauseT);
+  document.getElementById('pbLoopTotal').textContent=hasFrames?fmtTLong(extT+pauseT):'—';
+  document.getElementById('pbTotal').textContent=hasFrames?('≈ '+fmtT(extT+pauseT)):'—';
   /* speed badge */
   const fpsBadge=document.getElementById('pbFpsBadge');
   if(fpsBadge)fpsBadge.textContent=fe+' fps';
@@ -1473,6 +1494,8 @@ async function handleStageImgUpload(input,i){
   buildStages();
   /* reopen the images section */
   toggleStageImages(i);
+  /* auto-assemble sequence so site + preview pick up new images */
+  assembleSequenceFromStages(true);
   toast(files.length+' images uploaded ✓');
   input.value='';
 }
@@ -1483,9 +1506,11 @@ function deleteStageImg(i,j){
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   buildStages();
   toggleStageImages(i);
+  /* auto-assemble after delete */
+  assembleSequenceFromStages(true);
 }
 /* assemble global sequence from per-stage images */
-function assembleSequenceFromStages(){
+function assembleSequenceFromStages(silent){
   const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
   const allImages=[];
   let offset=0;
@@ -1502,10 +1527,14 @@ function assembleSequenceFromStages(){
   PROJ.sequence.count=allImages.length;
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-  buildStages();
-  try{buildFrames();}catch(e){}
+  if(!silent){
+    buildStages();
+    try{buildFrames();}catch(e){}
+  }
   try{pbLoadFrames();updPb();}catch(e){}
-  toast(isAr?'تم دمج '+allImages.length+' صورة في الفيديو':'Assembled '+allImages.length+' images into sequence');
+  if(!silent){
+    toast(isAr?'تم دمج '+allImages.length+' صورة في الفيديو':'Assembled '+allImages.length+' images into sequence');
+  }
 }
 function togglePausePoints(i){
   const el=document.getElementById('pp-'+i);

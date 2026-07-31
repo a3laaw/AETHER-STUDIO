@@ -510,14 +510,38 @@ window.AURA = (function(){
     save(cfg);
   }
 
+  /* helper: get all images assembled from per-stage images (in order) */
+  function getAssembledImages(project){
+    /* if sequence has images, use them */
+    if(project.sequence && project.sequence.images && project.sequence.images.length > 0){
+      return project.sequence.images;
+    }
+    /* fallback: assemble from per-stage images */
+    if(project.stages){
+      const all=[];
+      project.stages.forEach(s=>{
+        if(s.images && s.images.length > 0){
+          all.push(...s.images);
+        }
+      });
+      if(all.length > 0) return all;
+    }
+    return [];
+  }
+
   function frameSrc(project, n){
     const s = project.sequence;
-    /* if project has custom images array, use it (index 0-based) */
-    if(s.images && s.images.length > 0 && n <= s.images.length){
-      return s.images[n - 1];
+    /* try assembled images (from sequence or per-stage) */
+    const allImgs = getAssembledImages(project);
+    if(allImgs.length > 0 && n <= allImgs.length){
+      return allImgs[n - 1];
     }
-    /* fallback to path/prefix */
-    return s.path + s.prefix + String(n).padStart(s.digits, '0') + s.ext;
+    /* fallback to path/prefix (default frames) */
+    if(s.path && s.prefix){
+      return s.path + s.prefix + String(n).padStart(s.digits || 3, '0') + (s.ext || '.webp');
+    }
+    /* last resort: empty */
+    return '';
   }
   function applyTheme(project, rootEl){
     const r = (rootEl || document.documentElement).style;
@@ -532,7 +556,7 @@ window.AURA = (function(){
     KEY, load, save, reset,
     getProjects, getCurrent, setCurrent,
     addProject, deleteProject, updateProject, reorder,
-    frameSrc, applyTheme
+    frameSrc, getAssembledImages, applyTheme
   };
 })();
 
