@@ -799,15 +799,45 @@ function switchProject(id){
     AURA.applyTheme(PROJ);
     buildProjectBar();buildTimeline();buildPlaybar();buildWidgets();
     target=current=1;pausesDone.clear();visited.clear();
+    _stagePauseTriggered.clear();
     lastStageId=null;
-    bootFrames();
-    $('heroFade').style.opacity=0;
-    toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    /* clear canvas immediately so old frame doesn't linger */
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
+    /* update experience buttons visibility based on new project data */
+    updateExpButtons();
+    /* load first frames, THEN draw + fade in */
+    Promise.all([loadF(0,1),loadF(0,2)]).then(()=>{
+      draw(1);
+      /* preload remaining in background */
+      let i=3;(function pf(){if(i<=SEGS[0].count){loadF(0,i++);setTimeout(pf,25);}})();
+      $('heroFade').style.opacity=0;
+      toast(isAr?'تم تحميل: '+PROJ.project.title:'Loaded: '+PROJ.project.title);
+    });
   },450);
 }
 
 /* ---------- timeline (frame sequence) ---------- */
 let SEGS, TOTAL, cache={};
+
+/* show/hide experience buttons based on project data */
+function updateExpButtons(){
+  const exp=PROJ.experiences||{};
+  const panos=exp.panos||[];
+  const walk=exp.walkthrough||{};
+  const ba=exp.beforeAfter||PROJ.beforeAfter||[];
+  const b360=$('btn360'),bWalk=$('btnWalk'),bBA=$('btnBA');
+  const wrap=$('expButtons');
+  /* show button only if project has data for it */
+  const has360=panos.some(p=>p.img||p.embed);
+  const hasWalk=walk.video||walk.img;
+  const hasBA=ba.some(b=>b.before&&b.after);
+  if(b360)b360.style.display=has360?'flex':'none';
+  if(bWalk)bWalk.style.display=hasWalk?'flex':'none';
+  if(bBA)bBA.style.display=hasBA?'flex':'none';
+  /* hide entire container if none have data */
+  if(wrap)wrap.style.display=(has360||hasWalk||hasBA)?'flex':'none';
+}
+
 function buildTimeline(){
   SEGS=[
     {type:'ext',count:PROJ.sequence.count,src:n=>AURA.frameSrc(PROJ,n)}
@@ -1340,6 +1370,7 @@ buildProjectBar();
 buildTimeline();
 buildPlaybar();
 buildWidgets();
+updateExpButtons();
 bootFrames();
 
 /* ---------- site content (from admin) ---------- */
@@ -1412,6 +1443,7 @@ function applyAllFromStorage(){
   buildProjectBar();
   buildPlaybar();
   buildWidgets();
+  updateExpButtons();
   /* update hero title */
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */

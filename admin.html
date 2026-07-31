@@ -136,7 +136,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .frame.dragging{opacity:.4}
 
 /* stages table */
-.stage-row{display:grid;grid-template-columns:34px 1fr 110px 130px 90px auto;gap:12px;align-items:center;
+.stage-row{display:grid;grid-template-columns:28px 1fr 60px 120px 28px 50px 60px 30px;gap:8px;align-items:center;
   padding:12px 14px;background:var(--panel2);border:1px solid var(--brd);border-radius:13px;margin-bottom:9px;font-size:13px}
 .stage-row .drag{cursor:grab;color:var(--tx3);text-align:center}
 .stage-row input[type=text]{background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%}
@@ -1360,16 +1360,21 @@ async function handleFrameUpload(fileList){
 
 /* ---------------- stages editor ---------------- */
 function buildStages(){
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
   const p=document.getElementById('stagesPanel');
-  p.innerHTML='<h3>المراحل — اسحب للترتيب</h3>';
+  p.innerHTML='<h3>'+(isAr?'المراحل — اسحب للترتيب':'Stages — drag to reorder')+'</h3>';
   PROJ.stages.forEach((s,i)=>{
+    /* ensure stage has images array */
+    s.images=s.images||[];
+    const imgCount=s.images.length;
     const r=document.createElement('div');r.className='stage-row';r.draggable=true;r.dataset.idx=i;
     r.innerHTML='<span class="drag">⋮⋮</span>'+
-      '<input type="text" value="'+(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="اسم المرحلة">'+
-      '<input type="text" value="'+(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="عربي">'+
-      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span> · من/إلى'+
+      '<input type="text" value="'+(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="'+(isAr?'اسم المرحلة':'Stage name')+'">'+
+      '<input type="text" value="'+(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="'+(isAr?'عربي':'AR')+'">'+
+      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
       '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+(s.icon||'◆')+'</span>'+
-      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">نقاط التوقف</button>'+
+      '<button class="btn sm ghost" onclick="toggleStageImages('+i+')" style="position:relative">🖼 <span style="font-size:10px">'+imgCount+'</span></button>'+
+      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">'+(isAr?'التوقفات':'Pauses')+'</button>'+
       '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
     r.addEventListener('dragstart',()=>r.classList.add('dragging'));
     r.addEventListener('dragend',()=>{r.classList.remove('dragging');saveStageOrder();});
@@ -1378,6 +1383,11 @@ function buildStages(){
       const rect=r.getBoundingClientRect();
       p.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?r.nextSibling:r);});
     p.appendChild(r);
+    /* stage images section (collapsible) */
+    const siDiv=document.createElement('div');
+    siDiv.id='si-'+i;siDiv.style.cssText='display:none;margin:8px 0 12px;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)';
+    siDiv.innerHTML=buildStageImagesHTML(s,i);
+    p.appendChild(siDiv);
     /* pause points section (collapsible) */
     const ppDiv=document.createElement('div');
     ppDiv.id='pp-'+i;ppDiv.style.cssText='display:none;margin:10px 0;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)';
@@ -1391,12 +1401,111 @@ function buildStages(){
       else PROJ.stages[+i][k]=e.target.value;
     }
   });
-  /* add stage button */
-  const addBtn=document.createElement('button');
-  addBtn.className='btn sm ghost';addBtn.style.cssText='margin-top:12px;width:100%';
-  addBtn.textContent='+ إضافة مرحلة · Add Stage';
-  addBtn.onclick=addStage;
-  p.appendChild(addBtn);
+  /* assemble + add buttons */
+  const btnRow=document.createElement('div');
+  btnRow.style.cssText='display:flex;gap:10px;margin-top:14px;flex-wrap:wrap';
+  btnRow.innerHTML=
+    '<button class="btn sm" onclick="assembleSequenceFromStages()">'+(isAr?'🔧 دمج الصور في الفيديو':'🔧 Assemble Sequence from Stages')+'</button>'+
+    '<button class="btn sm ghost" onclick="addStage()">+ '+(isAr?'إضافة مرحلة':'Add Stage')+'</button>';
+  p.appendChild(btnRow);
+}
+function toggleStageImages(i){
+  const el=document.getElementById('si-'+i);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+function buildStageImagesHTML(s,i){
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  const imgs=s.images||[];
+  let html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+    '<b style="font-size:12px">'+(isAr?'صور المرحلة':'Stage Images')+' ('+imgs.length+')</b>'+
+    '<div style="display:flex;gap:6px">'+
+      '<button class="btn sm" onclick="stageImgUpload('+i+')">'+(isAr?'رفع صور':'Upload')+'</button>'+
+      '<input type="file" id="stageImgFile'+i+'" multiple accept="image/*" style="display:none" onchange="handleStageImgUpload(this,'+i+')">'+
+    '</div>'+
+  '</div>';
+  if(imgs.length===0){
+    html+='<div style="font-size:11px;color:var(--tx3);text-align:center;padding:14px">'+(isAr?'لا توجد صور — ارفع صور هذه المرحلة':'No images — upload images for this stage')+'</div>';
+  }else{
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6;max-height:200px;overflow-y:auto">';
+    imgs.forEach((src,j)=>{
+      html+='<div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--brd);aspect-ratio:16/9">'+
+        '<img src="'+src+'" alt="" style="width:100%;height:100%;object-fit:cover" loading="lazy">'+
+        '<span style="position:absolute;top:3px;left:3px;font-size:8px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:1px 5px;border-radius:100px">'+(j+1)+'</span>'+
+        '<button class="btn sm danger" style="position:absolute;top:3px;right:3px;padding:2px 6px;font-size:9px" onclick="deleteStageImg('+i+','+j+')">✕</button>'+
+      '</div>';
+    });
+    html+='</div>';
+  }
+  return html;
+}
+function stageImgUpload(i){
+  const f=document.getElementById('stageImgFile'+i);
+  if(f)f.click();
+}
+async function handleStageImgUpload(input,i){
+  const files=Array.from(input.files).filter(f=>f.type.startsWith('image/'));
+  if(!files.length)return;
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  toast(isAr?'جاري رفع '+files.length+' صور':'Uploading '+files.length+' images');
+  if(!PROJ.stages[i].images)PROJ.stages[i].images=[];
+  for(const file of files){
+    let url;
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    if(window.AURA_DB&&AURA_DB.isReady()){
+      try{url=await uploader(file,'stage-'+PROJ.id+'-'+i);}catch(e){}
+    }
+    if(!url){
+      url=await new Promise(res=>{
+        const reader=new FileReader();
+        reader.onload=e=>{const img=new Image();img.onload=()=>{
+          const canvas=document.createElement('canvas');const maxW=1408;let w=img.width,h=img.height;
+          if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          res(canvas.toDataURL('image/jpeg',0.85));
+        };img.src=e.target.result;};
+        reader.readAsDataURL(file);
+      });
+    }
+    PROJ.stages[i].images.push(url);
+  }
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  buildStages();
+  /* reopen the images section */
+  toggleStageImages(i);
+  toast(files.length+' images uploaded ✓');
+  input.value='';
+}
+function deleteStageImg(i,j){
+  if(!confirm('Delete this image?'))return;
+  PROJ.stages[i].images.splice(j,1);
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  buildStages();
+  toggleStageImages(i);
+}
+/* assemble global sequence from per-stage images */
+function assembleSequenceFromStages(){
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  const allImages=[];
+  let offset=0;
+  PROJ.stages.forEach(s=>{
+    s.images=s.images||[];
+    if(s.images.length>0){
+      s.from=offset+1;
+      s.to=offset+s.images.length;
+      offset=s.to;
+      allImages.push(...s.images);
+    }
+  });
+  PROJ.sequence.images=allImages;
+  PROJ.sequence.count=allImages.length;
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
+  buildStages();
+  try{buildFrames();}catch(e){}
+  try{pbLoadFrames();updPb();}catch(e){}
+  toast(isAr?'تم دمج '+allImages.length+' صورة في الفيديو':'Assembled '+allImages.length+' images into sequence');
 }
 function togglePausePoints(i){
   const el=document.getElementById('pp-'+i);
@@ -2077,6 +2186,10 @@ function pmAdd(){
   np.sequence=np.sequence||{};
   np.sequence.images=[];
   np.sequence.count=0;
+  /* clear inherited per-stage images */
+  if(np.stages){
+    np.stages=np.stages.map(s=>({...s,images:[]}));
+  }
   AURA.addProject(CFG,np);
   buildProjectManager();
   pmEdit(id);
@@ -2098,6 +2211,10 @@ function pmDuplicate(){
   if(clone.sequence){
     clone.sequence.images=[];
     clone.sequence.count=0;
+  }
+  /* clear per-stage images */
+  if(clone.stages){
+    clone.stages=clone.stages.map(s=>({...s,images:[]}));
   }
   if(clone.beforeAfter){
     clone.beforeAfter=clone.beforeAfter.map(ba=>({...ba,before:'',after:''}));
