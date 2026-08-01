@@ -2558,6 +2558,7 @@ function hsInit(){
     document.getElementById('hsImg').src='assets/gallery/'+hsGalleryId+'-07.webp';
   }
   hsRender();
+  hsWireStage(); /* wire pointer events on the stage element */
 }
 
 function hsSpots(){
@@ -2645,15 +2646,21 @@ function hsSave(){
   if(window.AURA_DB)AURA_DB.saveHotspots(PROJ.id,PROJ.hotspots||{});
   toast('Hotspots published · تم النشر');
 }
-(function hsWire(){
-  const st=document.getElementById('hsStage');if(!st)return;
-  let _hsDidDrag=false;
+/* hotspot stage interaction — wired inside hsInit (not IIFE) so it
+   re-binds every time the page is opened */
+var _hsStageWired=false;
+function hsWireStage(){
+  const st=document.getElementById('hsStage');
+  if(!st)return;
+  if(_hsStageWired)return; /* already wired */
+  _hsStageWired=true;
   /* pointerdown on stage: either start dragging existing dot or create new */
   st.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('hsdot'))return; /* dot handles its own */
+    e.preventDefault();
     const r=st.getBoundingClientRect();
     const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100;
-    /* check if clicked near an existing dot (within ~3%) → select + drag it */
+    /* check if clicked near an existing dot (within ~5%) → select + drag it */
     const spots=hsSpots();
     let nearest=-1,nearestDist=999;
     spots.forEach((f,i)=>{
@@ -2664,7 +2671,6 @@ function hsSave(){
     if(nearest>=0){
       /* clicked near existing dot → select + start dragging */
       hsDrag=nearest;hsSel=nearest;hsFill();hsRender();
-      _hsDidDrag=false;
     } else {
       /* clicked empty area → create new spot at click position */
       spots.push({x:+x.toFixed(1),y:+y.toFixed(1),name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
@@ -2673,7 +2679,6 @@ function hsSave(){
       toast('Spot added · نقطة جديدة');
       /* immediately start dragging the new spot */
       hsDrag=hsSel;
-      _hsDidDrag=false;
     }
   });
   /* pointermove: drag the selected spot */
@@ -2684,12 +2689,12 @@ function hsSave(){
     f.x=+Math.min(98,Math.max(2,(e.clientX-r.left)/r.width*100)).toFixed(1);
     f.y=+Math.min(98,Math.max(2,(e.clientY-r.top)/r.height*100)).toFixed(1);
     const hp=document.getElementById('hsPos');if(hp)hp.textContent=`x: ${Math.round(f.x)}% y: ${Math.round(f.y)}%`;
-    _hsDidDrag=true;
     hsRender();
   });
   st.addEventListener('pointerup',()=>{hsDrag=-1;});
   st.addEventListener('pointercancel',()=>{hsDrag=-1;});
-})();
+  st.addEventListener('pointerleave',()=>{hsDrag=-1;});
+}
 
 function saveInterior(){AURA.save(CFG);toast('Interior published · تم نشر الديكور')}
 
