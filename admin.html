@@ -467,16 +467,10 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
           <div style="font-size:11.5px;color:var(--tx3);display:flex;align-items:center;gap:6px">
             <span style="background:rgba(60,130,246,.1);color:var(--blue);padding:3px 9px;border-radius:100px;font-weight:600">💡 Tip</span>
-            <span>انقر على الصورة لإضافة نقطة، أو اسحبها لتغيير مكانها. Click image to add, drag to move.</span>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn sm" id="hsAddBtn" style="display:flex;align-items:center;gap:4px">
-              <span style="font-size:14px">➕</span> إضافة نقطة في المنتصف
-            </button>
-            <button class="btn sm ghost" id="hsAddCornerBtn" title="إضافة في الزاوية العلوية اليسرى">↖ سريع</button>
+            <span>انقر على أي مكان في الصورة لإضافة نقطة · اسحب أي نقطة لتغيير مكانها · Click anywhere to add · Drag to move</span>
           </div>
         </div>
-        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:320px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC);display:flex;align-items:center;justify-content:center">
+        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:320px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC);display:flex;align-items:center;justify-content:center;touch-action:none">
           <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
           <div id="hsPlaceholder" style="position:absolute;text-align:center;color:var(--tx3);font-size:13px;pointer-events:none">
             <div style="font-size:32px;margin-bottom:8px">◎</div>
@@ -2491,30 +2485,6 @@ function hsInit(){
     img.onload=()=>{if(ph)ph.style.display='none';};
     img.onerror=()=>{if(ph)ph.style.display='flex';img.style.opacity='0.2';};
     if(!img.dataset.fbk){img.onerror=()=>{img.dataset.fbk='1';img.src='assets/villa-clean.webp';};}
-  }
-  /* wire the new "Add Spot" buttons (if present in the page) */
-  const addBtn=document.getElementById('hsAddBtn');
-  if(addBtn && !addBtn.dataset.wired){
-    addBtn.dataset.wired='1';
-    addBtn.onclick=()=>{
-      const st=document.getElementById('hsStage');
-      if(!st)return;
-      const r=st.getBoundingClientRect();
-      hsSpots().push({x:50,y:50,name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
-        color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
-      hsSel=hsSpots().length-1;hsFill();hsRender();
-      toast('Spot added at center · تمت إضافة نقطة في المنتصف');
-    };
-  }
-  const addCornerBtn=document.getElementById('hsAddCornerBtn');
-  if(addCornerBtn && !addCornerBtn.dataset.wired){
-    addCornerBtn.dataset.wired='1';
-    addCornerBtn.onclick=()=>{
-      hsSpots().push({x:15,y:15,name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
-        color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
-      hsSel=hsSpots().length-1;hsFill();hsRender();
-      toast('Spot added at top-left · تمت إضافة نقطة');
-    };
   }
   /* mode tabs: rooms + sequence + beforeAfter + gallery */
   const modes=[
