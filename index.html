@@ -1622,7 +1622,18 @@ window.addEventListener('storage',e=>{
     toast(isAr?'تم تحديث المحتوى من لوحة التحكم':'Content updated from admin');
   }
 });
-/* also check every 3s for same-tab changes (admin open in same tab) */
+/* BroadcastChannel: instant same-tab sync (admin + site in same tab) */
+if(typeof BroadcastChannel!=='undefined'){
+  const bc=new BroadcastChannel('aura-cms');
+  bc.onmessage=e=>{
+    if(e.data&&e.data.type==='cms-updated'){
+      applyAllFromStorage();
+      toast(isAr?'تم تحديث المحتوى من لوحة التحكم':'Content updated from admin');
+    }
+  };
+  window._auraBC=bc;
+}
+/* fallback polling every 5s (in case BroadcastChannel not supported) */
 setInterval(()=>{
   try{
     const stored=JSON.parse(localStorage.getItem('aura.cms')||'{}');
@@ -1631,7 +1642,7 @@ setInterval(()=>{
       applyAllFromStorage();
     }
   }catch(err){}
-},3000);
+},5000);
 
 /* ---------- cta ---------- */
 document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?'اطلب تجربتك الحية عبر واتساب: +965 2222 3333':'Request your live demo via WhatsApp: +965 2222 3333'));

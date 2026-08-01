@@ -838,12 +838,21 @@ function $(id){return document.getElementById(id);}
    ============================================================ */
 let _unsavedChanges=false;
 const _origAdminSave=AURA.save;
+/* BroadcastChannel: notify site (same tab) of changes instantly */
+let _adminBC=null;
+if(typeof BroadcastChannel!=='undefined'){
+  _adminBC=new BroadcastChannel('aura-cms');
+}
 AURA.save=function(cfg){
   _origAdminSave(cfg);
   _unsavedChanges=false;
   /* visual indicator */
   const btn=document.getElementById('floatPreview');
   if(btn)btn.style.opacity='1';
+  /* broadcast to site (same tab) — instant sync */
+  if(_adminBC){
+    try{_adminBC.postMessage({type:'cms-updated',ts:Date.now()});}catch(e){}
+  }
 };
 /* mark changed on any input in admin */
 document.addEventListener('input',()=>{_unsavedChanges=true;});
@@ -2278,6 +2287,17 @@ function buildWidgets(){
     <h3 style="margin-top:20px">Info Bullets · النقاط المعلوماتية</h3>
     <div id="wBullets"></div>
     <div class="btnrow" style="margin-top:10px"><button class="btn sm ghost" onclick="addWidgetBullet()">+ Add Bullet · إضافة نقطة</button></div>
+    <!-- Widget Sequence (auto-play film per widget) -->
+    <div style="margin-top:20px; padding:14px; background:var(--panel2); border-radius:12px; border:1px solid var(--brd)">
+      <h3 style="margin:0 0 10px; font-size:13px">🎬 Sequence · تسلسل متتابع (فيلم مصغر) <span class="badge" id="wSeqCount">0</span></h3>
+      <div style="font-size:11px; color:var(--tx3); margin-bottom:10px">صور بتتغير تلقائياً داخل الـ overlay لما الزائر يفتح الويدجت</div>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap">
+        <label style="font-size:11px; display:flex; gap:6px; align-items:center"><input type="checkbox" id="wSeqAuto"> Autoplay · تشغيل تلقائي</label>
+        <label style="font-size:11px; display:flex; gap:6px; align-items:center">Interval · المدة (ms) <input type="number" id="wSeqInterval" value="3500" style="width:80px; padding:6px 8px; border-radius:8px; border:1px solid var(--brd)"></label>
+        <button class="btn sm ghost" onclick="addWidgetSeqImage()">+ إضافة إطار · Add Frame</button>
+      </div>
+      <div class="gal-grid" id="wSeqGrid"></div>
+    </div>
     <div class="btnrow" style="margin-top:20px">
       <button class="btn" onclick="saveWidgets()">Save & Publish · حفظ ونشر</button>
     </div>
@@ -2289,6 +2309,31 @@ function buildWidgets(){
     d.innerHTML=`<img src="${src}" alt="" style="object-fit:cover;aspect-ratio:4/3"><button class="del" onclick="removeWidgetImage(${i})">✕</button>`;
     gg.appendChild(d);
   });
+  /* fill widget sequence */
+  const wSeq=(PROJ.widgetSequences&&PROJ.widgetSequences[_wCur])||{images:[], autoplay:true, interval:3500};
+  const seqGrid=$('wSeqGrid');
+  const seqCount=$('wSeqCount');
+  if(seqCount) seqCount.textContent=(wSeq.images||[]).length+' frames';
+  if($('wSeqAuto')) $('wSeqAuto').checked=wSeq.autoplay!==false;
+  if($('wSeqInterval')) $('wSeqInterval').value=wSeq.interval||3500;
+  (wSeq.images||[]).forEach((src,i)=>{
+    const d=document.createElement('div');d.className='gimg';
+    d.innerHTML=`<img src="${src}" alt="" style="object-fit:cover;aspect-ratio:4/3"><span style="position:absolute; top:4px; left:4px; font-size:9px; background:rgba(0,0,0,.6); color:#fff; padding:2px 6px; border-radius:100px">#${i+1}</span><button class="del" onclick="removeWidgetSeqImage(${i})">✕</button>`;
+    seqGrid.appendChild(d);
+  });
+  /* wire sequence controls */
+  const autoEl=$('wSeqAuto');
+  const intEl=$('wSeqInterval');
+  if(autoEl) autoEl.onchange=e=>{
+    if(!PROJ.widgetSequences) PROJ.widgetSequences={};
+    if(!PROJ.widgetSequences[_wCur]) PROJ.widgetSequences[_wCur]={images:[], autoplay:true, interval:3500};
+    PROJ.widgetSequences[_wCur].autoplay=e.target.checked;
+  };
+  if(intEl) intEl.oninput=e=>{
+    if(!PROJ.widgetSequences) PROJ.widgetSequences={};
+    if(!PROJ.widgetSequences[_wCur]) PROJ.widgetSequences[_wCur]={images:[], autoplay:true, interval:3500};
+    PROJ.widgetSequences[_wCur].interval=+e.target.value||3500;
+  };
   /* fill bullets */
   const wb=$('wBullets');
   (w.bullets||[]).forEach((b,i)=>{
@@ -2354,6 +2399,45 @@ function addWidgetBullet(){
 function removeWidgetBullet(i){
   const w=PROJ.widgets[_wCur];if(!w||!w.bullets)return;
   w.bullets.splice(i,1);buildWidgets();
+}
+function removeWidgetSeqImage(i){
+  if(!PROJ.widgetSequences) PROJ.widgetSequences={};
+  if(!PROJ.widgetSequences[_wCur]) return;
+  PROJ.widgetSequences[_wCur].images.splice(i,1);
+  buildWidgets();
+  toast('Sequence frame removed · تم حذف إطار');
+}
+async function addWidgetSeqImage(){
+  if(!PROJ.widgetSequences) PROJ.widgetSequences={};
+  if(!PROJ.widgetSequences[_wCur]) PROJ.widgetSequences[_wCur]={images:[], autoplay:true, interval:3500};
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.style.display='none';
+  fi.onchange=async ()=>{
+    const file=fi.files[0];if(!file) return;
+    toast('Uploading sequence frame... · جاري الرفع');
+    let url;
+    const uploader=(AURA_DB.uploadMedia||AURA_DB.uploadImage);
+    if(window.AURA_DB && AURA_DB.isReady()){
+      try{ url=await uploader(file,'widget-seq-'+_wCur); }catch(e){}
+    }
+    if(!url){
+      url=await new Promise(res=>{
+        const reader=new FileReader();
+        reader.onload=e=>{
+          const img=new Image(); img.onload=()=>{
+            const canvas=document.createElement('canvas'); const maxW=1200;
+            let iw=img.width, ih=img.height; if(iw>maxW){ ih=Math.round(ih*maxW/iw); iw=maxW; }
+            canvas.width=iw; canvas.height=ih;
+            canvas.getContext('2d').drawImage(img,0,0,iw,ih);
+            res(canvas.toDataURL('image/jpeg',0.82));
+          }; img.src=e.target.result;
+        }; reader.readAsDataURL(file);
+      });
+    }
+    PROJ.widgetSequences[_wCur].images.push(url);
+    buildWidgets();
+    toast('Frame added to sequence · تمت إضافة إطار');
+  };
+  document.body.appendChild(fi);fi.click();document.body.removeChild(fi);
 }
 function addWidget(){
   const id=prompt('New widget ID · معرّف الويدجت','custom-'+Date.now());
