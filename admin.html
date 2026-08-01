@@ -163,6 +163,25 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .pm-vtab b{display:block;font-size:13px;font-weight:700;color:var(--tx)}
 .pm-vtab span{display:block;font-size:10px;color:var(--tx3);font-weight:500}
 .pm-vtab>span:first-child{flex:none;font-size:18px}
+
+/* stage cards (clean redesign) */
+.stage-card{background:var(--panel);border:1px solid var(--brd);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:.25s;box-shadow:var(--shadow)}
+.stage-card:hover{border-color:rgba(0,0,0,.15)}
+.stage-card.dragging{opacity:.5}
+.sc-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--brd)}
+.sc-drag{cursor:grab;color:var(--tx3);font-size:16px;flex:none;padding:2px}
+.sc-color-bar{width:4px;height:28px;border-radius:3px;flex:none}
+.sc-color-picker{width:24px;height:24px;border:none;border-radius:6px;background:none;cursor:pointer;flex:none;padding:0}
+.sc-name-wrap{flex:1;display:flex;gap:8px;min-width:0}
+.sc-name{background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:700;outline:none;flex:1;min-width:0}
+.sc-name-ar{background:transparent;border:none;color:var(--tx2);font-size:12px;font-weight:500;outline:none;width:80px;flex:none}
+.sc-del{flex:none}
+.sc-body{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;gap:10px;flex-wrap:wrap}
+.sc-range{display:flex;align-items:center;gap:6px}
+.sc-range label{font-size:10px;color:var(--tx3);font-weight:600}
+.sc-num{width:50px;text-align:center;background:var(--panel2);border:1px solid var(--brd);border-radius:7px;padding:5px 6px;color:var(--tx);font-size:12px}
+.sc-actions{display:flex;gap:6px}
+.sc-collapse{display:none;margin:0 10px 10px;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)}
 .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .gimg{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--brd)}
 .gimg img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
@@ -1477,36 +1496,56 @@ async function handleFrameUpload(fileList){
 function buildStages(){
   const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
   const p=document.getElementById('stagesPanel');
-  p.innerHTML='<h3>'+(isAr?'المراحل — اسحب للترتيب':'Stages — drag to reorder')+'</h3>';
+  if(!p)return;
+  p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'+
+    '<b style="font-size:14px">'+(isAr?'المراحل — اسحب للترتيب':'Stages — drag to reorder')+'</b>'+
+    '<button class="btn sm" onclick="addStage()">+ '+(isAr?'إضافة مرحلة':'Add Stage')+'</button>'+
+  '</div>';
   PROJ.stages.forEach((s,i)=>{
-    /* ensure stage has images array */
     s.images=s.images||[];
     const imgCount=s.images.length;
-    const r=document.createElement('div');r.className='stage-row';r.draggable=true;r.dataset.idx=i;
-    r.innerHTML='<span class="drag">⋮⋮</span>'+
-      '<input type="text" value="'+escAttr(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="'+(isAr?'اسم المرحلة':'Stage name')+'">'+
-      '<input type="text" value="'+escAttr(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="'+(isAr?'عربي':'AR')+'">'+
-      '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
-      '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+escAttr(s.icon||'◆')+'</span>'+
-      '<button class="btn sm ghost" onclick="toggleStageImages('+i+')" style="position:relative">🖼 <span style="font-size:10px">'+imgCount+'</span></button>'+
-      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')" style="position:relative">⏸ '+(isAr?'التوقفات':'Pauses')+' <span style="font-size:10px;font-weight:700;background:rgba(191,167,106,.22);color:var(--gold-2);padding:1px 8px;border-radius:100px">'+(s.pausePoints?s.pausePoints.length:0)+'</span></button>'+
-      '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
-    r.addEventListener('dragstart',()=>r.classList.add('dragging'));
-    r.addEventListener('dragend',()=>{r.classList.remove('dragging');saveStageOrder();});
-    r.addEventListener('dragover',e=>{e.preventDefault();
-      const dr=p.querySelector('.dragging');if(!dr||dr===r)return;
-      const rect=r.getBoundingClientRect();
-      p.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?r.nextSibling:r);});
-    p.appendChild(r);
+    const ppCount=s.pausePoints?s.pausePoints.length:0;
+    /* clean stage card */
+    const card=document.createElement('div');
+    card.className='stage-card';
+    card.draggable=true;card.dataset.idx=i;
+    card.innerHTML=
+      '<div class="sc-head">'+
+        '<span class="sc-drag" title="اسحب للترتيب">⋮⋮</span>'+
+        '<span class="sc-color-bar" style="background:'+(s.color||'#BFA76A')+'"></span>'+
+        '<input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" class="sc-color-picker" title="'+(isAr?'لون المرحلة':'Stage color')+'">'+
+        '<div class="sc-name-wrap">'+
+          '<input type="text" value="'+escAttr(s.name||'')+'" data-i="'+i+'" data-k="name" class="sc-name" placeholder="'+(isAr?'اسم المرحلة (EN)':'Stage name')+'">'+
+          '<input type="text" value="'+escAttr(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar)" class="sc-name-ar" placeholder="'+(isAr?'عربي':'AR')+'">'+
+        '</div>'+
+        '<button class="btn sm danger sc-del" onclick="deleteStage('+i+')" title="'+(isAr?'حذف':'Delete')+'">✕</button>'+
+      '</div>'+
+      '<div class="sc-body">'+
+        '<div class="sc-range">'+
+          '<label>'+(isAr?'من':'From')+'</label>'+
+          '<input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" class="sc-num">'+
+          '<label>'+(isAr?'إلى':'To')+'</label>'+
+          '<input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" class="sc-num">'+
+        '</div>'+
+        '<div class="sc-actions">'+
+          '<button class="btn sm ghost" onclick="toggleStageImages('+i+')">🖼 '+imgCount+' '+(isAr?'صور':'imgs')+'</button>'+
+          '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">⏸ '+ppCount+' '+(isAr?'توقفات':'pauses')+'</button>'+
+        '</div>'+
+      '</div>';
+    card.addEventListener('dragstart',()=>card.classList.add('dragging'));
+    card.addEventListener('dragend',()=>{card.classList.remove('dragging');saveStageOrder();});
+    card.addEventListener('dragover',e=>{e.preventDefault();
+      const dr=p.querySelector('.dragging');if(!dr||dr===card)return;
+      const rect=card.getBoundingClientRect();
+      p.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?card.nextSibling:card);});
+    p.appendChild(card);
     /* stage images section (collapsible) */
     const siDiv=document.createElement('div');
-    siDiv.id='si-'+i;siDiv.style.cssText='display:none;margin:8px 0 12px;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)';
-    siDiv.innerHTML=buildStageImagesHTML(s,i);
+    siDiv.id='si-'+i;siDiv.className='sc-collapse';siDiv.innerHTML=buildStageImagesHTML(s,i);
     p.appendChild(siDiv);
     /* pause points section (collapsible) */
     const ppDiv=document.createElement('div');
-    ppDiv.id='pp-'+i;ppDiv.style.cssText='display:none;margin:10px 0;padding:14px;background:var(--panel2);border-radius:12px;border:1px solid var(--brd)';
-    ppDiv.innerHTML=buildPausePointsHTML(s,i);
+    ppDiv.id='pp-'+i;ppDiv.className='sc-collapse';ppDiv.innerHTML=buildPausePointsHTML(s,i);
     p.appendChild(ppDiv);
   });
   p.addEventListener('input',e=>{
@@ -1514,6 +1553,10 @@ function buildStages(){
     if(i!==undefined&&k){
       if(k==='from'||k==='to')PROJ.stages[+i][k]=+e.target.value;
       else PROJ.stages[+i][k]=e.target.value;
+      if(k==='color'){
+        const bar= p.querySelector('.stage-card[data-idx="'+i+'"] .sc-color-bar');
+        if(bar)bar.style.background=e.target.value;
+      }
     }
   });
   /* --- تسلسل الفيديو: ملخّص بسيط + زر الدمج (بدل الأزرار المربكة) --- */
