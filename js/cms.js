@@ -240,16 +240,39 @@ const VILLA_SOLARA = {
   /* ---- NEW: Experiences (360°, Walkthrough, Before/After) — per project ---- */
   experiences: {
     panos: [
-      {room:'Living Room',roomAr:'غرفة المعيشة',img:'assets/rooms/pano-living.webp'},
-      {room:'Kitchen',roomAr:'المطبخ',img:'assets/rooms/pano-kitchen.webp'},
-      {room:'Master Bedroom',roomAr:'غرفة النوم',img:'assets/rooms/pano-master.webp'},
-      {room:'Master Bathroom',roomAr:'الحمام',img:'assets/rooms/pano-bath.webp'}
+      {room:'Living Room',roomAr:'غرفة المعيشة',img:'assets/rooms/pano-living.webp',depth:'',hotspots:[{x:.5,y:.55,id:'kitchen',label:'Kitchen · المطبخ',icon:'◉'},{x:.85,y:.5,id:'stairs',label:'Stairs · السلم',icon:'△'}]},
+      {room:'Kitchen',roomAr:'المطبخ',img:'assets/rooms/pano-kitchen.webp',depth:'',hotspots:[{x:.2,y:.5,id:'living',label:'Living · المعيشة',icon:'◉'}]},
+      {room:'Master Bedroom',roomAr:'غرفة النوم',img:'assets/rooms/pano-master.webp',depth:'',hotspots:[{x:.5,y:.5,id:'bath',label:'Bathroom · الحمام',icon:'◉'},{x:.1,y:.5,id:'living',label:'Living · المعيشة',icon:'◉'}]},
+      {room:'Master Bathroom',roomAr:'الحمام',img:'assets/rooms/pano-bath.webp',depth:'',hotspots:[{x:.85,y:.5,id:'bedroom',label:'Bedroom · النوم',icon:'◉'}]}
     ],
     walkthrough: {
       img:'assets/rooms/pano-living.webp',
       video:'',
-      title:'جولة حرة في فيلا سولارا',
-      desc:'اسحب للنظر حولك · انقر الأبواب للتنقل بين الغرف'
+      title:'جولة حرة 3D في فيلا سولارا',
+      desc:'اسحب للنظر حولك · انقر الأبواب للصعود للسلم أو ركوب السانسير',
+      startId:'living',
+      scenes:[
+        {id:'living', title:'Living Room', titleAr:'غرفة المعيشة', img:'assets/rooms/pano-living.webp', depth:'', hotspots:[
+          {x:.5,y:.55,id:'kitchen',icon:'◉',label:'Kitchen',labelAr:'المطبخ'},
+          {x:.85,y:.5,id:'stairs',icon:'△',label:'Upstairs',labelAr:'الطابق العلوي'},
+          {x:.15,y:.5,id:'bath',icon:'◉',label:'Bathroom',labelAr:'الحمام'}
+        ]},
+        {id:'kitchen', title:'Kitchen', titleAr:'المطبخ', img:'assets/rooms/pano-kitchen.webp', depth:'', hotspots:[
+          {x:.5,y:.5,id:'living',icon:'◉',label:'Living',labelAr:'المعيشة'}
+        ]},
+        {id:'stairs', title:'Upstairs', titleAr:'الطابق العلوي', img:'assets/rooms/pano-master.webp', depth:'', hotspots:[
+          {x:.5,y:.5,id:'master',icon:'◉',label:'Master Bedroom',labelAr:'غرفة النوم الرئيسية'},
+          {x:.5,y:.5,id:'living',icon:'◉',label:'Back Down',labelAr:'رجوع'}
+        ]},
+        {id:'master', title:'Master Bedroom', titleAr:'غرفة النوم', img:'assets/rooms/pano-master.webp', depth:'', hotspots:[
+          {x:.2,y:.5,id:'stairs',icon:'◉',label:'Hallway',labelAr:'الممر'},
+          {x:.85,y:.5,id:'bath',icon:'◉',label:'En-suite Bath',labelAr:'الحمام الخاص'}
+        ]},
+        {id:'bath', title:'Master Bathroom', titleAr:'الحمام الرئيسي', img:'assets/rooms/pano-bath.webp', depth:'', hotspots:[
+          {x:.85,y:.5,id:'master',icon:'◉',label:'Bedroom',labelAr:'غرفة النوم'},
+          {x:.2,y:.5,id:'living',icon:'◉',label:'Downstairs',labelAr:'الطابق السفلي'}
+        ]}
+      ]
     },
     beforeAfter: [
       {label:'Design',labelAr:'التصميم',before:'assets/villa-blueprint.webp',after:'assets/villa-wireframe.webp'},
