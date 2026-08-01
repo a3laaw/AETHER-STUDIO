@@ -467,7 +467,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
           <div style="font-size:11.5px;color:var(--tx3);display:flex;align-items:center;gap:6px">
             <span style="background:rgba(60,130,246,.1);color:var(--blue);padding:3px 9px;border-radius:100px;font-weight:600">💡 Tip</span>
-            <span>انقر على أي مكان في الصورة لإضافة نقطة · اسحب أي نقطة لتغيير مكانها · Click anywhere to add · Drag to move</span>
+            <span>انقر لإضافة نقطة · اسحب لتحريك · دبل-كليك للحذف · Click to add · Drag to move · Double-click to delete</span>
           </div>
         </div>
         <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:320px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC);display:flex;align-items:center;justify-content:center;touch-action:none">
@@ -2598,6 +2598,7 @@ function hsRender(){
       box-shadow:0 4px 14px rgba(0,0,0,.35)`;
     d.textContent=i+1;
     d.onpointerdown=e=>{e.stopPropagation();hsDrag=i;hsSel=i;hsFill();hsRender();st.setPointerCapture(e.pointerId);};
+    d.ondblclick=e=>{e.stopPropagation();if(confirm('حذف هذه النقطة؟ Delete this spot?')){hsSpots().splice(i,1);hsSel=-1;hsFill();hsRender();toast('Spot deleted · تم الحذف');}};
     st.appendChild(d);
   });
   const list=document.getElementById('hsList');if(!list)return;
