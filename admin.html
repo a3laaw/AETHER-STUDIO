@@ -146,9 +146,13 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 /* gallery manager */
 .gal-tabs{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-width:240px}
 .gal-tabs.horizontal{flex-direction:row;flex-wrap:wrap;max-width:none}
-.gtab{font-size:11.5px;font-weight:600;padding:7px 15px;border-radius:100px;cursor:pointer;background:var(--panel2);
-  border:1px solid var(--brd);color:var(--tx2);transition:.3s}
-.gtab.on{background:#1A1A1C;color:#fff;border-color:#1A1A1C}
+.gtab{font-size:11.5px;font-weight:600;padding:10px 16px;border-radius:11px;cursor:pointer;background:var(--panel2);
+  border:1px solid var(--brd);color:var(--tx2);transition:.3s;display:flex;align-items:center;gap:6px}
+.gtab:hover{border-color:rgba(0,0,0,.2);color:var(--tx)}
+.gtab.on{background:#1A1A1C;color:#fff;border-color:#1A1A1C;box-shadow:0 4px 12px -4px rgba(0,0,0,.3)}
+/* project internal tabs — hide all by default, show active via JS */
+.proj-tab{display:none}
+.proj-tab:first-of-type{display:block}
 .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
 .gimg{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--brd)}
 .gimg img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
