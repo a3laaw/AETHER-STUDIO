@@ -95,6 +95,7 @@ html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;fon
 .playbar .pbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--gold);color:#fff;font-size:12px;cursor:pointer;flex:none;
   display:flex;align-items:center;justify-content:center;transition:.3s}
 .playbar .pbtn.ghostb{background:rgba(26,26,28,.06);color:var(--fg-2)}
+.playbar .pbtn.ghostb.on{background:var(--gold);color:#fff}
 .playbar .pbtn:hover{filter:brightness(1.12)}
 .pb-wrap{flex:1;position:relative;padding-bottom:14px}
 .scrub{height:4px;background:rgba(26,26,28,.1);border-radius:4px;position:relative;cursor:pointer}
@@ -106,7 +107,7 @@ html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;fon
 .pb-ticks span:hover,.pb-ticks span.on{color:var(--gold)}
 
 /* ================= OVERLAY WIDGETS (bottom of video, compact) ================= */
-.widget-overlay{position:absolute;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);z-index:14;
+.widget-overlay{position:absolute;left:50%;bottom:110px;transform:translateX(-50%) translateY(10px);z-index:14;
   display:none;opacity:0;transition:opacity .4s,transform .4s;width:auto;max-width:min(90vw,300px)}
 .widget-overlay.show{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
 .widget-overlay .ow-card{background:rgba(255,255,255,.75);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
@@ -432,9 +433,6 @@ footer p .ar{font-family:var(--font-ar)}
   .glass-overall.show{display:none !important}
   /* show a compact progress badge instead */
   #mobileProgress{display:flex !important}
-  /* tour button smaller */
-  #tourBtn{padding:5px 10px;font-size:9px}
-  #tourBtn span:last-child{display:none}
   /* build timeline smaller */
   #buildTimeline{width:94vw !important;bottom:70px !important;height:6px !important}
   /* widget overlay even more compact on mobile */
@@ -468,8 +466,8 @@ footer p .ar{font-family:var(--font-ar)}
   .glass-overall .go-pct{font-size:13px}
   .glass-overall .go-info b{font-size:11px}
   .glass-overall .go-info span{font-size:9px}
-  #buildTimeline{width:90vw !important;bottom:72px !important}
-  .stage-cap{bottom:88px;font-size:9.5px;padding:6px 14px}
+  #buildTimeline{width:90vw !important;bottom:92px !important}
+  .stage-cap{bottom:132px;font-size:9.5px;padding:6px 14px}
 }
 
 /* compact mobile progress badge */
@@ -478,6 +476,56 @@ footer p .ar{font-family:var(--font-ar)}
   border:1px solid rgba(255,255,255,.5);border-radius:100px;padding:6px 16px;
   box-shadow:0 8px 24px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);
   font-size:11px;font-weight:700;color:var(--gold);font-family:var(--font);pointer-events:none;white-space:nowrap}
+
+/* ============================================================
+   OVERLAP FIXES — card layout review (2026-08-01)
+   - hero copy stays clear of the corner glass cards
+   - tablet collapses corner cards into the compact progress pill
+   - pause badge hidden ≤900 (playbar shows the state)
+   - experience buttons: bottom-left on desktop, compact row on ≤900
+   ============================================================ */
+
+/* compact HUD on narrower screens — keeps the 7-card column clear of the playbar zone */
+@media(max-width:1280px){
+  .glass-hud{max-width:160px;gap:5px}
+  .glass-hud .gh-stage{padding:6px 9px;border-radius:12px}
+  .glass-hud .gh-stage .gh-head{gap:6px;margin-bottom:3px}
+  .glass-hud .gh-stage .gh-num{font-size:9px;padding:1px 5px}
+  .glass-hud .gh-stage .gh-name{font-size:11px}
+  .glass-hud .gh-stage .gh-bar-wrap{height:4px;margin-bottom:3px}
+  .glass-hud .gh-stage .gh-meta .gh-frames{display:none}
+}
+@media(max-width:1280px){
+  .hero-copy{top:clamp(112px,16%,150px);width:min(48vw,520px)}
+}
+@media(max-width:900px) and (min-width:641px){
+  .glass-hud{display:none !important}
+  .glass-overall{display:none !important}
+  .glass-overall.show{display:none !important}
+  .pause-badge{display:none !important}
+  #mobileProgress{display:flex !important}
+  .hero-copy{top:150px !important;width:min(86vw,640px)}
+  #expButtons{top:112px !important;right:14px !important;bottom:auto !important;left:auto !important;flex-direction:row;gap:6px}
+  #buildTimeline{bottom:92px !important}
+  .stage-cap{bottom:132px}
+}
+@media(max-width:640px){
+  .pause-badge{display:none !important}
+  /* vertical stack to avoid overlaps: pill (70) → hero copy (110) → experience row (230) */
+  .hero-copy{top:110px !important}
+  #expButtons{top:230px !important;right:12px !important;bottom:auto !important;left:auto !important;flex-direction:row;gap:6px}
+}
+/* when the widget overlay is open, the stage caption underneath stays hidden (JS also does this) */
+.widget-overlay.show + .stage-cap{opacity:0 !important}
+
+/* RTL: keep the experience buttons away from the flipped HUD column (which sits on the left in RTL) */
+@media(min-width:901px){
+  html[dir="rtl"] #expButtons{left:auto !important;right:24px !important;bottom:128px !important;top:auto !important}
+}
+/* wide but short viewports: hero copy sits below the pause badge */
+@media(min-width:1281px) and (max-height:820px){
+  .hero-copy{top:90px}
+}
 </style>
 </head>
 <body>
@@ -532,7 +580,7 @@ footer p .ar{font-family:var(--font-ar)}
   </div>
 
   <!-- Experience buttons (right side, vertical, below glass-hud with gap) -->
-  <div id="expButtons" style="position:absolute;top:220px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:auto">
+  <div id="expButtons" style="position:absolute;bottom:128px;left:24px;top:auto;right:auto;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:auto">
     <button id="btn360" onclick="openExp360()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
       ⟲ <span>360°</span>
     </button>
@@ -554,6 +602,7 @@ footer p .ar{font-family:var(--font-ar)}
   <div class="widget-overlay" id="widgetOverlay">
     <div class="ow-card" id="owCard">
       <div class="ow-ic" id="owIcon">◉</div>
+      <img id="owSeqImg" alt="" style="display:none;width:30px;height:30px;border-radius:8px;object-fit:cover;flex:none">
       <div class="ow-tx">
         <b id="owTitle">Progress</b>
         <span id="owSub">Overall completion</span>
@@ -572,6 +621,7 @@ footer p .ar{font-family:var(--font-ar)}
       <div class="scrub" id="scrub"><div class="fill" id="scrubFill"></div><div class="knob" id="scrubKnob"></div></div>
       <div class="pb-ticks" id="pbTicks"></div>
     </div>
+    <button class="pbtn ghostb" id="pbTour" title="Full tour · جولة كاملة">🎬</button>
     <button class="pbtn" id="pbPlay" title="Pause">❚❚</button>
   </div>
 </section>
@@ -768,6 +818,7 @@ function safeUrl(u){
   return s;
 }
 let CFG = AURA.load();
+window._lastCfgUpdate = (CFG._lastUpdate||'');  /* avoid needless first re-sync */
 let PROJ = AURA.getCurrent(CFG);
 AURA.applyTheme(PROJ);
 AURA_I18N.init();
@@ -778,7 +829,7 @@ let isAr = AURA_I18N.lang === 'ar';
 (function(){
   let clicks=0, timer=null;
   function openAdmin(){
-    sessionStorage.setItem('aura.gate.pwd','aura2026');
+    sessionStorage.setItem('aura.gate.ok','1');  /* flag only — no plaintext password stored */
     location.href='admin.html';
   }
   document.addEventListener('click',e=>{
@@ -977,9 +1028,17 @@ function loadF(si,n){
 }
 function segOf(g){for(let i=0;i<SEGS.length;i++)if(g<=SEGS[i].end)return i;return SEGS.length-1;}
 function preload(g,r=10){for(let d=0;d<=r;d++)[g+d,g-d].forEach(x=>{if(x<1||x>TOTAL)return;const si=segOf(x);loadF(si,x-SEGS[si].start+1);});}
+/* evict decoded frames far from the playhead so memory stays bounded on large projects */
+function evictCache(g){
+  const near=new Set();
+  for(let d=0;d<=48;d++){near.add(g+d);near.add(g-d);}
+  for(const k in cache){if(!near.has(+k.split(':')[1]))delete cache[k];}
+}
 const cv=$('cine'),ctx=cv.getContext('2d');
+let _rszT=null;
 function fitCanvas(){cv.width=innerWidth;cv.height=innerHeight;}
-fitCanvas();addEventListener('resize',fitCanvas);
+fitCanvas();
+addEventListener('resize',()=>{clearTimeout(_rszT);_rszT=setTimeout(fitCanvas,150);},{passive:true});
 function draw(g){
   g=Math.round(Math.min(TOTAL,Math.max(1,g)));
   const si=segOf(g),seg=SEGS[si];
@@ -998,6 +1057,7 @@ function draw(g){
 let target=1,current=1,playing=true,pauseHold=false,holdT=null;
 let PB=PROJ.playback||{fpsExt:9,pauseExplore:5,pauseRoom:2.5};
 let FPS=+PB.fpsExt||9;
+let _frameN=0;
 let lastT=performance.now();
 const pausesDone=new Set();
 let _stagePauseTriggered=new Set();  /* track which stages triggered pause */
@@ -1163,13 +1223,16 @@ let widgetPauseUntil=0;
   const siNow=segOf(Math.round(current));
   const segNow=SEGS[siNow];
   if(playing&&!pauseHold&&now>widgetPauseUntil){
+    const prevTarget=target;
     target+=FPS*dt;
     const g=Math.round(target);
-    /* pause at the START of each stage (not at specific frame numbers) */
-    const enteringStage=PROJ.stages.find(s=>s.from===g&&!_stagePauseTriggered.has(s.id));
+    const prevG=Math.round(prevTarget);
+    /* pause at the START of each stage — robust at any speed: detects crossing a
+       stage's from-frame even when high FPS jumps over it */
+    const enteringStage=PROJ.stages.find(s=>!_stagePauseTriggered.has(s.id)&&s.from>prevG&&s.from<=g);
     if(enteringStage){
       _stagePauseTriggered.add(enteringStage.id);
-      target=g;
+      target=enteringStage.from;
       scheduleStagePause(enteringStage);
     }
     /* also pause at end of last stage */
@@ -1183,6 +1246,7 @@ let widgetPauseUntil=0;
   const g=Math.round(current);
   draw(current);
   preload(g);
+  if(++_frameN%20===0)evictCache(g);  /* keep memory bounded */
   const pct=(g-1)/(TOTAL-1)*100;
   $('scrubFill').style.width=pct+'%';$('scrubKnob').style.left=pct+'%';
   const st=PROJ.stages.find(s=>g>=s.from&&g<=s.to)||PROJ.stages[PROJ.stages.length-1];
@@ -1222,7 +1286,7 @@ function scheduleStagePause(stage){
   $('stageCap').style.opacity='0';
   /* start widget sequence auto-play if available */
   const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
-  if(seq&&seq.images&&seq.images.length>1){
+  if(seq&&seq.images&&seq.images.length>0){
     _widgetSeqImages=seq.images;
     _widgetSeqIdx=0;
     startWidgetSequence(seq.interval||3500);
@@ -1247,7 +1311,7 @@ function showOverlayWidgetForPause(w,pp){
   $('stageCap').style.opacity='0';
   /* start widget sequence auto-play if available */
   const seq=PROJ.widgetSequences&&PROJ.widgetSequences[w.id];
-  if(seq&&seq.images&&seq.images.length>1){
+  if(seq&&seq.images&&seq.images.length>0){
     _widgetSeqImages=seq.images;
     _widgetSeqIdx=0;
     startWidgetSequence(seq.interval||3500);
@@ -1255,15 +1319,20 @@ function showOverlayWidgetForPause(w,pp){
 }
 function startWidgetSequence(interval){
   stopWidgetSequence();
+  const img=$('owSeqImg');
+  if(!_widgetSeqImages.length||!img)return;
+  /* show the first frame immediately, then cycle through the sequence */
+  img.style.display='block';
+  img.src=_widgetSeqImages[0];
   _widgetSeqTimer=setInterval(()=>{
     _widgetSeqIdx=(_widgetSeqIdx+1)%_widgetSeqImages.length;
-    /* we could show sequence images as a mini-gallery in the overlay */
-    /* for now, just update the overlay background subtly */
+    img.src=_widgetSeqImages[_widgetSeqIdx];
   },interval);
 }
 function stopWidgetSequence(){
   if(_widgetSeqTimer){clearInterval(_widgetSeqTimer);_widgetSeqTimer=null;}
   _widgetSeqImages=[];_widgetSeqIdx=0;
+  const img=$('owSeqImg');if(img){img.style.display='none';img.src='';}
 }
 
 function bootFrames(){
@@ -1423,6 +1492,23 @@ $('modalClose').onclick=closeModal;
 $('mClose2').onclick=closeModal;
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
 addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetails();}});
+/* playback keyboard commands: Space = play/pause, ←/→ = scrub (organized with the playbar) */
+addEventListener('keydown',e=>{
+  const tag=(e.target&&e.target.tagName)||'';
+  if(tag==='INPUT'||tag==='TEXTAREA'||(e.target&&e.target.isContentEditable))return;
+  if($('modal').classList.contains('on')||$('detailsView').classList.contains('on'))return;
+  if(e.key===' '||e.code==='Space'){
+    e.preventDefault();
+    const b=$('pbPlay');if(b&&b.onclick)b.click();
+  } else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    e.preventDefault();
+    clearTimeout(holdT);pauseHold=false;
+    hideOverlayWidget();$('pauseBadge').classList.remove('show');
+    stopWidgetSequence();_stagePauseTriggered.clear();
+    const step=Math.max(1,Math.round(TOTAL*0.02));
+    target=current=Math.min(TOTAL,Math.max(1,current+(e.key==='ArrowRight'?step:-step)));
+  }
+});
 
 /* ---------- Details View (full-screen white overlay) ---------- */
 function openDetailsView(w){
@@ -1515,7 +1601,7 @@ function refreshLang(){
   buildProjectBar();buildPlaybar();buildWidgets();
   if(lastStageId){lastStageId=null;const st=PROJ.stages.find(s=>1>=s.from&&1<=s.to)||PROJ.stages[0];setExtStage(st,0);}
   /* update services cards text visibility */
-  document.querySelectorAll('.svc-card h3 .en').forEach(e=>e.style.display=isAr?'':'none');
+  document.querySelectorAll('.svc-card h3 .en').forEach(e=>e.style.display=isAr?'none':'');
   document.querySelectorAll('.svc-card h3 .ar').forEach(e=>e.style.display=isAr?'':'none');
 }
 /* intercept language toggle to refresh dynamic content */
@@ -1533,14 +1619,42 @@ buildWidgets();
 updateExpButtons();
 bootFrames();
 
+/* ---------- SEO (from admin site settings) ---------- */
+function applySEO(){
+  const seo=(CFG.siteContent&&CFG.siteContent.seo)||{};
+  if(seo.title)document.title=seo.title;
+  if(seo.desc){
+    let m=document.querySelector('meta[name="description"]');
+    if(m)m.setAttribute('content',seo.desc);
+  }
+  if(seo.ogImage){
+    let og=document.querySelector('meta[property="og:image"]');
+    if(!og){og=document.createElement('meta');og.setAttribute('property','og:image');document.head.appendChild(og);}
+    og.setAttribute('content',seo.ogImage);
+  }
+  if(seo.canonical){
+    let c=document.querySelector('link[rel="canonical"]');
+    if(!c){c=document.createElement('link');c.setAttribute('rel','canonical');document.head.appendChild(c);}
+    c.setAttribute('href',seo.canonical);
+  }
+  if(seo.gaId&&!window._gaAdded){
+    window._gaAdded=true;
+    const g=document.createElement('script');g.async=true;
+    g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(seo.gaId);
+    document.head.appendChild(g);
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=function(){dataLayer.push(arguments);};
+    gtag('js',new Date());gtag('config',seo.gaId);
+  }
+}
 /* ---------- site content (from admin) ---------- */
 function applySiteContent(){
   const sc=CFG.siteContent;if(!sc)return;
   const c=sc.contact||{};
   /* contact channels */
-  document.querySelectorAll('.contact-channel[href*="wa.me"]').forEach(a=>{if(c.whatsapp)a.href='https://wa.me/'+c.whatsapp;});
-  document.querySelectorAll('.contact-channel[href^="mailto:"]').forEach(a=>{if(c.email)a.href='mailto:'+c.email;});
-  document.querySelectorAll('.contact-channel[href^="tel:"]').forEach(a=>{if(c.phone)a.href='tel:'+c.phone.replace(/\s/g,'');});
+  document.querySelectorAll('.contact-channel[href*="wa.me"]').forEach(a=>{if(c.whatsapp)a.href='https://wa.me/'+String(c.whatsapp).replace(/[^0-9]/g,'');});
+  document.querySelectorAll('.contact-channel[href^="mailto:"]').forEach(a=>{if(c.email)a.href='mailto:'+String(c.email).replace(/[^\w.@+-]/g,'');});
+  document.querySelectorAll('.contact-channel[href^="tel:"]').forEach(a=>{if(c.phone)a.href='tel:'+String(c.phone).replace(/[^+0-9]/g,'');});
   document.querySelectorAll('.contact-channel .c-tx span').forEach((s,i)=>{
     const channels=document.querySelectorAll('.contact-channel');
     if(c.whatsapp&&i===0)s.textContent='+'+c.whatsapp;
@@ -1554,7 +1668,7 @@ function applySiteContent(){
   /* hero */
   const h=sc.hero||{};
   const h1=document.querySelector('.hero-copy h1');
-  if(h1&&h.title1Ar){h1.innerHTML=isAr?(h.title1Ar+'<br><span style="font-size:.55em;color:var(--fg-2);font-weight:500;display:block;margin-top:10px">'+h.subtitleAr+'</span>'):(h.title1En+' '+h.title2En+'<br><span style="font-size:.55em;color:var(--fg-2);font-weight:500;display:block;margin-top:10px">'+h.subtitleEn+'</span>');}
+  if(h1&&h.title1Ar){h1.innerHTML=isAr?(esc(h.title1Ar)+'<br><span style="font-size:.55em;color:var(--fg-2);font-weight:500;display:block;margin-top:10px">'+esc(h.subtitleAr)+'</span>'):(esc(h.title1En)+' '+esc(h.title2En)+'<br><span style="font-size:.55em;color:var(--fg-2);font-weight:500;display:block;margin-top:10px">'+esc(h.subtitleEn)+'</span>');}
   const sub=document.querySelector('.hero-copy .sub');
   if(sub&&h.sublineAr){sub.textContent=isAr?h.sublineAr:h.sublineEn;}
   /* about */
@@ -1575,15 +1689,16 @@ function applySiteContent(){
     for(let r=0;r<2;r++){sc.clients.forEach(cl=>{
       const el=document.createElement('div');el.className='client-logo';
       if(cl.logo&&cl.logo.length>10){
-        el.innerHTML='<img src="'+cl.logo+'" alt="'+cl.name+'" style="max-width:100%;max-height:50px;object-fit:contain">';
+        el.innerHTML='<img src="'+escAttr(safeUrl(cl.logo))+'" alt="'+esc(cl.name)+'" style="max-width:100%;max-height:50px;object-fit:contain">';
       } else {
-        el.innerHTML='<span class="c-ic">'+(cl.icon||'◆')+'</span>'+cl.name;
+        el.innerHTML='<span class="c-ic">'+esc(cl.icon||'◆')+'</span>'+esc(cl.name);
       }
       track.appendChild(el);
     });}}
   }
 }
 applySiteContent();
+applySEO();
 
 /* ---------- sync: when admin saves, site updates automatically ---------- */
 function applyPlayback(){
@@ -1600,6 +1715,7 @@ function applyAllFromStorage(){
   AURA.applyTheme(PROJ);
   applyPlayback();
   applySiteContent();
+  applySEO();
   buildProjectBar();
   buildPlaybar();
   buildWidgets();
@@ -1749,7 +1865,7 @@ function buildBuildTimeline(){
   const existing=$('buildTimeline');if(existing)existing.remove();
   const tl=document.createElement('div');
   tl.id='buildTimeline';
-  tl.style.cssText='position:absolute;bottom:78px;left:50%;transform:translateX(-50%);z-index:12;display:flex;gap:2px;width:min(74vw,860px);height:8px;border-radius:6px;overflow:hidden;box-shadow:0 4px 14px -4px rgba(0,0,0,.1)';
+  tl.style.cssText='position:absolute;bottom:92px;left:50%;transform:translateX(-50%);z-index:12;display:flex;gap:2px;width:min(74vw,860px);height:8px;border-radius:6px;overflow:hidden;box-shadow:0 4px 14px -4px rgba(0,0,0,.1)';
   PROJ.stages.forEach((s,i)=>{
     const seg=document.createElement('div');
     const pct=(s.to-s.from+1)/TOTAL*100;
@@ -1795,17 +1911,14 @@ function markSaved(){_hasUnsavedChanges=false;}
 const _origSave=AURA.save;
 AURA.save=function(cfg){_origSave(cfg);markSaved();};
 
-/* Add Full Tour + Timeline buttons to hero */
-(function addTourButton(){
-  const btn=document.createElement('button');
-  btn.id='tourBtn';
-  btn.style.cssText='position:absolute;top:18px;right:24px;z-index:13;display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 8px 24px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:11px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit';
-  btn.innerHTML='<span>🎬</span><span>'+(isAr?'جولة كاملة':'Full Tour')+'</span>';
+/* Full Tour control lives in the playbar now (أوامر التشغيل موحّدة في شريط واحد) */
+(function wireTourButton(){
+  const btn=$('pbTour');
+  if(!btn)return;
   btn.onclick=()=>{
-    if(_fullTour){stopFullTour();btn.style.background='rgba(255,255,255,.55)';btn.innerHTML='<span>🎬</span><span>'+(isAr?'جولة كاملة':'Full Tour')+'</span>';}
-    else{startFullTour();btn.style.background='var(--gold)';btn.style.color='#fff';btn.innerHTML='<span>⏹</span><span>'+(isAr?'إيقاف':'Stop')+'</span>';}
+    if(_fullTour){stopFullTour();btn.classList.remove('on');btn.title=isAr?'جولة كاملة':'Full tour';}
+    else{startFullTour();btn.classList.add('on');btn.title=isAr?'إيقاف الجولة':'Stop tour';}
   };
-  $('hero').appendChild(btn);
 })();
 
 /* init build timeline */
@@ -1825,7 +1938,7 @@ function openExp360(){
       const thumb=p.img||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 10%22><rect fill=%22%23222%22 width=%2216%22 height=%2210%22/><text x=%228%22 y=%226%22 fill=%22%23fff%22 font-size=%221.4%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>360</text></svg>';
       const isEmbed=!!p.embed;
       const badge=isEmbed?'<span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:100px;backdrop-filter:blur(6px)">🔗 Embed</span>':'';
-      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+thumb+'" alt="'+(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
+      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+escAttr(safeUrl(thumb))+'" alt="'+esc(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+esc(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
     }).join('')+'</div>'+
     '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
   dv.classList.add('on');document.body.style.overflow='hidden';
@@ -1841,16 +1954,16 @@ function loadPano(i){
     if(yt)src='https://www.youtube.com/embed/'+yt[1];
     const vm=src.match(/vimeo\.com\/(\d+)/);
     if(vm)src='https://player.vimeo.com/video/'+vm[1];
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+esc(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
       '<div style="position:relative;width:100%;height:70vh;overflow:hidden;border-radius:14px;background:#000">'+
-        '<iframe src="'+src+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
+        '<iframe src="'+escAttr(safeUrl(src))+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
       '</div>'+
       '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
     return;
   }
   /* image pano → drag viewer */
   $('dvContent').innerHTML='<div style="position:relative;width:100%;height:60vh;overflow:hidden;border-radius:14px;cursor:grab;background:#000" id="panoWrap">'+
-    '<img src="'+p.img+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
+    '<img src="'+escAttr(safeUrl(p.img))+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
     '<div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.5);padding:8px 18px;border-radius:100px;backdrop-filter:blur(8px)">'+(isAr?'اسحب للنظر حولك':'Drag to look')+'</div></div>'+
     '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
   /* drag to look */
@@ -1881,9 +1994,9 @@ function openExpWalk(){
     }else if(vm){
       videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
     }else{
-      videoHTML='<video src="'+src+'" poster="'+(walk.img||'')+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
+      videoHTML='<video src="'+escAttr(safeUrl(src))+'" poster="'+escAttr(safeUrl(walk.img||''))+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
     }
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+title+'</h2>'+(walk.desc?'<p class="dv-sub">'+walk.desc+'</p>':'')+'</div></div>'+
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
       videoHTML+
       '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
     dv.classList.add('on');document.body.style.overflow='hidden';
@@ -1892,7 +2005,7 @@ function openExpWalk(){
   /* fallback: legacy pano image drag view */
   loadPano(0);
   const img=document.querySelector('[id=panoImg]');
-  if(img){img.src=walk.img;}
+  if(img){img.src=safeUrl(walk.img);}
 }
 function openExpBA(){
   const exp=PROJ.experiences||{};
@@ -1901,10 +2014,10 @@ function openExpBA(){
   const dv=$('detailsView');
   let baPos=50,baIdx=0;
   $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⇆</div><div><div class="dv-eyebrow">'+(isAr?'قبل / بعد':'BEFORE / AFTER')+'</div><h2>'+(isAr?'مقارنة تفاعلية':'Interactive Comparison')+'</h2></div></div>'+
-    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+(isAr?(b.labelAr||b.label):b.label)+'</button>').join('')+'</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+esc(isAr?(b.labelAr||b.label):b.label)+'</button>').join('')+'</div>'+
     '<div id="baSlider" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;cursor:ew-resize;background:#000">'+
-      '<img id="baAfter" src="'+ba[0].after+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
-      '<img id="baBefore" src="'+ba[0].before+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
+      '<img id="baAfter" src="'+escAttr(safeUrl(ba[0].after))+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
+      '<img id="baBefore" src="'+escAttr(safeUrl(ba[0].before))+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
       '<div id="baHandle" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.4)"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:100px;padding:6px 10px;font-size:11px;font-weight:700">↔</div></div>'+
       '<span style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'قبل':'BEFORE')+'</span>'+
       '<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'بعد':'AFTER')+'</span>'+
@@ -1922,7 +2035,7 @@ function openExpBA(){
   window._baSelect=function(i){
     baIdx=i;
     ba.forEach((b,j)=>{const t=$('baTab'+j);if(t){t.style.border='1px solid '+(j===i?'#BFA76A':'rgba(0,0,0,.1)');t.style.background=(j===i?'#BFA76A':'transparent');t.style.color=(j===i?'#fff':'#6E7079');}});
-    before.src=ba[i].before;$('baAfter').src=ba[i].after;
+    before.src=safeUrl(ba[i].before);$('baAfter').src=safeUrl(ba[i].after);
     setBA(slider.getBoundingClientRect().left+slider.getBoundingClientRect().width/2);
   };
 }

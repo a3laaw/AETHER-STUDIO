@@ -106,7 +106,7 @@ Top bar with project cards. Currently two demo projects:
 Hidden from regular visitors. Access via:
 - **3 clicks on the AURA logo** within 2 seconds (in `index.html`)
 - OR **Ctrl + Shift + A** keyboard shortcut
-- OR direct URL `/admin.html` (password required: `aura2026`)
+- OR direct URL `/admin.html` (password-protected — the secret is hashed, never displayed; for demo credentials ask the project owner)
 
 ### What it manages
 
