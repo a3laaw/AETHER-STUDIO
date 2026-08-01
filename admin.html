@@ -250,10 +250,19 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <div class="panel" style="margin-bottom:20px">
         <h3><span>كل المشاريع · All Projects</span> <span class="badge" id="pmCount">0</span></h3>
         <div id="pmList"></div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="pmSearch" placeholder="🔍 بحث باسم المشروع · Search projects" style="flex:1; padding:9px 14px; border-radius:10px; border:1px solid var(--brd); background:var(--panel2); font-size:12.5px;" oninput="pmSearchFilter()">
+        </div>
         <div class="btnrow">
           <button class="btn sm" onclick="pmAdd()">+ إضافة مشروع · Add Project</button>
           <button class="btn sm ghost" onclick="pmDuplicate()">📋 نسخ المشروع · Duplicate</button>
           <button class="btn sm ghost" onclick="pmSave()">حفظ الترتيب · Save Order</button>
+          <button class="btn sm ghost" onclick="exportConfig()" title="تصدير كل البيانات JSON">⬇ تصدير · Export</button>
+          <button class="btn sm ghost" onclick="$('importConfigFile').click()" title="استيراد ملف JSON">⬆ استيراد · Import</button>
+          <input type="file" id="importConfigFile" accept=".json" style="display:none" onchange="importConfig(this)">
+        </div>
+        <div class="krow" style="margin-top:12px; font-size:11px; color:var(--tx3)">
+          <span>التخزين المستخدم · Storage Used</span><b id="storageUsed">—</b>
         </div>
       </div>
 
@@ -466,6 +475,32 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <button class="btn sm ghost" onclick="scAddClient()">+ Add Client · إضافة عميل</button>
         </div>
       </div>
+      <!-- SEO & Analytics -->
+      <div class="panel">
+        <h3><span>SEO & Analytics · تحسين محركات البحث</span> <span class="badge">NEW</span></h3>
+        <div class="grid2">
+          <div class="f"><label>Site Title · عنوان الموقع</label><input type="text" id="scSeoTitle" placeholder="AURA Studio — من أول حجر حتى آخر غرفة"></div>
+          <div class="f"><label>Meta Description · الوصف</label><input type="text" id="scSeoDesc" placeholder="منصة توثيق بناء متواصل..."></div>
+          <div class="f"><label>OG Image · صورة المشاركة</label><div style="display:flex; gap:8px"><input type="text" id="scSeoImg" style="flex:1" placeholder="https://.../og.jpg"><button class="btn sm ghost" onclick="uploadImage('scSeoImg')">رفع</button><input type="file" id="scSeoImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'scSeoImg')"></div></div>
+          <div class="f"><label>Google Analytics ID · كود التحليلات</label><input type="text" id="scGaId" placeholder="G-XXXXXXXX" dir="ltr"></div>
+          <div class="f"><label>Keywords · كلمات مفتاحية (AR)</label><input type="text" id="scKeywords" placeholder="بناء, تشطيب, توثيق مشاريع" dir="rtl" style="font-family:var(--font-ar)"></div>
+          <div class="f"><label>Canonical URL · الرابط الأساسي</label><input type="text" id="scCanonical" placeholder="https://aura-arch.com" dir="ltr"></div>
+        </div>
+      </div>
+      <!-- System Health -->
+      <div class="panel">
+        <h3><span>System Health · صحة النظام</span> <span class="badge" id="sysHealthBadge">OK</span></h3>
+        <div class="grid2">
+          <div class="krow"><span>المشاريع · Projects</span><b id="sysProjCount">—</b></div>
+          <div class="krow"><span>إجمالي الصور · Total Images</span><b id="sysImgCount">—</b></div>
+          <div class="krow"><span>حجم البيانات · Data Size</span><b id="sysDataSize">—</b></div>
+          <div class="krow"><span>آخر تحديث · Last Update</span><b id="sysLastUpdate">—</b></div>
+        </div>
+        <div class="btnrow" style="margin-top:14px">
+          <button class="btn sm ghost" onclick="checkSystemHealth()">🔍 فحص النظام · Check</button>
+          <button class="btn sm ghost" onclick="clearImageCache()">🗑 مسح كاش الصور · Clear Cache</button>
+        </div>
+      </div>
       <div class="btnrow">
         <button class="btn" onclick="saveSiteContent()">Save & Publish · حفظ ونشر</button>
         <button class="btn ghost" onclick="window.open('index.html')">Preview · معاينة ↗</button>
@@ -585,8 +620,22 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <div class="grid3" style="margin-top:16px">
           <div class="f"><label>Glow · شدة التوهج</label><input type="range" id="uGlow" min="0" max="1" step="0.05"><div class="rv" id="uGlowV"></div></div>
         </div>
-        <div class="btnrow"><button class="btn" onclick="saveUI()">Save & Publish · حفظ ونشر</button>
-        <button class="btn ghost" onclick="resetAll()">Reset · استعادة الافتراضي</button></div>
+        <!-- Live Preview -->
+        <div style="margin-top:20px; padding:18px; background:var(--panel2); border-radius:14px; border:1px solid var(--brd)">
+          <h3 style="margin:0 0 12px; font-size:12px">Live Preview · معاينة حية <span class="badge">LIVE</span></h3>
+          <div style="position:relative; height:180px; border-radius:12px; overflow:hidden; background:linear-gradient(135deg,#E8E6DF,#F2F1EC); display:flex; align-items:center; justify-content:center;">
+            <img src="assets/villa-clean.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.6">
+            <div id="uiLivePreview" style="position:relative; padding:18px 22px; border-radius:16px; background:rgba(255,255,255,.55); backdrop-filter:blur(28px) saturate(180%); border:1px solid rgba(255,255,255,.7); box-shadow:0 10px 36px -10px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.9); font-size:13px; font-weight:600; color:#1A1A1C;">
+              ◉ Glass Preview · معاينة الزجاج
+              <div style="font-size:11px; color:#6E7079; margin-top:4px; font-weight:500">شفافية + ضبابية + استدارة + توهج</div>
+            </div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button class="btn" onclick="saveUI()">Save & Publish · حفظ ونشر</button>
+          <button class="btn ghost" onclick="resetUIOnly()">↺ Reset UI Only · استعادة الواجهة فقط</button>
+          <button class="btn danger" onclick="resetAll()" title="يحذف كل المشاريع ويرجع للافتراضي - خطر">⚠ Reset All CMS · استعادة النظام كامل</button>
+        </div>
       </div>
     </div>
 
@@ -1045,6 +1094,18 @@ function updRvUI(){
   uBlurV.textContent=uBlur.value+'px backdrop blur';
   uRadiusV.textContent=uRadius.value+'px radius';
   uGlowV.textContent=Math.round(uGlow.value*100)+'% glow';
+  // live preview update
+  const prev=document.getElementById('uiLivePreview');
+  if(prev){
+    const op=uGlass.value;
+    const blur=uBlur.value;
+    const rad=uRadius.value;
+    const glow=uGlow.value;
+    prev.style.background=`rgba(255,255,255,${op})`;
+    prev.style.backdropFilter=`blur(${blur}px) saturate(180%)`;
+    prev.style.borderRadius=rad+'px';
+    prev.style.boxShadow=`0 ${10*glow}px ${36*glow}px -10px rgba(0,0,0,${0.12*glow}), 0 2px 8px -2px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)`;
+  }
 }
 
 /* ---------------- save actions ---------------- */
@@ -1072,7 +1133,39 @@ function saveUI(){
   PROJ.ui={...PROJ.ui,theme:uTheme.value,glassOpacity:+uGlass.value,blur:+uBlur.value,radius:+uRadius.value,glow:+uGlow.value};
   AURA.save(CFG);toast('UI theme published · تم نشر الواجهة');
 }
-function resetAll(){AURA.reset();CFG=AURA.load();PROJ=AURA.getCurrent(CFG);boot();toast('Reset to defaults · تم الاستعادة')}
+function resetUIOnly(){
+  try{
+    const defProj = (window.AURA_DEFAULTS && AURA_DEFAULTS.projects && AURA_DEFAULTS.projects[0]) ? AURA_DEFAULTS.projects[0] : null;
+    if(!defProj || !defProj.ui || !defProj.brand){
+      toast('No defaults found');
+      return;
+    }
+    PROJ.brand = PROJ.brand || {};
+    PROJ.brand.name = defProj.brand.name;
+    PROJ.brand.accent = defProj.brand.accent;
+    PROJ.brand.tagline = defProj.brand.tagline || PROJ.brand.tagline;
+    PROJ.ui = JSON.parse(JSON.stringify(defProj.ui));
+    AURA.save(CFG);
+    boot();
+    toast('UI reset to defaults · تم استعادة الواجهة فقط');
+  }catch(e){
+    console.error('resetUIOnly failed', e);
+    toast('Reset failed: '+e.message);
+  }
+}
+function resetAll(){
+  if(!confirm('⚠️ تحذير خطر!\n\nهذا الزر يمسح كل شيء:\n- كل المشاريع المخصصة\n- كل محتوى الموقع\n- كل إعدادات الواجهة والفيديو\n\nويرجع النظام لمشروعين افتراضيين فقط.\n\nالطلبات (Inquiries) لن تتمسح.\n\nهل أنت متأكد 100%?\n\nWarning: This deletes ALL custom projects and resets to factory defaults!')){
+    return;
+  }
+  if(!confirm('تأكيد أخير - كل البيانات هتتمسح!\n\nLast confirmation - all data will be lost!')){
+    return;
+  }
+  AURA.reset();
+  CFG=AURA.load();
+  PROJ=AURA.getCurrent(CFG);
+  boot();
+  toast('Full reset done · تمت استعادة النظام كامل');
+}
 
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){
@@ -2355,6 +2448,13 @@ function buildSiteContent(){
   scAQuote.value=a.quoteAr||'';scS1V.value=a.stat1Val||'';scS1L.value=a.stat1LabelAr||'';
   sc.clients=sc.clients||[];
   scRenderClients();
+  // SEO
+  const seo=sc.seo=sc.seo||{};
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v||''; };
+  set('scSeoTitle', seo.title); set('scSeoDesc', seo.desc); set('scSeoImg', seo.ogImage); set('scGaId', seo.gaId); set('scKeywords', seo.keywords); set('scCanonical', seo.canonical);
+  // System health
+  try{ checkSystemHealth(); }catch(e){}
+  try{ updateStorageUsage(); }catch(e){}
 }
 function scRenderClients(){
   const list=$('scClientList');list.innerHTML='';
@@ -2408,10 +2508,14 @@ function saveSiteContent(){
   sc.hero.title1Ar=get('scH1Ar');sc.hero.title2Ar=get('scH2Ar');sc.hero.subtitleAr=get('scHSubAr');sc.hero.sublineAr=get('scHLineAr');
   sc.about.headingAr=get('scAHead');sc.about.titleAr=get('scATitle');sc.about.p1Ar=get('scAP1');sc.about.p2Ar=get('scAP2');
   sc.about.quoteAr=get('scAQuote');sc.about.stat1Val=get('scS1V');sc.about.stat1LabelAr=get('scS1L');
+  // SEO
+  sc.seo=sc.seo||{};
+  sc.seo.title=get('scSeoTitle'); sc.seo.desc=get('scSeoDesc'); sc.seo.ogImage=get('scSeoImg'); sc.seo.gaId=get('scGaId'); sc.seo.keywords=get('scKeywords'); sc.seo.canonical=get('scCanonical');
   AURA.save(CFG);
   /* also save to Supabase */
   if(window.AURA_DB)AURA_DB.saveSiteContent(sc);
   toast('Site content published · تم نشر المحتوى — حدّث صفحة الموقع');
+  try{ updateStorageUsage(); checkSystemHealth(); }catch(e){}
 }
 
 /* ============================================================
@@ -2496,6 +2600,109 @@ function safeUrl(u){
   if(s.startsWith('assets/') || s.startsWith('/') || s.startsWith('data:image/') || s.startsWith('https://') || s.startsWith('http://')) return s;
   if(/^\s*javascript:/i.test(s) || /^\s*data:/i.test(s) && !s.startsWith('data:image/')) return '';
   return s;
+}
+
+/* ============================================================
+   PROJECT SEARCH + EXPORT/IMPORT + STORAGE + SYSTEM HEALTH
+   ============================================================ */
+function pmSearchFilter(){
+  const q=($('pmSearch')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('#pmList .stage-row').forEach(row=>{
+    const txt=row.textContent.toLowerCase();
+    row.style.display= txt.includes(q) ? '' : 'none';
+  });
+}
+function updateStorageUsage(){
+  try{
+    const str=localStorage.getItem('aura.cms')||'';
+    const bytes=new Blob([str]).size;
+    const kb=(bytes/1024).toFixed(1);
+    const limit=5120; // 5MB typical localStorage limit
+    const pct=Math.round((bytes/1024/limit)*100);
+    const el=$('storageUsed');
+    if(el){
+      el.textContent=`${kb} KB (${pct}% of ~5MB)`;
+      el.style.color=pct>80?'var(--red)': pct>60?'var(--amber)':'var(--green)';
+    }
+  }catch(e){
+    const el=$('storageUsed'); if(el) el.textContent='—';
+  }
+}
+function exportConfig(){
+  try{
+    const dataStr=JSON.stringify(CFG,null,2);
+    const blob=new Blob([dataStr],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`aura-config-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Config exported · تم تصدير كل البيانات');
+  }catch(e){ toast('Export failed: '+e.message); }
+}
+function importConfig(input){
+  const file=input.files[0]; if(!file) return;
+  if(!confirm('⚠️ استيراد ملف سيستبدل كل البيانات الحالية! هل أنت متأكد؟\n\nImport will replace ALL current data!')){
+    input.value=''; return;
+  }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const obj=JSON.parse(e.target.result);
+      if(!obj.projects || !Array.isArray(obj.projects)){
+        toast('Invalid config file · ملف غير صالح'); return;
+      }
+      CFG=obj;
+      AURA.save(CFG);
+      if(window.AURA_DB){
+        CFG.projects.forEach(p=>AURA_DB.saveProject(p));
+        if(CFG.siteContent) AURA_DB.saveSiteContent(CFG.siteContent);
+      }
+      boot();
+      updateStorageUsage();
+      toast('Config imported · تم استيراد البيانات بنجاح');
+    }catch(err){ toast('Import failed: '+err.message); }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+function checkSystemHealth(){
+  try{
+    const projCount=CFG.projects?.length||0;
+    let imgCount=0;
+    CFG.projects?.forEach(p=>{
+      imgCount+= (p.sequence?.images?.length||0);
+      p.stages?.forEach(s=> imgCount+= (s.images?.length||0));
+      if(p.experiences?.panos) imgCount+=p.experiences.panos.length;
+      if(p.experiences?.beforeAfter) imgCount+=p.experiences.beforeAfter.length*2;
+      if(p.beforeAfter) imgCount+=p.beforeAfter.length*2;
+    });
+    const dataStr=localStorage.getItem('aura.cms')||'';
+    const kb=(new Blob([dataStr]).size/1024).toFixed(1);
+    const last=CFG._lastUpdate ? new Date(parseInt(CFG._lastUpdate)).toLocaleString('en-GB') : '—';
+    const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+    set('sysProjCount', projCount);
+    set('sysImgCount', imgCount);
+    set('sysDataSize', kb+' KB');
+    set('sysLastUpdate', last);
+    const badge=document.getElementById('sysHealthBadge');
+    if(badge){
+      const sizeKb=parseFloat(kb);
+      if(sizeKb>4000){ badge.textContent='⚠ Large'; badge.style.background='rgba(255,69,58,.15)'; badge.style.color='var(--red)'; }
+      else if(imgCount>200){ badge.textContent='Heavy'; badge.style.background='rgba(255,159,10,.15)'; badge.style.color='var(--amber)'; }
+      else { badge.textContent='OK · سليم'; badge.style.background='rgba(52,199,89,.14)'; badge.style.color='var(--green)'; }
+    }
+  }catch(e){ console.warn('health check failed', e); }
+}
+function clearImageCache(){
+  if(!confirm('مسح كاش الصور من المتصفح؟ سيتم إعادة تحميل الصور عند الحاجة.\nClear browser image cache?')) return;
+  try{
+    if(typeof cache!=='undefined'){ cache={}; }
+    const sizeBefore=(new Blob([localStorage.getItem('aura.cms')||'']).size/1024).toFixed(1);
+    toast(`Cache cleared · تم المسح (was ${sizeBefore} KB)`);
+    setTimeout(()=>location.reload(), 800);
+  }catch(e){ toast('Clear failed: '+e.message); }
 }
 function filterInquiries(s){_inqFilter=s;buildInquiries();}
 function inqStatus(id,status){
