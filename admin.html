@@ -2626,7 +2626,7 @@ function hsRender(){
       display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;z-index:5;
       box-shadow:0 4px 14px rgba(0,0,0,.35)`;
     d.textContent=i+1;
-    d.onpointerdown=e=>{e.stopPropagation();hsDrag=i;hsSel=i;hsFill();hsRender();};
+    d.onpointerdown=e=>{e.stopPropagation();hsDrag=i;hsSel=i;hsFill();hsRender();st.setPointerCapture(e.pointerId);};
     st.appendChild(d);
   });
   const list=document.getElementById('hsList');if(!list)return;
@@ -2677,25 +2677,48 @@ function hsSave(){
 }
 (function hsWire(){
   const st=document.getElementById('hsStage');if(!st)return;
+  let _hsDidDrag=false;
+  /* pointerdown on stage: either start dragging existing dot or create new */
   st.addEventListener('pointerdown',e=>{
-    if(e.target.classList.contains('hsdot'))return;
+    if(e.target.classList.contains('hsdot'))return; /* dot handles its own */
     const r=st.getBoundingClientRect();
     const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100;
-    hsSpots().push({x:+x.toFixed(1),y:+y.toFixed(1),name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
-      color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
-    hsSel=hsSpots().length-1;hsFill();hsRender();
-    toast('Spot added · نقطة جديدة');
+    /* check if clicked near an existing dot (within ~3%) → select + drag it */
+    const spots=hsSpots();
+    let nearest=-1,nearestDist=999;
+    spots.forEach((f,i)=>{
+      const dx=f.x-x,dy=f.y-y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<5&&dist<nearestDist){nearestDist=dist;nearest=i;}
+    });
+    if(nearest>=0){
+      /* clicked near existing dot → select + start dragging */
+      hsDrag=nearest;hsSel=nearest;hsFill();hsRender();
+      _hsDidDrag=false;
+    } else {
+      /* clicked empty area → create new spot at click position */
+      spots.push({x:+x.toFixed(1),y:+y.toFixed(1),name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
+        color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
+      hsSel=spots.length-1;hsFill();hsRender();
+      toast('Spot added · نقطة جديدة');
+      /* immediately start dragging the new spot */
+      hsDrag=hsSel;
+      _hsDidDrag=false;
+    }
   });
-  addEventListener('pointermove',e=>{
+  /* pointermove: drag the selected spot */
+  st.addEventListener('pointermove',e=>{
     if(hsDrag<0)return;
     const r=st.getBoundingClientRect();
     const f=hsSpots()[hsDrag];if(!f)return;
     f.x=+Math.min(98,Math.max(2,(e.clientX-r.left)/r.width*100)).toFixed(1);
     f.y=+Math.min(98,Math.max(2,(e.clientY-r.top)/r.height*100)).toFixed(1);
     const hp=document.getElementById('hsPos');if(hp)hp.textContent=`x: ${Math.round(f.x)}% y: ${Math.round(f.y)}%`;
+    _hsDidDrag=true;
     hsRender();
   });
-  addEventListener('pointerup',()=>hsDrag=-1);
+  st.addEventListener('pointerup',()=>{hsDrag=-1;});
+  st.addEventListener('pointercancel',()=>{hsDrag=-1;});
 })();
 
 function saveInterior(){AURA.save(CFG);toast('Interior published · تم نشر الديكور')}
