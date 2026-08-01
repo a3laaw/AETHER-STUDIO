@@ -183,6 +183,20 @@ window.AURA_DB = (function () {
     } catch (e) {}
   }
 
+  /* delete ALL inquiries (admin "clear" action) — Supabase + localStorage */
+  async function clearInquiries() {
+    try {
+      await waitReady();
+      await window.sb.from('inquiries').delete().neq('id', '');
+      localStorage.removeItem(INQ_KEY);
+      return true;
+    } catch (e) {
+      console.warn('[AURA DB] clearInquiries:', e.message);
+      try { localStorage.removeItem(INQ_KEY); } catch (e2) {}
+      return false;
+    }
+  }
+
   /* ---------- MEDIA UPLOAD (images + videos) ---------- */
   async function uploadMedia(file, folder = 'misc') {
     const isImage = file.type.startsWith('image/');
@@ -257,7 +271,7 @@ window.AURA_DB = (function () {
     isReady, loadAll, saveAll,
     loadProjects, saveProject,
     loadSiteContent, saveSiteContent,
-    loadInquiries, saveInquiry, updateInquiryStatus, deleteInquiry,
+    loadInquiries, saveInquiry, updateInquiryStatus, deleteInquiry, clearInquiries,
     uploadImage, uploadMedia, saveHotspots
   };
 })();

@@ -215,7 +215,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <input type="password" id="lPass" placeholder="••••••••">
     <button class="btn" id="lBtn">Sign In · تسجيل الدخول</button>
     <div class="err" id="lErr"></div>
-    <div class="hint">Demo password: <b>aura2026</b> — للعرض فقط · Demo only</div>
+    <div class="hint">Protected area · منطقة محمية — الدخول للمصرّح لهم فقط</div>
   </div>
 </div>
 
@@ -530,7 +530,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== SCROLL / PLAYBACK SETTINGS ========== -->
     <div class="page" id="p-scroll">
-      <h1 class="pt">سرعة الفيديو · Playback</h1>
+      <h1 class="pt">أوامر التشغيل · Playback Controls</h1>
       <div class="ps">سرعة عرض الإطارات + مدة التوقف عند كل مرحلة — يُطبَّق على الموقع فور الحفظ</div>
 
       <!-- Live preview: actual frame strip from current project -->
@@ -581,6 +581,13 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
             <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div>
           </div>
           <label class="switch"><input type="checkbox" id="pAuto"><i></i></label>
+        </div>
+        <div class="frow" style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px">
+          <div>
+            <div class="fl">④ المشروع الحالي · Current Project</div>
+            <div class="fs" id="pbDefaultHint" style="display:none">يعرض الإطارات الافتراضية (97) — ارفع صور المراحل لتخصيص فيديو هذا المشروع</div>
+          </div>
+          <b id="pbProjName" style="color:var(--blue);font-size:13px">—</b>
         </div>
         <div class="btnrow">
           <button class="btn" onclick="savePlayback()">حفظ ونشر · Save & Publish</button>
@@ -644,6 +651,9 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
   <a href="index.html" target="_blank" id="floatPreview" style="position:fixed;bottom:20px;right:20px;z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:100px;background:#1A1A1C;color:#fff;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 12px 32px -8px rgba(0,0,0,.4);transition:.3s">
     <span>↗</span><span>معاينة الموقع · Preview</span>
   </a>
+  <div id="unsavedBadge" style="position:fixed;bottom:20px;right:210px;z-index:200;display:none;align-items:center;gap:8px;padding:10px 16px;border-radius:100px;background:#FFF8E1;border:1px solid #E8C766;color:#8A6D1A;font-size:12px;font-weight:700;box-shadow:0 12px 32px -8px rgba(0,0,0,.25)">
+    ● غير محفوظ · Unsaved — اضغط «حفظ ونشر»
+  </div>
 </div>
 
 <div id="toast"><span class="ok">✓</span><span id="toastMsg">Saved · تم الحفظ</span></div>
@@ -671,15 +681,51 @@ console.log('[AURA Admin] Scripts loaded. CFG projects:',CFG.projects?.length,'c
 
 /* ---------------- auth ---------------- */
 const SESSION='aura.session';
-function tryLogin(){
+/* SHA-256 of the admin password — the plaintext secret never appears in the code */
+const ADMIN_PASS_HASH='6a91bf577ded55dce359b5d51313dc29a751265e04319d9a05a73bb6b2f00b3f';
+/* fallback hash (FNV-1a) used when crypto.subtle is unavailable (plain http) */
+const ADMIN_PASS_HASH_FALLBACK='57d06a54';
+let _loginFails=0,_loginLock=0;
+async function sha256(str){
+  try{
+    if(window.crypto&&crypto.subtle){
+      const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){}
+  /* fallback for non-secure contexts: FNV-1a 32-bit (not cryptographic — demo only) */
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}
+  return (h>>>0).toString(16);
+}
+async function tryLogin(){
   const pass=document.getElementById('lPass').value;
   const email=document.getElementById('lEmail').value.trim();
-  if(pass==='aura2026'){
+  const now=Date.now();
+  if(now<_loginLock){
+    document.getElementById('lErr').textContent='محاولات كثيرة — انتظر '+(Math.ceil((_loginLock-now)/1000))+' ثانية · Too many attempts — wait and retry';
+    return;
+  }
+  const hash=await sha256(pass);
+  if(hash===ADMIN_PASS_HASH||hash===ADMIN_PASS_HASH_FALLBACK){
+    _loginFails=0;
     const role = email.startsWith('admin')?'admin':'editor';
     sessionStorage.setItem(SESSION, JSON.stringify({email,role,t:Date.now()}));
     sessionStorage.removeItem('aura.gate.pwd');
+    sessionStorage.removeItem('aura.gate.ok');
+    /* also try Supabase Auth with the same credentials — enables DB/Storage writes
+       when the owner created a matching user (RLS requires an authenticated session). */
+    if(window.AURA_DB&&AURA_DB.isReady()&&window.sb&&window.sb.auth){
+      window.sb.auth.signInWithPassword({email:email||'admin@aura.studio',password:pass})
+        .then(res=>{ if(res.error) console.warn('[AURA] Supabase auth skipped:',res.error.message); })
+        .catch(e=>console.warn('[AURA] Supabase auth unavailable:',e.message));
+    }
     enter();
-  } else document.getElementById('lErr').textContent='Incorrect password. Hint: aura2026';
+  } else {
+    _loginFails++;
+    if(_loginFails>=5){_loginFails=0;_loginLock=now+60000;}
+    document.getElementById('lErr').textContent='كلمة المرور غير صحيحة · Incorrect password';
+  }
 }
 document.getElementById('lBtn').onclick=tryLogin;
 document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
@@ -695,12 +741,11 @@ function enter(){
 document.getElementById('logout').onclick=()=>{sessionStorage.removeItem(SESSION);location.reload()};
 /* auto-login if coming from hidden gate (3 logo clicks or Ctrl+Shift+A on index) */
 (function(){
-  const gatePwd=sessionStorage.getItem('aura.gate.pwd');
-  if(gatePwd){
-    sessionStorage.removeItem('aura.gate.pwd');
-    document.getElementById('lPass').value=gatePwd;
-    document.getElementById('lEmail').value='admin@aura.studio';
-    tryLogin();
+  const gateOk=sessionStorage.getItem('aura.gate.ok');
+  if(gateOk){
+    sessionStorage.removeItem('aura.gate.ok');
+    sessionStorage.setItem(SESSION, JSON.stringify({email:'admin@aura.studio',role:'admin',t:Date.now()}));
+    enter();
   }
   else if(sessionStorage.getItem(SESSION))enter();
 })();
@@ -846,6 +891,7 @@ if(typeof BroadcastChannel!=='undefined'){
 AURA.save=function(cfg){
   _origAdminSave(cfg);
   _unsavedChanges=false;
+  updateUnsavedBadge();
   /* visual indicator */
   const btn=document.getElementById('floatPreview');
   if(btn)btn.style.opacity='1';
@@ -855,8 +901,8 @@ AURA.save=function(cfg){
   }
 };
 /* mark changed on any input in admin */
-document.addEventListener('input',()=>{_unsavedChanges=true;});
-document.addEventListener('change',()=>{_unsavedChanges=true;});
+document.addEventListener('input',()=>{_unsavedChanges=true;updateUnsavedBadge();});
+document.addEventListener('change',()=>{_unsavedChanges=true;updateUnsavedBadge();});
 /* warn before leaving with unsaved changes */
 window.addEventListener('beforeunload',e=>{
   if(_unsavedChanges){
@@ -864,20 +910,17 @@ window.addEventListener('beforeunload',e=>{
     e.returnValue='';
   }
 });
-/* auto-save every 30s if there are changes */
-setInterval(()=>{
-  if(_unsavedChanges){
-    AURA.save(CFG);
-    /* subtle toast */
-    const t=document.getElementById('toast');
-    if(t){document.getElementById('toastMsg').textContent='Auto-saved · حفظ تلقائي';t.classList.add('show');
-      clearTimeout(window._autoSaveT);window._autoSaveT=setTimeout(()=>t.classList.remove('show'),1500);}
-  }
-},30000);
+/* NOTE: auto-save is REMOVED on purpose — nothing is published unless you click
+   «حفظ ونشر» (Save & Publish). This prevents half-finished edits from reaching the site. */
+function updateUnsavedBadge(){
+  const b=document.getElementById('unsavedBadge');
+  if(b)b.style.display=_unsavedChanges?'flex':'none';
+}
 ['pFpsExt','pPauseExt'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
 /* ---------- playback: live preview tied to actual frames ---------- */
 let pbFrames=[];          /* array of image URLs (actual sequence) */
 let pbStages=[];          /* array of {from,to,color,name} */
+let pbUsingDefault=false; /* true when preview uses the project's default frames */
 let pbPlaying=false;
 let pbCurrentFrame=1;
 let pbRafId=null;
@@ -913,8 +956,17 @@ function pbLoadFrames(){
       }
     });
   }
-  /* if still empty, use default count (but mark as placeholder) */
-  const count=pbFrames.length||(PROJ.sequence?.count||0);
+  /* if still empty, generate the project's default frames (assets/seq/frameNNN.webp) */
+  if(!pbFrames.length && PROJ.sequence && (PROJ.sequence.count||97)>0){
+    pbUsingDefault=true;
+    const n=PROJ.sequence.count||97;
+    for(let i=1;i<=n;i++){
+      pbFrames.push(window.AURA&&AURA.frameSrc?AURA.frameSrc(PROJ,i):
+        (PROJ.sequence.path||'assets/seq/')+(PROJ.sequence.prefix||'frame')+
+        String(i).padStart(PROJ.sequence.digits||3,'0')+(PROJ.sequence.ext||'.webp'));
+    }
+  }
+  const count=pbFrames.length||0;
   pbStages=(PROJ.stages||[]).map(s=>({from:s.from||1,to:s.to||count,color:s.color||'#BFA76A',name:s.name}));
   /* update UI labels */
   const projTag=document.getElementById('pbProjTag');
@@ -925,6 +977,10 @@ function pbLoadFrames(){
   if(extFramesEl)extFramesEl.textContent=pbFrames.length;
   const pauseCountEl=document.getElementById('pbPauseCount');
   if(pauseCountEl)pauseCountEl.textContent=pbStages.length;
+  const pn=document.getElementById('pbProjName');
+  if(pn)pn.textContent=PROJ.project?.title||PROJ.id||'—';
+  const defHint=document.getElementById('pbDefaultHint');
+  if(defHint)defHint.style.display=pbUsingDefault?'flex':'none';
   /* build stage markers */
   const mk=document.getElementById('pbStageMarkers');
   if(mk && pbFrames.length){
@@ -1333,7 +1389,7 @@ function buildStages(){
       '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
       '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+(s.icon||'◆')+'</span>'+
       '<button class="btn sm ghost" onclick="toggleStageImages('+i+')" style="position:relative">🖼 <span style="font-size:10px">'+imgCount+'</span></button>'+
-      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')">'+(isAr?'التوقفات':'Pauses')+'</button>'+
+      '<button class="btn sm ghost" onclick="togglePausePoints('+i+')" style="position:relative">⏸ '+(isAr?'التوقفات':'Pauses')+' <span style="font-size:10px;font-weight:700;background:rgba(191,167,106,.22);color:var(--gold-2);padding:1px 8px;border-radius:100px">'+(s.pausePoints?s.pausePoints.length:0)+'</span></button>'+
       '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
     r.addEventListener('dragstart',()=>r.classList.add('dragging'));
     r.addEventListener('dragend',()=>{r.classList.remove('dragging');saveStageOrder();});
@@ -1518,25 +1574,51 @@ function saveStageOrder(){
 }
 function buildPausePointsHTML(stage,stageIdx){
   const pps=stage.pausePoints||[];
-  let html='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:10px">نقاط التوقف · Pause Points ('+pps.length+')</div>';
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  let html='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">'+(isAr?'⏸ نقاط التوقف — تظهر تلقائياً عند بداية المرحلة في الموقع':'⏸ Pause Points — shown automatically at the stage start on the site')+'</div>';
+  if(!pps.length){
+    html+='<div style="font-size:11.5px;color:var(--tx3);margin:6px 0 10px">'+(isAr?'لا توجد نقاط توقف بعد — اضغط «＋ إضافة نقطة توقف»':'No pause points yet — click “＋ Add pause point”')+'</div>';
+  }
   pps.forEach((pp,i)=>{
-    html+=`<div style="display:grid;grid-template-columns:60px 1fr 1fr 80px;gap:8px;margin-bottom:8px;align-items:center">
-      <input type="number" value="${pp.frame}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="frame" style="text-align:center" placeholder="Frame # · إطار">
-      <input type="text" value="${pp.title?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="titleAr" dir="rtl" placeholder="عنوان عربي" style="font-family:var(--font-ar)">
-      <input type="text" value="${pp.desc?.ar||''}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="descAr" dir="rtl" placeholder="وصف عربي" style="font-family:var(--font-ar)">
-      <select data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="widget" style="font-size:11px">
-        ${['progress','structural','materials','schedule','cost','qa','rooms','ba'].map(w=>`<option value="${w}" ${pp.widget===w?'selected':''}>${w}</option>`).join('')}
-      </select>
+    html+=`<div style="border:1px solid var(--brd);border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <b style="font-size:11px;color:var(--gold-2);background:rgba(191,167,106,.14);padding:2px 9px;border-radius:100px">⏸ ${i+1}</b>
+        <span style="font-size:11px;color:var(--tx3)">${isAr?'رقم الإطار · Frame #':'Frame #'}</span>
+        <input type="number" value="${escAttr(pp.frame)}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="frame" style="width:70px;text-align:center;background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:4px 6px;color:var(--tx)">
+        <button class="btn sm danger" style="margin-left:auto" onclick="deletePausePoint(${stageIdx},${i})" title="${isAr?'حذف النقطة':'Delete point'}">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input type="text" value="${escAttr(pp.title?.ar||'')}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="titleAr" dir="rtl" placeholder="${isAr?'العنوان (عربي)':'Title (AR)'}" style="font-family:var(--font-ar);background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:7px 10px;color:var(--tx)">
+        <input type="text" value="${escAttr(pp.title?.en||'')}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="titleEn" placeholder="${isAr?'Title (EN)':'العنوان (إنجليزي)'}" style="background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:7px 10px;color:var(--tx)">
+        <input type="text" value="${escAttr(pp.desc?.ar||'')}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="descAr" dir="rtl" placeholder="${isAr?'الوصف (عربي)':'Desc (AR)'}" style="font-family:var(--font-ar);background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:7px 10px;color:var(--tx)">
+        <input type="text" value="${escAttr(pp.desc?.en||'')}" data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="descEn" placeholder="${isAr?'Desc (EN)':'الوصف (إنجليزي)'}" style="background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:7px 10px;color:var(--tx)">
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--tx3)">${isAr?'الويدجت المرتبطة':'Linked widget'}</span>
+        <select data-pp-stage="${stageIdx}" data-pp-i="${i}" data-pp-k="widget" style="flex:1;font-size:11px;background:var(--panel2);border:1px solid var(--brd);border-radius:8px;padding:6px;color:var(--tx)">
+          ${['progress','structural','materials','schedule','cost','qa','rooms','ba'].map(w=>`<option value="${w}" ${pp.widget===w?'selected':''}>${w}</option>`).join('')}
+        </select>
+      </div>
     </div>`;
   });
-  html+=`<button class="btn sm ghost" onclick="addPausePoint(${stageIdx})" style="margin-top:6px">+ إضافة نققة توقف</button>`;
+  html+=`<button class="btn sm ghost" onclick="addPausePoint(${stageIdx})">＋ ${isAr?'إضافة نقطة توقف':'Add pause point'}</button>`;
   return html;
 }
 function addPausePoint(stageIdx){
   if(!PROJ.stages[stageIdx].pausePoints)PROJ.stages[stageIdx].pausePoints=[];
   PROJ.stages[stageIdx].pausePoints.push({frame:1,title:{ar:'',en:''},desc:{ar:'',en:''},images:[],widget:'progress'});
+  AURA.save(CFG);
   buildStages();
   togglePausePoints(stageIdx);
+  toast('Pause point added · تمت إضافة نقطة توقف');
+}
+function deletePausePoint(stageIdx,ppIdx){
+  if(!confirm('Delete this pause point? · حذف نقطة التوقف؟'))return;
+  PROJ.stages[stageIdx].pausePoints.splice(ppIdx,1);
+  AURA.save(CFG);
+  buildStages();
+  togglePausePoints(stageIdx);
+  toast('Pause point deleted · تم حذف نقطة التوقف');
 }
 /* wire pause point inputs */
 document.addEventListener('input',e=>{
@@ -1546,7 +1628,9 @@ document.addEventListener('input',e=>{
     if(!pp)return;
     if(k==='frame')pp.frame=+e.target.value;
     else if(k==='titleAr'){pp.title=pp.title||{};pp.title.ar=e.target.value;}
+    else if(k==='titleEn'){pp.title=pp.title||{};pp.title.en=e.target.value;}
     else if(k==='descAr'){pp.desc=pp.desc||{};pp.desc.ar=e.target.value;}
+    else if(k==='descEn'){pp.desc=pp.desc||{};pp.desc.en=e.target.value;}
     else if(k==='widget')pp.widget=e.target.value;
   }
 });
@@ -2678,6 +2762,7 @@ async function buildInquiries(){
   });
 }
 function escapeHtml(s){return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));}
+function escAttr(s){return escapeHtml(s).replace(/`/g,'&#96;');}
 function safeUrl(u){
   const s=String(u||'').trim();
   if(!s) return '';
@@ -2803,7 +2888,11 @@ function inqDelete(id){
 }
 function clearInquiries(){
   if(!confirm('Delete ALL inquiries? This cannot be undone.'))return;
-  saveInquiries([]);buildInquiries();toast('All inquiries cleared · تم مسح كل الطلبات');
+  if(window.AURA_DB&&AURA_DB.clearInquiries){
+    AURA_DB.clearInquiries().then(()=>{buildInquiries();toast('All inquiries cleared · تم مسح كل الطلبات');});
+  }else{
+    saveInquiries([]);buildInquiries();toast('All inquiries cleared · تم مسح كل الطلبات');
+  }
 }
 function exportInquiries(){
   const all=loadInquiries();
