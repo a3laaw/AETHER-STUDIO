@@ -25,13 +25,21 @@ button{font-family:inherit}
 .latin{font-family:var(--font);font-feature-settings:"tnum" 1,"lnum" 1}
 .num{font-family:var(--font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1,"lnum" 1}
 
-/* ================= TOP BAR (project switcher) ================= */
-#projBar{position:fixed;top:0;left:0;right:0;z-index:101;display:flex;align-items:center;gap:14px;
-  padding:8px 16px;background:rgba(250,250,247,.85);backdrop-filter:blur(22px) saturate(180%);
-  -webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid var(--border);max-height:54px;overflow-x:auto;scrollbar-width:none;
-  transition:transform .35s ease,opacity .3s ease}
-#projBar::-webkit-scrollbar{display:none}
-#projBar .pb-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2);flex:none;padding-inline-end:8px;border-inline-end:1px solid var(--border);margin-inline-end:4px}
+/* ================= UNIFIED TOP BAR ================= */
+#topBar{position:fixed;top:0;left:0;right:0;z-index:101;background:rgba(250,250,247,.92);backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border);transition:transform .35s ease}
+#topBar.hidden{transform:translateY(-100%)}
+.tb-row{display:flex;align-items:center;gap:14px;padding:0 24px}
+.tb-main{justify-content:space-between;padding-top:12px;padding-bottom:12px}
+.tb-projects{padding-top:6px;padding-bottom:8px;border-top:1px solid rgba(0,0,0,.04);overflow-x:auto;scrollbar-width:none;max-width:100vw}
+.tb-projects::-webkit-scrollbar{display:none}
+.tb-projects .pb-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2);flex:none;padding-inline-end:8px;border-inline-end:1px solid var(--border);margin-inline-end:4px}
+.logo{font-weight:700;letter-spacing:.28em;font-size:14px;cursor:pointer;color:var(--fg);text-decoration:none}
+.logo b{color:var(--gold)}
+.links{display:flex;gap:22px;align-items:center}
+.links a{color:var(--fg-2);text-decoration:none;font-size:13px;font-weight:500;transition:.3s;cursor:pointer}
+.links a:hover{color:var(--gold)}
+/* project cards */
 .pcard{flex:none;display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:100px;
   background:rgba(26,26,28,.04);border:1px solid var(--border);cursor:pointer;transition:.35s;font-size:12px;min-width:max-content}
 .pcard:hover{border-color:var(--gold);background:rgba(191,167,106,.08)}
@@ -45,15 +53,6 @@ button{font-family:inherit}
 .pcard .pdot.completed{background:var(--green)}
 .pcard .pdot.in-progress{background:var(--gold);box-shadow:0 0 0 3px rgba(191,167,106,.18);animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(191,167,106,.18)}50%{box-shadow:0 0 0 6px rgba(191,167,106,.05)}}
-
-/* ================= NAV ================= */
-.nav{position:fixed;top:54px;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:13px 40px;transition:.4s}
-.nav.scrolled{background:rgba(250,250,247,.75);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border)}
-.nav .logo{font-weight:700;letter-spacing:.28em;font-size:14px;cursor:pointer;color:var(--fg);text-decoration:none}
-.nav .logo b{color:var(--gold)}
-.nav .links{display:flex;gap:24px;align-items:center}
-.nav .links a{color:var(--fg-2);text-decoration:none;font-size:13px;font-weight:500;transition:.3s;cursor:pointer}
-.nav .links a:hover{color:var(--gold)}
 .lang-btn{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--gold);
   background:rgba(191,167,106,.1);border:1px solid rgba(191,167,106,.4);border-radius:100px;padding:9px 16px;cursor:pointer;transition:.3s;font-family:inherit}
 .lang-btn:hover{background:rgba(191,167,106,.2)}
@@ -63,7 +62,7 @@ button{font-family:inherit}
 .cta-btn:hover{background:#d4ba80;border-color:#d4ba80;transform:translateY(-1px)}
 
 /* ================= HERO (cinematic) ================= */
-#hero{position:relative;height:calc(100vh - 110px);min-height:540px;overflow:hidden;background:#fff;margin-top:110px}
+#hero{position:relative;height:calc(100vh - 100px);min-height:540px;overflow:hidden;background:#fff;margin-top:100px}
 #cine{position:absolute;inset:0;width:100%;height:100%;display:block;background:#fff}
 #heroFade{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .45s;z-index:7}
 
@@ -414,18 +413,17 @@ footer p .ar{font-family:var(--font-ar)}
 #adminGate{display:none}
 
 @media(max-width:640px){
-  .nav .links a:not(.cta-btn){display:none}
-  .nav{padding:13px 20px}
-  /* compact top bar on mobile */
-  #projBar{padding:6px 10px;max-height:44px}
-  #projBar .pb-label{font-size:9px}
+  .links a:not(.cta-btn):not(.lang-btn){display:none}
+  .tb-row{padding:0 14px}
+  .tb-main{padding-top:10px;padding-bottom:10px}
+  .tb-projects{padding-top:5px;padding-bottom:6px}
+  .tb-projects .pb-label{font-size:9px}
   .pcard{padding:4px 10px 4px 4px;gap:6px}
   .pcard img{width:24px;height:24px}
   .pcard .pmeta b{font-size:11px}
   .pcard .pmeta .pstat{font-size:8.5px}
-  .nav{top:44px}
-  /* hero adjusts for compact bars (44 + 50 = 94) */
-  #hero{height:calc(100vh - 94px);margin-top:94px;min-height:420px}
+  /* hero adjusts for compact top bar (mobile ~88px) */
+  #hero{height:calc(100vh - 88px);margin-top:88px;min-height:420px}
   #services{padding:60px 20px 80px}
   .modal-card{padding:28px 22px}
   /* === MOBILE: hide glass HUD to avoid overlap with video === */
@@ -484,24 +482,24 @@ footer p .ar{font-family:var(--font-ar)}
 </head>
 <body>
 
-<!-- ================= TOP BAR ================= -->
-<div id="projBar">
-  <span class="pb-label">المشاريع · Projects</span>
-  <div id="projList" style="display:flex;gap:8px"></div>
-</div>
-
-<!-- ================= NAV ================= -->
-<nav class="nav" id="nav">
-  <a href="#" class="logo" data-aura-logo="1">AU<b>R</b>A</a>
-  <div class="links">
-    <a data-go="services">خدماتنا · Services</a>
-    <a data-go="about">من نحن · About</a>
-    <a data-go="clients">عملاؤنا · Clients</a>
-    <a data-go="contact">تواصل · Contact</a>
-    <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">English</span></button>
-    <a class="cta-btn" href="#contact">اطلب تجربة حية</a>
+<!-- ================= UNIFIED TOP BAR (logo + projects + nav) ================= -->
+<header id="topBar">
+  <div class="tb-row tb-main">
+    <a href="#" class="logo" data-aura-logo="1">AU<b>R</b>A</a>
+    <nav class="links">
+      <a data-go="services">خدماتنا · Services</a>
+      <a data-go="about">من نحن · About</a>
+      <a data-go="clients">عملاؤنا · Clients</a>
+      <a data-go="contact">تواصل · Contact</a>
+      <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">English</span></button>
+      <a class="cta-btn" href="#contact">اطلب تجربة حية</a>
+    </nav>
   </div>
-</nav>
+  <div class="tb-row tb-projects" id="projBar">
+    <span class="pb-label">المشاريع · Projects</span>
+    <div id="projList" style="display:flex;gap:8px"></div>
+  </div>
+</header>
 
 <!-- ================= HERO (cinematic) ================= -->
 <section id="hero">
@@ -1496,19 +1494,13 @@ document.querySelectorAll('.svc-card[data-wid]').forEach(c=>{
 
 /* ---------- nav scroll ---------- */
 addEventListener('scroll',()=>{
-  const sc=scrollY>40;
-  $('nav').classList.toggle('scrolled',sc);
-  /* hide projBar when scrolled down (more video space) */
-  const pb=$('projBar');
-  if(pb){
-    if(scrollY>100){
-      pb.style.transform='translateY(-100%)';
-      pb.style.opacity='0';
-      pb.style.pointerEvents='none';
+  /* hide entire top bar when scrolled down (more video space) */
+  const tb=$('topBar');
+  if(tb){
+    if(scrollY>120){
+      tb.classList.add('hidden');
     }else{
-      pb.style.transform='';
-      pb.style.opacity='';
-      pb.style.pointerEvents='';
+      tb.classList.remove('hidden');
     }
   }
 },{passive:true});
