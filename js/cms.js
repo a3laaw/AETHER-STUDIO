@@ -596,8 +596,8 @@ window.AURA = (function(){
    ============================================================ */
 window.AURA_I18N=(function(){
   const KEY='aura.lang';
-  let lang='en';
-  try{lang=localStorage.getItem(KEY)||'en';}catch(e){}
+  let lang='ar';  /* Arabic (RTL) is the site default — README & UI are Arabic-first */
+  try{lang=localStorage.getItem(KEY)||'ar';}catch(e){}
   const ARX=/[\u0600-\u06FF]/, LAT=/[A-Za-z]/;
   const pick=(en,ar)=>lang==='ar'?(ar||en):(en||ar);
   function setLang(l){try{localStorage.setItem(KEY,l);}catch(e){}location.reload();}
@@ -631,7 +631,7 @@ window.AURA_I18N=(function(){
   }
   function init(){
     document.documentElement.lang=lang;
-    if(lang==='ar')document.documentElement.dir='rtl';
+    document.documentElement.dir=lang==='ar'?'rtl':'ltr';  /* always keep dir in sync with lang */
     document.querySelectorAll('.langLbl').forEach(e=>e.textContent=lang==='ar'?'English':'العربية');
     process(document.body);
     new MutationObserver(muts=>{
