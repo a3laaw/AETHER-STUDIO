@@ -28,7 +28,8 @@ button{font-family:inherit}
 /* ================= TOP BAR (project switcher) ================= */
 #projBar{position:fixed;top:0;left:0;right:0;z-index:101;display:flex;align-items:center;gap:14px;
   padding:8px 16px;background:rgba(250,250,247,.85);backdrop-filter:blur(22px) saturate(180%);
-  -webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid var(--border);max-height:54px;overflow-x:auto;scrollbar-width:none}
+  -webkit-backdrop-filter:blur(22px) saturate(180%);border-bottom:1px solid var(--border);max-height:54px;overflow-x:auto;scrollbar-width:none;
+  transition:transform .35s ease,opacity .3s ease}
 #projBar::-webkit-scrollbar{display:none}
 #projBar .pb-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2);flex:none;padding-inline-end:8px;border-inline-end:1px solid var(--border);margin-inline-end:4px}
 .pcard{flex:none;display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:100px;
@@ -62,7 +63,7 @@ button{font-family:inherit}
 .cta-btn:hover{background:#d4ba80;border-color:#d4ba80;transform:translateY(-1px)}
 
 /* ================= HERO (cinematic) ================= */
-#hero{position:relative;height:calc(100vh - 54px);min-height:600px;overflow:hidden;background:#fff}
+#hero{position:relative;height:calc(100vh - 110px);min-height:540px;overflow:hidden;background:#fff;margin-top:110px}
 #cine{position:absolute;inset:0;width:100%;height:100%;display:block;background:#fff}
 #heroFade{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .45s;z-index:7}
 
@@ -125,7 +126,7 @@ html[dir="rtl"] .hero-copy .sub{font-family:var(--font-ar);font-style:normal;fon
 .widget-overlay .ow-hint{display:none}
 
 /* ================= APPLE LIQUID GLASS — stage progress HUD ================= */
-.glass-hud{position:absolute;top:80px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:200px}
+.glass-hud{position:absolute;top:24px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:200px}
 .glass-hud .gh-stage{background:rgba(255,255,255,.72);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
   border:1.5px solid rgba(255,255,255,.7);border-radius:14px;padding:12px 14px;
   box-shadow:0 10px 36px -10px rgba(0,0,0,.12),0 2px 8px -2px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9);
@@ -153,7 +154,7 @@ html[dir="rtl"] .glass-hud .gh-stage.show{transform:translateX(0) scale(1)}
 .glass-hud .gh-stage .gh-status.upcoming{color:#9A9A9F;background:rgba(154,154,159,.08)}
 
 /* overall project progress (top-left glass card) */
-.glass-overall{position:absolute;top:80px;left:24px;z-index:13;
+.glass-overall{position:absolute;top:24px;left:24px;z-index:13;
   background:rgba(255,255,255,.72);backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
   border:1.5px solid rgba(255,255,255,.7);border-radius:14px;padding:14px 16px;
   box-shadow:0 10px 36px -10px rgba(0,0,0,.12),0 2px 8px -2px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9);
@@ -415,6 +416,16 @@ footer p .ar{font-family:var(--font-ar)}
 @media(max-width:640px){
   .nav .links a:not(.cta-btn){display:none}
   .nav{padding:13px 20px}
+  /* compact top bar on mobile */
+  #projBar{padding:6px 10px;max-height:44px}
+  #projBar .pb-label{font-size:9px}
+  .pcard{padding:4px 10px 4px 4px;gap:6px}
+  .pcard img{width:24px;height:24px}
+  .pcard .pmeta b{font-size:11px}
+  .pcard .pmeta .pstat{font-size:8.5px}
+  .nav{top:44px}
+  /* hero adjusts for compact bars (44 + 50 = 94) */
+  #hero{height:calc(100vh - 94px);margin-top:94px;min-height:420px}
   #services{padding:60px 20px 80px}
   .modal-card{padding:28px 22px}
   /* === MOBILE: hide glass HUD to avoid overlap with video === */
@@ -523,7 +534,7 @@ footer p .ar{font-family:var(--font-ar)}
   </div>
 
   <!-- Experience buttons (right side, vertical, below glass-hud with gap) -->
-  <div id="expButtons" style="position:absolute;top:260px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:auto">
+  <div id="expButtons" style="position:absolute;top:220px;right:24px;z-index:13;display:flex;flex-direction:column;gap:8px;pointer-events:auto">
     <button id="btn360" onclick="openExp360()" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.55);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid rgba(255,255,255,.5);box-shadow:0 6px 18px -8px rgba(0,0,0,.1),inset 0 1px 0 rgba(255,255,255,.6);font-size:10.5px;font-weight:700;color:var(--gold);cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap">
       ⟲ <span>360°</span>
     </button>
@@ -1485,7 +1496,21 @@ document.querySelectorAll('.svc-card[data-wid]').forEach(c=>{
 
 /* ---------- nav scroll ---------- */
 addEventListener('scroll',()=>{
-  $('nav').classList.toggle('scrolled',scrollY>40);
+  const sc=scrollY>40;
+  $('nav').classList.toggle('scrolled',sc);
+  /* hide projBar when scrolled down (more video space) */
+  const pb=$('projBar');
+  if(pb){
+    if(scrollY>100){
+      pb.style.transform='translateY(-100%)';
+      pb.style.opacity='0';
+      pb.style.pointerEvents='none';
+    }else{
+      pb.style.transform='';
+      pb.style.opacity='';
+      pb.style.pointerEvents='';
+    }
+  }
 },{passive:true});
 document.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>{
   const el=$(a.dataset.go);if(el)scrollTo({top:el.offsetTop-80,behavior:'smooth'});
