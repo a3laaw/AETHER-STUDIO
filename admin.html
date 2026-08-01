@@ -39,27 +39,27 @@ button{font-family:inherit}
 .login-card .hint{font-size:11px;color:var(--tx3);text-align:center;margin-top:16px}
 .login-card .err{color:var(--red);font-size:12px;text-align:center;margin-top:12px;min-height:16px}
 
-/* ---------- shell ---------- */
-#app{display:none;grid-template-columns:230px 1fr;min-height:100vh}
+/* ---------- shell — horizontal primary nav + sidebar fallback ---------- */
+#app{display:none;grid-template-columns:1fr;min-height:100vh}
 #app.in{display:grid}
-aside{background:var(--bg2);border-right:1px solid var(--brd);padding:26px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
-aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0 12px;margin-bottom:4px;color:var(--tx)}
+/* horizontal primary nav at top of admin (no left sidebar) */
+aside{background:var(--bg2);border-bottom:1px solid var(--brd);padding:10px 24px;position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-height:auto}
+aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0;margin:0;color:var(--tx);flex:none;margin-inline-end:8px}
 aside .logo b{color:var(--gold)}
-aside .role{font-size:10.5px;color:var(--tx3);padding:0 12px;margin-bottom:26px}
-.mi{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;font-size:13px;font-weight:500;color:var(--tx2);
-  cursor:pointer;transition:.25s;margin-bottom:2px}
-.mi:hover{background:rgba(0,0,0,.04);color:var(--tx)}
-.mi.on{background:rgba(60,130,246,.1);color:var(--blue)}
-.mi .ic{width:18px;text-align:center;font-size:14px}
-aside .sep{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);padding:18px 12px 8px}
-aside .logout{margin-top:20px;color:var(--red)}
-.lang-btn{display:flex;align-items:center;gap:8px;margin:0 12px 14px;padding:9px 14px;border-radius:11px;
-  font-size:12px;font-weight:600;color:var(--tx2);background:#fff;border:1px solid var(--brd);cursor:pointer;transition:.3s;width:calc(100% - 24px)}
-.lang-btn:hover{color:var(--blue);border-color:rgba(60,130,246,.5)}
+aside .role{font-size:10.5px;color:var(--tx3);padding:0;margin:0 4px 0 0;flex:none}
+aside .lang-btn{width:auto;margin:0;padding:7px 12px;font-size:11.5px;flex:none}
+.mi{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:100px;font-size:12.5px;font-weight:600;color:var(--tx2);
+  cursor:pointer;transition:.25s;flex:none;white-space:nowrap;border:1px solid transparent}
+.mi:hover{background:rgba(0,0,0,.05);color:var(--tx);border-color:var(--brd)}
+.mi.on{background:#1A1A1C;color:#fff;border-color:#1A1A1C}
+.mi .ic{font-size:13px;opacity:.8}
+aside .sep{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);padding:0 4px;flex:none}
+aside .logout{margin:0;color:var(--red);margin-inline-start:auto;flex:none}
 html[lang=ar] body{font-family:var(--font-ar)}
 html[lang=ar] input,html[lang=ar] select,html[lang=ar] textarea{font-family:var(--font-ar)}
 
-main{padding:34px 40px;max-width:1180px}
+main{padding:24px 28px 60px;max-width:1320px;margin:0 auto;width:100%}
 .page{display:none}
 .page.on{display:block;animation:pin .35s ease}
 @keyframes pin{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
@@ -199,7 +199,9 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 .heat{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;margin-top:6px}
 .heat i{aspect-ratio:1;border-radius:3px;background:var(--blue)}
 
-@media(max-width:900px){#app{grid-template-columns:1fr}aside{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}aside .sep,aside .role{display:none}main{padding:22px}}
+@media(max-width:900px){#app{grid-template-columns:1fr}aside{padding:8px 12px;gap:6px}aside .sep,aside .role{display:none}aside .mi{padding:6px 10px;font-size:11.5px}main{padding:18px 14px 50px}}
+/* on very narrow screens, allow horizontal scroll for nav */
+@media(max-width:560px){aside{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}aside::-webkit-scrollbar{display:none}aside .mi{flex:none}}
 </style>
 </head>
 <body>
@@ -227,7 +229,6 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
     <div class="mi on" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
     <div class="mi" data-p="widgets"><span class="ic">◫</span>الويدجات · Widgets</div>
-    <div class="mi" data-p="beforeafter"><span class="ic">⇆</span>قبل وبعد · Before/After</div>
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>محرر النقاط · Hotspots</div>
     <div class="mi" data-p="site"><span class="ic">⚙</span>إعدادات الموقع · Site</div>
     <div class="mi" data-p="inquiries"><span class="ic">✉</span>الطلبات · Inquiries <span class="badge-count" id="inqBadge" style="margin-inline-start:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;display:none"></span></div>
@@ -330,12 +331,22 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
             <button class="btn sm ghost" onclick="expAdd360()">+ إضافة غرفة · Add Room</button>
           </div>
         </div>
-        <!-- Free Walkthrough -->
+        <!-- Free Walkthrough — 3D walkthrough editor -->
         <div class="panel">
-          <h3><span>جولة حرة · Free Walkthrough</span></h3>
-          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع ملف فيديو (mp4 / webm) أو الصق رابط فيديو مباشر</div>
-          <div class="exp-upload">
-            <div class="eu-label">▶ ملف الفيديو · Video File</div>
+          <h3>
+            <span>جولة حرة 3D · Free Walkthrough 3D</span>
+            <span class="badge" id="expWalkSceneCount">0</span>
+            <span style="font-size:10.5px;font-weight:600;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px;margin-inline-start:8px">مشي تفاعلي</span>
+          </h3>
+          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">
+            كل "مشهد" = صورة بانورامية لنقطة في البيت (غرفة، مدخل، أعلى السلم، سانسير). الزائر يضغط على نقاط ساخنة للمشي من مشهد لآخر. ارفع panorama equirectangular لكل مشهد + اختياري خريطة عمق.
+          </div>
+          <div class="grid2" style="margin-bottom:14px">
+            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
+            <div class="f"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar);resize:vertical" placeholder="اسحب للنظر حولك · انقر الأبواب والصور للمشي"></textarea></div>
+          </div>
+          <div class="exp-upload" style="margin-bottom:14px">
+            <div class="eu-label">▶ فيديو (اختياري للـ fallback)</div>
             <div class="eu-preview" id="walkVideoPreview"></div>
             <div class="eu-url">
               <input type="text" id="expWalkVideo" placeholder="رابط فيديو مباشر (mp4 / webm / YouTube)" dir="ltr">
@@ -343,25 +354,29 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
               <input type="file" id="expWalkVideoFile" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'expWalkVideo')">
             </div>
           </div>
-          <div class="grid2" style="margin-top:14px">
-            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
-            <div class="f"><label>صورة الغلاف · Poster Image (Optional)</label>
-              <div style="display:flex;gap:8px">
-                <input type="text" id="expWalkImg" style="flex:1">
-                <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
-                <input type="file" id="expWalkImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'expWalkImg')">
-              </div>
-            </div>
+          <h3 style="font-size:12.5px;margin-top:6px;margin-bottom:10px;display:flex;align-items:center;gap:8px;justify-content:space-between">
+            <span>🗺 مشاهد الجولة · Scenes</span>
+            <button class="btn sm ghost" onclick="expAddWalkScene()">+ إضافة مشهد · Add Scene</button>
+          </h3>
+          <div id="expWalkScenes"></div>
+          <div class="f" style="margin-top:14px">
+            <label>المشهد الابتدائي · Start scene</label>
+            <select id="expWalkStart" style="width:100%;background:var(--panel2);border:1px solid var(--brd);border-radius:11px;padding:11px 13px;font-size:13px;outline:none;font-family:inherit"></select>
           </div>
-          <div class="f" style="margin-top:14px"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك · انقر الأبواب للتنقل"></textarea></div>
         </div>
-        <!-- Before/After (per project) -->
+        <!-- Before/After — Evolution (multi-frame sequence) -->
         <div class="panel">
-          <h3><span>قبل وبعد · Before/After</span> <span class="badge" id="expBACount">0</span></h3>
-          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع صورة "قبل" وصورة "بعد" لكل زوج — كلاهما مطلوب</div>
+          <h3>
+            <span>قبل وبعد · Before/After Evolution</span>
+            <span class="badge" id="expBACount">0</span>
+            <span style="font-size:10.5px;font-weight:600;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px;margin-inline-start:8px">متعدد صور · multi-frame</span>
+          </h3>
+          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">
+            كل بند = تطور متتالي من الحالة الأولى إلى الأخيرة. مثال: التصميم (مخطط → 3D → واقعي) أو التنفيذ (حفر → أساسات → هيكل → تشطيب). <b>الحد الأدنى 2 صور</b>، يمكن إضافة المزيد عبر زر "إضافة مرحلة".</div>
           <div id="expBAList"></div>
           <div class="btnrow">
-            <button class="btn sm ghost" onclick="expAddBA()">+ إضافة زوج · Add Pair</button>
+            <button class="btn sm ghost" onclick="expAddBA()">+ إضافة بند تطور · Add Evolution</button>
+            <button class="btn sm ghost" onclick="expAddBAFrame()">+ إضافة صورة لآخر بند</button>
           </div>
         </div>
         <div class="btnrow">
@@ -384,23 +399,25 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       </div>
     </div>
 
-    <!-- ========== BEFORE/AFTER EDITOR ========== -->
-    <div class="page" id="p-beforeafter">
-      <h1 class="pt">قبل وبعد · Before/After Editor</h1>
-      <div class="ps">4 بنود × زوج صور = 8 صور. تظهر في الـ overlay widget والصفحة التفصيلية</div>
-      <div class="panel" id="baPanel"></div>
-      <div class="btnrow">
-        <button class="btn" onclick="saveBA()">حفظ · Save</button>
-      </div>
-    </div>
-
     <!-- ========== HOTSPOTS EDITOR ========== -->
     <div class="page" id="p-hotspots">
       <h1 class="pt">محرر النقاط · Hotspots Editor</h1>
       <div class="ps">انقر على الصورة لإضافة نقطة ← عدّل بياناتها ← اضغط «تطبيق» ثم «حفظ». اسحب أي نقطة لتغيير مكانها.</div>
       <div class="gal-tabs" id="hsTabs"></div>
       <div class="panel" style="padding:14px">
-        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:240px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:11.5px;color:var(--tx3);display:flex;align-items:center;gap:6px">
+            <span style="background:rgba(60,130,246,.1);color:var(--blue);padding:3px 9px;border-radius:100px;font-weight:600">💡 Tip</span>
+            <span>انقر على الصورة لإضافة نقطة، أو اسحبها لتغيير مكانها. Click image to add, drag to move.</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn sm" id="hsAddBtn" style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:14px">➕</span> إضافة نقطة في المنتصف
+            </button>
+            <button class="btn sm ghost" id="hsAddCornerBtn" title="إضافة في الزاوية العلوية اليسرى">↖ سريع</button>
+          </div>
+        </div>
+        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:280px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC)">
           <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
         </div>
       </div>
@@ -823,10 +840,20 @@ function boot(){
   // builders — each wrapped so one failure doesn't kill the rest
   const safeCall=(fn)=>{try{if(typeof fn==='function')fn();}catch(e){console.warn('Builder failed:',e);}};
   safeCall(buildStages);
-  safeCall(hsInit);safeCall(buildProjectManager);
+  safeCall(buildProjectManager);
   safeCall(buildWidgets);safeCall(buildBAEditor);
   safeCall(buildInquiries);safeCall(buildSiteContent);
   try{wireProjTabs();}catch(e){}
+  /* hsInit wires the new Add buttons, but only call it when the user actually
+     opens the Hotspots page (lazy) — it depends on DOM that's only created then. */
+  let _hsInitWired=false;
+  document.querySelectorAll('.mi[data-p]').forEach(m=>{
+    if(m.dataset.p==='hotspots' && !_hsInitWired){
+      _hsInitWired=true;
+      const orig=go;
+      window.go=function(p){ orig(p); if(p==='hotspots'){ try{safeCall(hsInit);}catch(e){} } };
+    }
+  });
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
   }catch(e){
     console.error('boot() critical error:',e);
@@ -1695,8 +1722,43 @@ function buildExperiences(){
       '<div class="grid2" style="margin-top:10px">'+
         '<div class="f"><label>'+(isAr?'اسم الغرفة (EN)':'Room Name (EN)')+'</label><input type="text" value="'+(p.room||'')+'" data-p360="'+i+'" data-k="room" dir="ltr" placeholder="Living Room"></div>'+
         '<div class="f"><label>'+(isAr?'اسم الغرفة (AR)':'Room Name (AR)')+'</label><input type="text" value="'+(p.roomAr||'')+'" data-p360="'+i+'" data-k="roomAr" dir="rtl" style="font-family:var(--font-ar)" placeholder="غرفة المعيشة"></div>'+
+      '</div>'+
+      '<div style="margin-top:10px;padding:10px;background:var(--panel);border:1px dashed var(--brd);border-radius:10px">'+
+        '<div style="font-size:10.5px;font-weight:700;color:var(--gold-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px">'+
+          '🗺 '+(isAr?'خريطة العمق (اختياري) — لـ 3D شبه حقيقي':'Depth Map (optional) — for pseudo-3D')+
+        '</div>'+
+        '<div class="exp-upload" style="background:transparent;padding:0;border:0">'+
+          '<div class="eu-preview" style="aspect-ratio:16/9;background:#000;position:relative">'+
+            (p.depth?'<img src="'+escAttr(safeUrl(p.depth))+'" style="width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.4)">':'<div class="eu-empty" style="color:var(--tx3)"><span class="ico">🌑</span><span>'+(isAr?'صورة رمادية: الأبيض = قريب، الأسود = بعيد':'Grayscale: white=near, black=far')+'</span></div>')+
+          '</div>'+
+          '<div class="eu-url">'+
+            '<input type="text" value="'+(p.depth||'')+'" data-p360="'+i+'" data-k="depth" placeholder="'+(isAr?'رابط خريطة العمق (أو ارفع)':'Depth map URL (or upload)')+'" dir="ltr">'+
+            '<button class="btn sm" onclick="expUploadDepth('+i+')">'+(isAr?'رفع':'Upload')+'</button>'+
+            (p.depth?'<button class="btn sm danger" onclick="expClearDepth('+i+')">✕</button>':'')+
+          '</div>'+
+          '<input type="file" id="pDepthFile'+i+'" accept="image/*" style="display:none" onchange="handleDepthUpload(this,'+i+')">'+
+        '</div>'+
+      '</div>'+
+      '<div style="margin-top:10px;padding:10px;background:var(--panel);border:1px dashed var(--brd);border-radius:10px">'+
+        '<div style="font-size:10.5px;font-weight:700;color:var(--gold-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px;justify-content:space-between">'+
+          '<span>◎ '+(isAr?'النقاط الساخنة (للتنقل) · Hotspots':'Hotspots (navigation)')+' <span style="color:var(--tx3);font-weight:500">('+(p.hotspots&&p.hotspots.length?p.hotspots.length:0)+')</span></span>'+
+          '<button class="btn sm ghost" onclick="expAddHS('+i+')">+ '+ (isAr?'نقطة':'Add')+'</button>'+
+        '</div>'+
+        '<div id="pHS'+i+'" style="display:flex;flex-wrap:wrap;gap:6px"></div>'+
+        '<div style="font-size:10.5px;color:var(--tx3);margin-top:6px">'+(isAr?'انقر على نقطة للانتقال لمشهد آخر في الجولة':'Click a hotspot to jump to another scene in the tour')+'</div>'+
       '</div>';
     list360.appendChild(card);
+    /* render hotspots for this pano */
+    const hsEl=$('pHS'+i);
+    if(hsEl){
+      (p.hotspots||[]).forEach((h,hi)=>{
+        const chip=document.createElement('div');
+        chip.style.cssText='display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--bg2);border:1px solid var(--brd);border-radius:100px;font-size:10.5px;cursor:pointer';
+        chip.innerHTML='<span style="font-size:11px">'+esc(h.icon||'◉')+'</span> <span>'+esc(h.label||h.id||'untitled')+'</span> <span style="color:var(--tx3)">· x:'+((h.x*100).toFixed(0))+'% y:'+((h.y*100).toFixed(0))+'%</span> <button onclick="event.stopPropagation();expDelHS('+i+','+hi+')" style="background:none;border:none;color:var(--red);font-size:11px;padding:0 2px;cursor:pointer">✕</button>';
+        chip.onclick=()=>{ expEditHS(i,hi); };
+        hsEl.appendChild(chip);
+      });
+    }
   });
   /* wire 360 mode tabs */
   list360.querySelectorAll('.em-btn[data-pm]').forEach(btn=>{
@@ -1725,50 +1787,165 @@ function buildExperiences(){
   set('expWalkDesc',exp.walkthrough.desc);
   updateWalkVideoPreview(exp.walkthrough.video||'');
 
-  /* ---------- Before/After list ---------- */
+  /* scenes list */
+  exp.walkthrough.scenes=exp.walkthrough.scenes||[];
+  const scList=$('expWalkScenes');
+  if(scList){
+    scList.innerHTML='';
+    exp.walkthrough.scenes.forEach((sc,si)=>{
+      const card=document.createElement('div');
+      card.className='exp-card';
+      card.innerHTML=
+        '<div class="exp-card-head">'+
+          '<div class="lbl" style="display:flex;align-items:center;gap:6px;flex:1">'+
+            '<span style="background:linear-gradient(135deg,#BFA76A,#3c82f6);color:#fff;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">'+String(si+1).padStart(2,'0')+'</span>'+
+            '<input type="text" value="'+escAttr(sc.title||'')+'" data-ws-i="'+si+'" data-ws-k="title" placeholder="Living Room" style="flex:1;background:transparent;border:none;font-size:13px;font-weight:700;color:var(--tx);outline:none;padding:4px 0;font-family:inherit">'+
+          '</div>'+
+          '<div class="ops">'+
+            '<span class="tag blue" style="font-size:10px">'+(sc.hotspots&&sc.hotspots.length?sc.hotspots.length:0)+' '+(isAr?'نقاط':'hotspots')+'</span>'+
+            '<button class="btn sm danger" onclick="expDelWalkScene('+si+')">✕</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="grid2" style="margin-top:6px">'+
+          '<div class="f"><label>'+(isAr?'العنوان (AR)':'Title (AR)')+'</label><input type="text" value="'+escAttr(sc.titleAr||'')+'" data-ws-i="'+si+'" data-ws-k="titleAr" dir="rtl" style="font-family:var(--font-ar);font-size:12px" placeholder="غرفة المعيشة"></div>'+
+          '<div class="f"><label>ID · معرّف</label><input type="text" value="'+escAttr(sc.id||'')+'" data-ws-i="'+si+'" data-ws-k="id" dir="ltr" placeholder="living"></div>'+
+        '</div>'+
+        '<div class="exp-media-row" style="margin-top:8px">'+
+          '<div class="exp-upload">'+
+            '<div class="eu-label">⟲ صورة البانوراما</div>'+
+            '<div class="eu-preview" id="wsImgPrev'+si+'">'+(sc.img?'<img src="'+escAttr(safeUrl(sc.img))+'" style="object-fit:cover">':'<div class="eu-empty"><span class="ico">⟲</span><span>panorama equirectangular</span></div>')+'</div>'+
+            '<div class="eu-url">'+
+              '<input type="text" value="'+escAttr(sc.img||'')+'" data-ws-i="'+si+'" data-ws-k="img" placeholder="panorama.jpg" dir="ltr">'+
+              '<button class="btn sm" onclick="expUploadWalkScene('+si+',\'img\')">📷</button>'+
+            '</div>'+
+            '<input type="file" id="wsImgFile'+si+'" accept="image/*" style="display:none" onchange="handleWalkSceneUpload(this,'+si+',\'img\')">'+
+          '</div>'+
+          '<div class="exp-upload">'+
+            '<div class="eu-label" style="color:var(--tx3)">🗺 خريطة العمق (اختياري)</div>'+
+            '<div class="eu-preview" id="wsDepthPrev'+si+'" style="filter:grayscale(1) contrast(1.4)">'+(sc.depth?'<img src="'+escAttr(safeUrl(sc.depth))+'" style="object-fit:cover">':'<div class="eu-empty"><span class="ico">🌑</span><span>depth map</span></div>')+'</div>'+
+            '<div class="eu-url">'+
+              '<input type="text" value="'+escAttr(sc.depth||'')+'" data-ws-i="'+si+'" data-ws-k="depth" placeholder="depth.jpg (اختياري)" dir="ltr">'+
+              '<button class="btn sm" onclick="expUploadWalkScene('+si+',\'depth\')">📷</button>'+
+            '</div>'+
+            '<input type="file" id="wsDepthFile'+si+'" accept="image/*" style="display:none" onchange="handleWalkSceneUpload(this,'+si+',\'depth\')">'+
+          '</div>'+
+        '</div>'+
+        '<div style="margin-top:10px;padding:10px;background:var(--panel);border:1px dashed var(--brd);border-radius:10px">'+
+          '<div style="font-size:10.5px;font-weight:700;color:var(--gold-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px;justify-content:space-between">'+
+            '<span>◎ '+(isAr?'نقاط التنقل · Nav Hotspots':'Nav Hotspots')+' <span style="color:var(--tx3);font-weight:500">('+(sc.hotspots&&sc.hotspots.length?sc.hotspots.length:0)+')</span></span>'+
+            '<button class="btn sm ghost" onclick="expAddWalkHS('+si+')">+ '+ (isAr?'نقطة':'Add')+'</button>'+
+          '</div>'+
+          '<div id="wsHS'+si+'" style="display:flex;flex-wrap:wrap;gap:6px"></div>'+
+        '</div>';
+      scList.appendChild(card);
+      /* render hotspots for this scene */
+      const hsEl=$('wsHS'+si);
+      if(hsEl){
+        (sc.hotspots||[]).forEach((h,hi)=>{
+          const chip=document.createElement('div');
+          chip.style.cssText='display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--bg2);border:1px solid var(--brd);border-radius:100px;font-size:10.5px;cursor:pointer';
+          const targetScene=exp.walkthrough.scenes.find(s=>s.id===h.id);
+          const targetLabel=targetScene?(isAr?targetScene.titleAr||targetScene.title:targetScene.title):('→ '+h.id);
+          chip.innerHTML='<span style="font-size:11px">'+esc(h.icon||'◉')+'</span> <span>'+esc(targetLabel||'?')+'</span> <span style="color:var(--tx3)">· '+((h.x*100).toFixed(0))+'%, '+((h.y*100).toFixed(0))+'%</span> <button onclick="event.stopPropagation();expDelWalkHS('+si+','+hi+')" style="background:none;border:none;color:var(--red);font-size:11px;padding:0 2px;cursor:pointer">✕</button>';
+          chip.onclick=()=>{ expEditWalkHS(si,hi); };
+          hsEl.appendChild(chip);
+        });
+      }
+    });
+    const scCountEl=$('expWalkSceneCount');
+    if(scCountEl) scCountEl.textContent=exp.walkthrough.scenes.length+' '+(isAr?'مشهد':'scenes');
+    /* start scene dropdown */
+    const startSel=$('expWalkStart');
+    if(startSel){
+      startSel.innerHTML='<option value="">— اختر —</option>'+
+        exp.walkthrough.scenes.map(s=>'<option value="'+escAttr(s.id)+'" '+(s.id===exp.walkthrough.startId?'selected':'')+'>'+esc(isAr?(s.titleAr||s.title):(s.title||s.titleAr))+'</option>').join('');
+      startSel.onchange=()=>{ exp.walkthrough.startId=startSel.value; };
+    }
+  }
+
+  /* ---------- Before/After — Evolution list (multi-frame per item) ---------- */
   const baList=$('expBAList');baList.innerHTML='';
   const ba=exp.beforeAfter;
   $('expBACount').textContent=ba.length;
+  /* Normalize: support both old {before,after} and new {frames:[]} schemas */
+  ba.forEach((b,i)=>{
+    if(!b.frames || !Array.isArray(b.frames)){
+      const frames=[];
+      if(b.before)frames.push({url:b.before,label:'Before',labelAr:'قبل'});
+      if(b.after) frames.push({url:b.after, label:'After', labelAr:'بعد'});
+      b.frames=frames.length?frames:[{url:'',label:'Start',labelAr:'البداية'},{url:'',label:'End',labelAr:'النهاية'}];
+    }
+  });
   ba.forEach((b,i)=>{
     const card=document.createElement('div');card.className='exp-card';
+    let framesHTML='<div class="ba-frames" id="baFrames'+i+'" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px">';
+    b.frames.forEach((f,fi)=>{
+      const isFirst=fi===0, isLast=fi===b.frames.length-1;
+      const label=isAr?(f.labelAr||f.label||'إطار '+(fi+1)):(f.label||f.labelAr||'Frame '+(fi+1));
+      const colorDot=isFirst?'#d97757':(isLast?'#3b9b6e':'#3c82f6');
+      framesHTML+=
+        '<div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--brd);background:var(--panel2);padding:8px">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+
+            '<span style="width:8px;height:8px;border-radius:50%;background:'+colorDot+';flex:none"></span>'+
+            '<input type="text" value="'+escAttr(label)+'" data-baf-i="'+i+'" data-baf-fi="'+fi+'" data-baf-k="label" data-baf-lng="ar" placeholder="'+(isAr?'تسمية عربية':'AR label')+'" dir="rtl" style="font-size:11px;flex:1;padding:5px 7px;border:1px solid var(--brd);border-radius:7px;background:var(--panel);font-family:var(--font-ar)">'+
+          '</div>'+
+          '<div class="eu-preview" style="aspect-ratio:4/3;background:var(--panel2);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--brd)">'+
+            (f.url?'<img src="'+escAttr(safeUrl(f.url))+'" alt="" style="width:100%;height:100%;object-fit:cover">':'<div style="text-align:center;color:var(--tx3);font-size:11px;padding:14px">'+(isAr?'ارفع صورة':'Upload')+'</div>')+
+          '</div>'+
+          '<div style="display:flex;gap:4px;margin-top:6px">'+
+            '<input type="text" value="'+escAttr(f.url||'')+'" data-baf-i="'+i+'" data-baf-fi="'+fi+'" data-baf-k="url" placeholder="'+(isAr?'رابط أو ارفع':'URL or upload')+'" dir="ltr" style="flex:1;font-size:10.5px;padding:5px 7px;border:1px solid var(--brd);border-radius:7px;background:var(--panel)">'+
+            '<button class="btn sm" onclick="expUploadBAFrame('+i+','+fi+')" title="'+(isAr?'رفع':'Upload')+'" style="padding:4px 8px;font-size:11px">📷</button>'+
+            (b.frames.length>2?'<button class="btn sm danger" onclick="expDelBAFrame('+i+','+fi+')" title="'+(isAr?'حذف':'Delete')+'" style="padding:4px 8px;font-size:11px">✕</button>':'')+
+          '</div>'+
+          '<input type="file" id="baFrameFile'+i+'_'+fi+'" accept="image/*" style="display:none" onchange="handleBAFrameUpload(this,'+i+','+fi+')">'+
+          (fi<b.frames.length-1?'<div style="position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--gold-2);font-weight:600;background:var(--panel);padding:0 6px;z-index:1">↓</div>':'')+
+        '</div>';
+    });
+    framesHTML+='</div>';
     card.innerHTML=
       '<div class="exp-card-head">'+
-        '<div class="lbl">⇆ '+(isAr?'زوج':'Pair')+' #'+(i+1)+'</div>'+
-        '<div class="ops"><button class="btn sm danger" onclick="expDelBA('+i+')">✕</button></div>'+
+        '<div class="lbl" style="display:flex;align-items:center;gap:8px;flex:1">'+
+          '<span style="background:linear-gradient(135deg,#3c82f6,#BFA76A);color:#fff;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">'+String(i+1).padStart(2,'0')+'</span>'+
+          '<input type="text" value="'+escAttr(b.label||b.labelAr||'')+'" data-ba="'+i+'" data-k="label" placeholder="'+(isAr?'مثال: التصميم (مخطط→3D→واقعي)':'e.g. Design (plan→3D→real)')+'" style="flex:1;background:transparent;border:none;font-size:13px;font-weight:700;color:var(--tx);outline:none;padding:4px 0;font-family:inherit">'+
+        '</div>'+
+        '<div class="ops">'+
+          '<span class="tag blue" style="font-size:10px">'+b.frames.length+' '+(isAr?'صور':'frames')+'</span>'+
+          '<button class="btn sm ghost" onclick="expAddBAFrameTo('+i+')" title="'+(isAr?'إضافة صورة':'Add frame')+'">+ صورة</button>'+
+          '<button class="btn sm danger" onclick="expDelBA('+i+')">✕</button>'+
+        '</div>'+
       '</div>'+
-      '<div class="f" style="margin-bottom:12px"><label>'+(isAr?'عنوان الزوج':'Pair Label')+'</label><input type="text" value="'+(b.label||b.labelAr||'')+'" data-ba="'+i+'" data-k="label" placeholder="'+(isAr?'مثال: غرفة المعيشة':'e.g. Living Room')+'"></div>'+
-      '<div class="exp-media-row">'+
-        '<div class="exp-upload">'+
-          '<div class="eu-label" style="color:#d97757">⬅ '+(isAr?'قبل · BEFORE':'BEFORE')+'</div>'+
-          '<div class="eu-preview" id="baBeforePrev'+i+'">'+(b.before?'<img src="'+b.before+'" alt="">':'<div class="eu-empty"><span class="ico">⬅</span><span>'+(isAr?'ارفع صورة قبل':'Upload before image')+'</span></div>')+'</div>'+
-          '<div class="eu-url">'+
-            '<input type="text" value="'+(b.before||'')+'" data-ba="'+i+'" data-k="before" placeholder="'+(isAr?'أو رابط':'Or URL')+'" dir="ltr">'+
-            '<button class="btn sm" onclick="expUploadBA('+i+',\'before\')">'+(isAr?'رفع':'Upload')+'</button>'+
-          '</div>'+
-          '<input type="file" id="baBeforeFile'+i+'" accept="image/*" style="display:none" onchange="handleBAUpload(this,'+i+',\'before\')">'+
-        '</div>'+
-        '<div class="exp-upload">'+
-          '<div class="eu-label" style="color:#3b9b6e">'+(isAr?'بعد · AFTER':'AFTER')+' ➡</div>'+
-          '<div class="eu-preview" id="baAfterPrev'+i+'">'+(b.after?'<img src="'+b.after+'" alt="">':'<div class="eu-empty"><span class="ico">➡</span><span>'+(isAr?'ارفع صورة بعد':'Upload after image')+'</span></div>')+'</div>'+
-          '<div class="eu-url">'+
-            '<input type="text" value="'+(b.after||'')+'" data-ba="'+i+'" data-k="after" placeholder="'+(isAr?'أو رابط':'Or URL')+'" dir="ltr">'+
-            '<button class="btn sm" onclick="expUploadBA('+i+',\'after\')">'+(isAr?'رفع':'Upload')+'</button>'+
-          '</div>'+
-          '<input type="file" id="baAfterFile'+i+'" accept="image/*" style="display:none" onchange="handleBAUpload(this,'+i+',\'after\')">'+
-        '</div>'+
-      '</div>';
+      framesHTML+
+      '<div style="margin-top:18px;font-size:11px;color:var(--tx3);text-align:center">'+(isAr?'الزائر يسحب على الشريط ليتنقل بين الصور في الموقع':'Visitor drags the slider to scrub through frames on the site')+'</div>';
     baList.appendChild(card);
   });
-  /* wire BA inputs (delegated) */
+  /* wire BA inputs (delegated) — label + frames */
   baList.oninput=e=>{
-    const i=e.target.dataset.ba,k=e.target.dataset.k;
-    if(i!==undefined&&k){
-      exp.beforeAfter[+i]=exp.beforeAfter[+i]||{};
-      exp.beforeAfter[+i][k]=e.target.value;
-      if(k==='before'){updateBAPreview(+i,'before',e.target.value);}
-      else if(k==='after'){updateBAPreview(+i,'after',e.target.value);}
+    const i=+e.target.dataset.ba;
+    if(!isNaN(i) && e.target.dataset.k==='label'){
+      exp.beforeAfter[i].label=e.target.value;
+      return;
+    }
+    /* frame-level inputs */
+    const fi=+e.target.dataset.bafFi;
+    const k=e.target.dataset.bafK;
+    if(!isNaN(i) && !isNaN(fi) && k){
+      exp.beforeAfter[i].frames[fi]=exp.beforeAfter[i].frames[fi]||{};
+      if(k==='url') exp.beforeAfter[i].frames[fi].url=e.target.value;
+      else if(k==='label') exp.beforeAfter[i].frames[fi].labelAr=e.target.value;
     }
   };
+
+  /* wire walkthrough scenes inputs (delegated) */
+  const scListEl=$('expWalkScenes');
+  if(scListEl){
+    scListEl.oninput=e=>{
+      const i=+e.target.dataset.wsI,k=e.target.dataset.wsK;
+      if(isNaN(i)||!k)return;
+      exp.walkthrough.scenes=exp.walkthrough.scenes||[];
+      exp.walkthrough.scenes[i]=exp.walkthrough.scenes[i]||{};
+      exp.walkthrough.scenes[i][k]=e.target.value;
+    };
+  }
 }
 /* preview updaters */
 function updateP360Preview(i,val){
@@ -1809,11 +1986,58 @@ function expDel360(i){
 function expAddBA(){
   PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
   PROJ.experiences.beforeAfter=PROJ.experiences.beforeAfter||[];
-  PROJ.experiences.beforeAfter.push({label:'New Pair',before:'',after:''});
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  PROJ.experiences.beforeAfter.push({
+    label:isAr?'بند جديد':'New Evolution',
+    labelAr:isAr?'بند جديد':'New Evolution',
+    frames:[
+      {url:'',label:'Start',labelAr:'البداية'},
+      {url:'',label:'End',labelAr:'النهاية'}
+    ]
+  });
   buildExperiences();
 }
+function expAddBAFrame(){
+  /* add a frame to the last evolution item */
+  if(!PROJ.experiences||!PROJ.experiences.beforeAfter||!PROJ.experiences.beforeAfter.length){
+    expAddBA();
+    return;
+  }
+  const i=PROJ.experiences.beforeAfter.length-1;
+  expAddBAFrameTo(i);
+}
+function expAddBAFrameTo(i){
+  PROJ.experiences.beforeAfter[i]=PROJ.experiences.beforeAfter[i]||{frames:[]};
+  PROJ.experiences.beforeAfter[i].frames=PROJ.experiences.beforeAfter[i].frames||[];
+  const newIdx=PROJ.experiences.beforeAfter[i].frames.length;
+  PROJ.experiences.beforeAfter[i].frames.push({url:'',label:'Frame '+(newIdx+1),labelAr:'إطار '+(newIdx+1)});
+  buildExperiences();
+  toast('Frame added · تمت إضافة صورة');
+}
+function expDelBAFrame(i,fi){
+  if(!confirm('حذف هذه الصورة؟ Delete this frame?'))return;
+  PROJ.experiences.beforeAfter[i].frames.splice(fi,1);
+  buildExperiences();
+}
+function expUploadBAFrame(i,fi){
+  const f=$('baFrameFile'+i+'_'+fi);
+  if(f)f.click();
+}
+async function handleBAFrameUpload(input,i,fi){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading frame... · جاري الرفع');
+  try{
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    const url=await uploader(file,'ba-'+PROJ.id+'-'+i+'-'+fi);
+    PROJ.experiences.beforeAfter[i].frames[fi].url=url;
+    buildExperiences();
+    toast('Frame uploaded ✓');
+  }catch(e){toast(e.message||'Upload failed');}
+  input.value='';
+}
 function expDelBA(i){
-  if(!confirm('Delete this before/after pair? · حذف هذا الزوج؟'))return;
+  if(!confirm('Delete this evolution? · حذف هذا البند؟'))return;
   PROJ.experiences.beforeAfter.splice(i,1);
   buildExperiences();
 }
@@ -1836,25 +2060,70 @@ async function handlePanoUpload(input,i){
   }catch(e){toast(e.message||'Upload failed');}
   input.value='';
 }
-
-/* upload handlers — Before/After */
-function expUploadBA(i,side){
-  const f=$(side+'File'+i);if(f)f.click();
+/* depth map upload (separate field on pano) */
+function expUploadDepth(i){
+  const f=$('pDepthFile'+i);if(f)f.click();
 }
-async function handleBAUpload(input,i,side){
+async function handleDepthUpload(input,i){
   const file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('image/')){toast('Please select an image file · اختر ملف صورة');return;}
-  toast('Uploading '+side+' image... · جاري الرفع');
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading depth map... · جاري رفع خريطة العمق');
   try{
     const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
-    const url=await uploader(file,'ba-'+PROJ.id);
-    if(!PROJ.experiences.beforeAfter)PROJ.experiences.beforeAfter=PROJ.beforeAfter||[];
-    PROJ.experiences.beforeAfter[i]=PROJ.experiences.beforeAfter[i]||{};
-    PROJ.experiences.beforeAfter[i][side]=url;
+    const url=await uploader(file,'depth-'+PROJ.id+'-'+i);
+    PROJ.experiences.panos[i].depth=url;
     buildExperiences();
-    toast(side+' image uploaded ✓');
+    toast('Depth map uploaded ✓ · سيتم تفعيل 3D');
   }catch(e){toast(e.message||'Upload failed');}
   input.value='';
+}
+function expClearDepth(i){
+  PROJ.experiences.panos[i].depth='';
+  buildExperiences();
+  toast('Depth map removed');
+}
+/* hotspots management */
+function expAddHS(panoIdx){
+  const p=PROJ.experiences.panos[panoIdx];
+  p.hotspots=p.hotspots||[];
+  const num=prompt('Hotspot label (AR + EN separated by |) · تسمية النقطة\nمثال: باب المطبخ | Kitchen Door','نقطة جديدة | New Spot');
+  if(!num)return;
+  const parts=num.split('|').map(s=>s.trim());
+  p.hotspots.push({x:0.5, y:0.5, id:'hs-'+Date.now(), label:parts[1]||parts[0]||'Spot', labelAr:parts[0]||'نقطة', icon:'◉'});
+  buildExperiences();
+  toast('Hotspot added · تمت إضافة نقطة');
+}
+function expDelHS(panoIdx, hsIdx){
+  PROJ.experiences.panos[panoIdx].hotspots.splice(hsIdx,1);
+  buildExperiences();
+}
+function expEditHS(panoIdx, hsIdx){
+  const h=PROJ.experiences.panos[panoIdx].hotspots[hsIdx];
+  const xPct=prompt('X position % (0-100)', (h.x*100).toFixed(0));
+  if(xPct===null)return;
+  const yPct=prompt('Y position % (0-100)', (h.y*100).toFixed(0));
+  if(yPct===null)return;
+  h.x=Math.max(0,Math.min(1,parseFloat(xPct)/100));
+  h.y=Math.max(0,Math.min(1,parseFloat(yPct)/100));
+  buildExperiences();
+}
+
+/* upload handlers — Before/After (legacy before/after, redirects to new frames system) */
+function expUploadBA(i,side){
+  /* redirect to new frames system — side=before → frames[0], side=after → frames[last] */
+  const item=PROJ.experiences.beforeAfter[i];
+  if(!item){expAddBA();return;}
+  if(!item.frames){
+    item.frames=[];
+    if(side==='before')item.frames.push({url:'',label:'Before',labelAr:'قبل'});
+    else item.frames.push({url:'',label:'After',labelAr:'بعد'});
+  }
+  const fi=side==='before'?0:Math.max(0,item.frames.length-1);
+  expUploadBAFrame(i,fi);
+}
+async function handleBAUpload(input,i,side){
+  const fi=side==='before'?0:(PROJ.experiences.beforeAfter[i].frames.length-1);
+  return handleBAFrameUpload(input,i,fi);
 }
 
 /* upload handler — Walkthrough video */
@@ -1879,15 +2148,105 @@ async function handleVideoUpload(input,targetId){
 
 function saveExperiences(){
   PROJ.experiences=PROJ.experiences||{};
-  PROJ.experiences.walkthrough={
-    img:$('expWalkImg')?.value||'',
-    video:$('expWalkVideo')?.value||'',
-    title:$('expWalkTitle')?.value||'',
-    desc:$('expWalkDesc')?.value||''
-  };
+  /* collect walkthrough fields from the UI (scenes are already in PROJ) */
+  const wt=PROJ.experiences.walkthrough=PROJ.experiences.walkthrough||{};
+  wt.img=$('expWalkImg')?.value||'';
+  wt.video=$('expWalkVideo')?.value||'';
+  wt.title=$('expWalkTitle')?.value||'';
+  wt.desc=$('expWalkDesc')?.value||'';
+  wt.startId=$('expWalkStart')?.value||'';
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   toast('Experiences saved · تم حفظ التجارب');
+}
+
+/* Walk3D scene handlers */
+function expAddWalkScene(){
+  PROJ.experiences=PROJ.experiences||{};
+  PROJ.experiences.walkthrough=PROJ.experiences.walkthrough||{};
+  PROJ.experiences.walkthrough.scenes=PROJ.experiences.walkthrough.scenes||[];
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
+  const id='scene-'+(PROJ.experiences.walkthrough.scenes.length+1);
+  PROJ.experiences.walkthrough.scenes.push({
+    id, title:'New Scene', titleAr:'مشهد جديد', img:'', depth:'', hotspots:[]
+  });
+  if(!PROJ.experiences.walkthrough.startId) PROJ.experiences.walkthrough.startId=id;
+  buildExperiences();
+  toast('Scene added · تمت إضافة مشهد');
+}
+function expDelWalkScene(si){
+  if(!confirm('Delete this scene? · حذف هذا المشهد؟'))return;
+  const sc=PROJ.experiences.walkthrough.scenes[si];
+  PROJ.experiences.walkthrough.scenes.splice(si,1);
+  /* remove hotspots pointing to this scene from other scenes */
+  PROJ.experiences.walkthrough.scenes.forEach(s=>{
+    if(s.hotspots) s.hotspots = s.hotspots.filter(h=>h.id!==sc.id);
+  });
+  if(PROJ.experiences.walkthrough.startId===sc.id){
+    PROJ.experiences.walkthrough.startId = PROJ.experiences.walkthrough.scenes[0]?.id || '';
+  }
+  buildExperiences();
+}
+function expUploadWalkScene(si, field){
+  const f=$('ws'+(field==='depth'?'Depth':'Img')+'File'+si);
+  if(f)f.click();
+}
+async function handleWalkSceneUpload(input,si,field){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Please select an image file');return;}
+  toast('Uploading '+field+'... · جاري الرفع');
+  try{
+    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
+    const url=await uploader(file,'walk-'+PROJ.id+'-'+si+'-'+field);
+    PROJ.experiences.walkthrough.scenes[si][field]=url;
+    buildExperiences();
+    toast((field==='depth'?'Depth map':'Panorama')+' uploaded ✓');
+  }catch(e){toast(e.message||'Upload failed');}
+  input.value='';
+}
+function expAddWalkHS(sceneIdx){
+  const sc=PROJ.experiences.walkthrough.scenes[sceneIdx];
+  sc.hotspots=sc.hotspots||[];
+  /* build a list of other scenes */
+  const other=PROJ.experiences.walkthrough.scenes.filter((s,i)=>i!==sceneIdx);
+  if(!other.length){toast('Add more scenes first · أضف مشاهد أخرى أولاً');return;}
+  const sel=prompt('اذهب إلى مشهد:\n'+
+    other.map((s,i)=>(i+1)+'. '+(isAr?(s.titleAr||s.title):(s.title||s.titleAr))+' (id:'+s.id+')').join('\n')+
+    '\nأدخل رقم أو id:','1');
+  if(!sel)return;
+  let target=null;
+  const num=parseInt(sel,10);
+  if(!isNaN(num) && num>=1 && num<=other.length) target=other[num-1];
+  else target=other.find(s=>s.id===sel);
+  if(!target){toast('Scene not found');return;}
+  const xPct=prompt('X position (0-100) · موضع أفقي','50');
+  if(!xPct)return;
+  const yPct=prompt('Y position (0-100) · موضع رأسي','50');
+  if(!yPct)return;
+  sc.hotspots.push({
+    x:Math.max(0,Math.min(1,parseFloat(xPct)/100)),
+    y:Math.max(0,Math.min(1,parseFloat(yPct)/100)),
+    id:target.id,
+    label:isAr?target.titleAr||target.title:target.title,
+    labelAr:target.titleAr,
+    icon:'◉'
+  });
+  buildExperiences();
+  toast('Hotspot added · تمت إضافة نقطة تنقل');
+}
+function expDelWalkHS(sceneIdx, hsIdx){
+  PROJ.experiences.walkthrough.scenes[sceneIdx].hotspots.splice(hsIdx,1);
+  buildExperiences();
+}
+function expEditWalkHS(sceneIdx, hsIdx){
+  const h=PROJ.experiences.walkthrough.scenes[sceneIdx].hotspots[hsIdx];
+  const xPct=prompt('X position % (0-100)', (h.x*100).toFixed(0));
+  if(xPct===null)return;
+  const yPct=prompt('Y position % (0-100)', (h.y*100).toFixed(0));
+  if(yPct===null)return;
+  h.x=Math.max(0,Math.min(1,parseFloat(xPct)/100));
+  h.y=Math.max(0,Math.min(1,parseFloat(yPct)/100));
+  buildExperiences();
 }
 
 /* ---------------- gallery manager (section removed from UI — guarded) ---------------- */
@@ -1999,6 +2358,30 @@ function hsInit(){
   const tabs=document.getElementById('hsTabs');if(!tabs)return;tabs.innerHTML='';
   const img=document.getElementById('hsImg');
   if(img&&!img.dataset.fbk){img.onerror=()=>{img.dataset.fbk='1';img.src='assets/villa-clean.webp';};}
+  /* wire the new "Add Spot" buttons (if present in the page) */
+  const addBtn=document.getElementById('hsAddBtn');
+  if(addBtn && !addBtn.dataset.wired){
+    addBtn.dataset.wired='1';
+    addBtn.onclick=()=>{
+      const st=document.getElementById('hsStage');
+      if(!st)return;
+      const r=st.getBoundingClientRect();
+      hsSpots().push({x:50,y:50,name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
+        color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
+      hsSel=hsSpots().length-1;hsFill();hsRender();
+      toast('Spot added at center · تمت إضافة نقطة في المنتصف');
+    };
+  }
+  const addCornerBtn=document.getElementById('hsAddCornerBtn');
+  if(addCornerBtn && !addCornerBtn.dataset.wired){
+    addCornerBtn.dataset.wired='1';
+    addCornerBtn.onclick=()=>{
+      hsSpots().push({x:15,y:15,name:'New Item',nameAr:'قطعة جديدة',material:'—',materialAr:'',brand:'—',
+        color:'—',dims:'—',finish:'—',supplier:'—',price:'—'});
+      hsSel=hsSpots().length-1;hsFill();hsRender();
+      toast('Spot added at top-left · تمت إضافة نقطة');
+    };
+  }
   /* mode tabs: rooms + sequence + beforeAfter + gallery */
   const modes=[
     {id:'rooms',label:'الغرف · Rooms'},
@@ -2076,7 +2459,7 @@ function hsInit(){
 function hsSpots(){
   PROJ.hotspots=PROJ.hotspots||{};
   if(hsMode==='rooms'){
-    PROJ.interior=PROJ.interior||{furniture:{}};
+    PROJ.interior=PROJ.interior||{};
     PROJ.interior.furniture=PROJ.interior.furniture||{};
     PROJ.interior.furniture[hsRoom]=PROJ.interior.furniture[hsRoom]||[];
     return PROJ.interior.furniture[hsRoom];
@@ -2589,44 +2972,16 @@ function deleteWidget(){
 function saveWidgets(){AURA.save(CFG);toast('Widgets published · تم نشر الويدجات')}
 
 /* ============================================================
-   BEFORE/AFTER EDITOR
+   BEFORE/AFTER — moved to Experiences tab (Unified Evolution Editor)
+   buildBAEditor kept as a safe no-op for legacy callers
    ============================================================ */
 function buildBAEditor(){
+  /* legacy: BA is now edited in the Experiences tab → no-op here */
   const panel=$('baPanel');
-  const items=PROJ.beforeAfter||[];
-  panel.innerHTML='<h3>4 Items × 2 images each = 8 images total</h3>';
-  items.forEach((it,i)=>{
-    const row=document.createElement('div');row.className='stage-row';
-    row.style.gridTemplateColumns='34px 1fr 1fr 1fr 1fr 90px';
-    row.innerHTML=`
-      <span class="drag">⋮⋮</span>
-      <input type="text" value="${escAttr(it.label||'')}" data-bai="${i}" data-k="label" placeholder="Label EN · عنوان إنجليزي">
-      <input type="text" value="${escAttr(it.labelAr||'')}" data-bai="${i}" data-k="labelAr" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
-      <input type="text" value="${escAttr(it.before||'')}" data-bai="${i}" data-k="before" placeholder="Before image URL · رابط الصورة قبل">
-      <input type="text" value="${escAttr(it.after||'')}" data-bai="${i}" data-k="after" placeholder="After image URL · رابط الصورة بعد">
-      <button class="btn sm ghost" onclick="previewBA(${i})">Preview · معاينة</button>`;
-    panel.appendChild(row);
-  });
-  panel.addEventListener('input',e=>{
-    const i=e.target.dataset.bai,k=e.target.dataset.k;
-    if(i!==undefined&&k)PROJ.beforeAfter[+i][k]=e.target.value;
-  });
-  /* preview row */
-  const pv=document.createElement('div');pv.style.cssText='margin-top:18px;padding:14px;background:var(--panel2);border-radius:14px;border:1px solid var(--brd)';
-  pv.innerHTML=`<h3 style="margin:0 0 10px">Preview · معاينة</h3>
-    <div id="baPreview" style="position:relative;width:100%;aspect-ratio:1408/768;border-radius:10px;overflow:hidden;background:#000">
-      <img id="baPvBefore" src="${escAttr(safeUrl(items[0]?.before||''))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-      <img id="baPvAfter" src="${escAttr(safeUrl(items[0]?.after||''))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 0 0 50%)">
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700">BEFORE ◂ ▸ AFTER</div>
-    </div>`;
-  panel.appendChild(pv);
+  if(panel) panel.innerHTML='<div style="text-align:center;padding:30px;color:var(--tx3)"><div style="font-size:32px;margin-bottom:8px">⇆</div><b>تم نقل محرر قبل/بعد</b><br><span style="font-size:12px">اذهب إلى: إدارة المشاريع → تجارب → Before/After Evolution</span></div>';
 }
-function previewBA(i){
-  const it=PROJ.beforeAfter[i];if(!it)return;
-  $('baPvBefore').src=safeUrl(it.before)||'';
-  $('baPvAfter').src=safeUrl(it.after)||'';
-}
-function saveBA(){AURA.save(CFG);toast('Before/After published · تم نشر قبل وبعد')}
+function previewBA(i){ /* no-op: open the Experiences tab instead */ if(typeof go==='function')go('projects'); }
+function saveBA(){ AURA.save(CFG); toast('Saved · تم الحفظ'); }
 
 /* ============================================================
    CONTACT EDITOR
