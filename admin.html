@@ -250,9 +250,9 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
       <!-- Project list + add -->
       <div class="panel" style="margin-bottom:20px">
-        <h3><span>كل المشاريع · All Projects</span> <span class="badge" id="pmCount">0</span></h3>
-        <div id="pmList"></div>
-        <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <h3><span>كل المشاريع · All Projects</span> <span class="badge" id="pmCount">0</span> <span style="font-size:11px;color:var(--tx3);font-weight:400;margin-inline-start:8px">💡 انقر للتحرير · اسحب للترتيب · دبل-كليك للافتراضي</span></h3>
+        <div id="pmList" style="display:flex;gap:12px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x mandatory;min-height:200px;scrollbar-width:thin"></div>
+        <div style="display:flex; gap:8px; margin-top:12px;margin-bottom:12px;">
           <input type="text" id="pmSearch" placeholder="🔍 بحث باسم المشروع · Search projects" style="flex:1; padding:9px 14px; border-radius:10px; border:1px solid var(--brd); background:var(--panel2); font-size:12.5px;" oninput="pmSearchFilter()">
         </div>
         <div class="btnrow">
@@ -2629,37 +2629,49 @@ function buildProjectManager(){
     const isDefault=p.id===CFG.currentProjectId;
     const isEditing=p.id===PROJ.id;
     const stat=p.status||'concept';
-    const statLbl=stat==='completed'?'Completed · مكتمل':stat==='in-progress'?'In Progress · قيد التنفيذ':'Concept · تصور';
+    const statLbl=stat==='completed'?(isAr?'مكتمل':'Completed'):stat==='in-progress'?(isAr?'جاري':'In Progress'):(isAr?'تصور':'Concept');
     const statCls=stat==='completed'?'green':stat==='in-progress'?'amber':'blue';
-    const row=document.createElement('div');row.className='stage-row';
-    row.style.gridTemplateColumns='34px 50px 1fr 130px 130px 110px 110px';
-    if(isEditing)row.style.boxShadow='inset 0 0 0 1.5px var(--gold)';
-    row.draggable=true;row.dataset.id=p.id;
-    row.innerHTML=`
-      <span class="drag">${isEditing?'●':(isDefault?'📌':'⋮⋮')}</span>
-      <img src="${escAttr(safeUrl(p.cover))||'assets/villa-clean.webp'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
-      <input type="text" value="${escAttr(p.project?.title||p.id)}" data-id="${escAttr(p.id)}" data-k="title">
-      <span class="range">${escAttr(p.project?.location||'—')}</span>
-      <span class="range">${escAttr(p.project?.year||'—')}</span>
-      <span class="tag ${statCls}" style="justify-self:start">${statLbl}</span>
-      ${isDefault?'<span class="tag green" style="justify-self:start">DEFAULT</span>':'<button class="btn sm ghost" data-set-default="1">Set Default</button>'}`;
-    row.addEventListener('dragstart',()=>row.classList.add('dragging'));
-    row.addEventListener('dragend',()=>row.classList.remove('dragging'));
-    row.addEventListener('dragover',e=>{
+    const card=document.createElement('div');
+    card.className='pm-card';
+    card.draggable=true;card.dataset.id=p.id;
+    card.style.cssText='flex:0 0 220px;scroll-snap-align:start;background:var(--panel);border:1px solid var(--brd);border-radius:14px;padding:0;cursor:pointer;transition:.3s;overflow:hidden;position:relative'+(isEditing?';box-shadow:0 0 0 2px var(--gold)':'');
+    card.innerHTML=`
+      <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--panel2)">
+        <img src="${escAttr(safeUrl(p.cover))||'assets/villa-clean.webp'}" alt="" style="width:100%;height:100%;object-fit:cover">
+        <div style="position:absolute;top:6px;left:6px;display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag ${statCls}" style="font-size:9px;padding:2px 8px">${statLbl}</span>
+          ${isDefault?'<span class="tag green" style="font-size:9px;padding:2px 8px">DEFAULT</span>':''}
+        </div>
+        ${isEditing?'<div style="position:absolute;top:6px;right:6px;background:var(--gold);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px">● EDITING</div>':''}
+      </div>
+      <div style="padding:10px 12px">
+        <input type="text" value="${escAttr(p.project?.title||p.id)}" data-id="${escAttr(p.id)}" data-k="title" style="background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:700;outline:none;width:100%;padding:0 0 4px" onclick="event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--tx3);gap:6px">
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escAttr(p.project?.location||'—')}</span>
+          <span style="flex:none">${escAttr(p.project?.year||'—')}</span>
+        </div>
+      </div>`;
+    card.addEventListener('dragstart',()=>card.classList.add('dragging'));
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+    card.addEventListener('dragover',e=>{
       e.preventDefault();
-      const dr=list.querySelector('.dragging');if(!dr||dr===row)return;
-      const rect=row.getBoundingClientRect();
-      list.insertBefore(dr,(e.clientY-rect.top)/rect.height>.5?row.nextSibling:row);
+      const dr=list.querySelector('.dragging');if(!dr||dr===card)return;
+      const rect=card.getBoundingClientRect();
+      list.insertBefore(dr,(e.clientX-rect.left)/rect.width>.5?card.nextSibling:card);
     });
-    /* click on row (not buttons/inputs) → load it for editing */
-    row.addEventListener('click',e=>{
+    /* click on card (not inputs/buttons) → load it for editing */
+    card.addEventListener('click',e=>{
       if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
       pmEdit(p.id);
     });
-    /* Set Default — read id from dataset (no inline JS string injection) */
-    const sd=row.querySelector('[data-set-default]');
-    if(sd)sd.onclick=()=>{pmSetDefault(p.id);};
-    list.appendChild(row);
+    /* Set Default via right-click context */
+    if(!isDefault){
+      card.addEventListener('dblclick',e=>{
+        if(e.target.tagName==='INPUT')return;
+        pmSetDefault(p.id);
+      });
+    }
+    list.appendChild(card);
   });
   /* wire title edits */
   list.addEventListener('input',e=>{
@@ -2804,7 +2816,7 @@ function pmDeleteCurrent(){
 }
 function pmSave(){
   /* read the DOM order and reorder CFG.projects */
-  const newOrder=[...document.querySelectorAll('#pmList .stage-row')].map(r=>r.dataset.id);
+  const newOrder=[...document.querySelectorAll('#pmList .pm-card')].map(r=>r.dataset.id);
   AURA.reorder(CFG,newOrder);
   toast('Order saved · تم حفظ الترتيب');
   buildProjectManager();
@@ -3231,9 +3243,9 @@ function safeUrl(u){
    ============================================================ */
 function pmSearchFilter(){
   const q=($('pmSearch')?.value||'').toLowerCase().trim();
-  document.querySelectorAll('#pmList .stage-row').forEach(row=>{
-    const txt=row.textContent.toLowerCase();
-    row.style.display= txt.includes(q) ? '' : 'none';
+  document.querySelectorAll('#pmList .pm-card').forEach(card=>{
+    const txt=card.textContent.toLowerCase();
+    card.style.display= txt.includes(q) ? '' : 'none';
   });
 }
 function updateStorageUsage(){
