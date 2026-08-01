@@ -397,10 +397,10 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <!-- ========== HOTSPOTS EDITOR ========== -->
     <div class="page" id="p-hotspots">
       <h1 class="pt">محرر النقاط · Hotspots Editor</h1>
-      <div class="ps">انقر على الصورة لإضافة نقطة · اسحب لتغيير المكان · انقر نقطة لتعديلها</div>
+      <div class="ps">انقر على الصورة لإضافة نقطة ← عدّل بياناتها ← اضغط «تطبيق» ثم «حفظ». اسحب أي نقطة لتغيير مكانها.</div>
       <div class="gal-tabs" id="hsTabs"></div>
       <div class="panel" style="padding:14px">
-        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none">
+        <div id="hsStage" style="position:relative;border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;min-height:240px;background:linear-gradient(135deg,#E8E6DF,#F2F1EC)">
           <img id="hsImg" src="" alt="" style="width:100%;display:block;pointer-events:none">
         </div>
       </div>
@@ -414,6 +414,10 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
             <div class="f"><label>الخامة · Material (AR)</label><input type="text" id="hsMatAr" dir="rtl" style="font-family:var(--font-ar)"></div>
             <div class="f"><label>Brand · الماركة</label><input type="text" id="hsBrand"></div>
             <div class="f"><label>Price · السعر</label><input type="text" id="hsPrice"></div>
+            <div class="f"><label>Color · اللون</label><input type="text" id="hsColor"></div>
+            <div class="f"><label>Dimensions · الأبعاد</label><input type="text" id="hsDims"></div>
+            <div class="f"><label>Supplier · المورد</label><input type="text" id="hsSup"></div>
+            <div class="f"><label>Finish · التشطيب</label><input type="text" id="hsFin"></div>
           </div>
           <div class="btnrow">
             <button class="btn" onclick="hsApply()">تطبيق · Apply</button>
@@ -425,6 +429,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <div id="hsList"></div>
           <div class="btnrow">
             <button class="btn" onclick="hsSave()">حفظ · Save</button>
+            <button class="btn sm danger" onclick="hsClearAll()">حذف كل النقاط · Clear All</button>
           </div>
         </div>
       </div>
@@ -533,52 +538,28 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <h1 class="pt">أوامر التشغيل · Playback Controls</h1>
       <div class="ps">سرعة عرض الإطارات + مدة التوقف عند كل مرحلة — يُطبَّق على الموقع فور الحفظ</div>
 
-      <!-- Live preview: actual frame strip from current project -->
-      <div class="panel" style="background:linear-gradient(180deg,#fff,#FAFAF7)">
-        <h3><span>Live Preview · معاينة حية</span> <span class="badge" id="pbProjTag">—</span></h3>
-        <div style="position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/7">
-          <!-- frame strip (canvas) -->
-          <canvas id="pbCanvas" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></canvas>
-          <!-- playhead overlay -->
-          <div id="pbPlayhead" style="position:absolute;top:0;bottom:0;width:3px;background:#BFA76A;box-shadow:0 0 14px #BFA76A;left:0;pointer-events:none"></div>
-          <!-- stage markers (bottom) -->
-          <div id="pbStageMarkers" style="position:absolute;bottom:0;left:0;right:0;height:18px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:flex-end;pointer-events:none"></div>
-          <!-- time badges -->
-          <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px;align-items:center">
-            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px)" id="pbTimeNow">0:00</span>
-            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:600;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px);opacity:.7" id="pbTimeTotal">/ 0:00</span>
-          </div>
-          <!-- speed badge -->
-          <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;align-items:center">
-            <span style="background:#BFA76A;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px" id="pbFpsBadge">9 fps</span>
-          </div>
-          <!-- pause badges overlay -->
-          <div id="pbPauseBadges" style="position:absolute;inset:0;pointer-events:none"></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
-          <button class="btn sm" id="pbPreviewBtn" onclick="pbPreviewToggle()">▶ Play Preview · تشغيل</button>
-          <button class="btn sm ghost" onclick="pbPreviewReset()">↺ Reset · إعادة</button>
-          <span style="font-size:11px;color:var(--tx3)">Preview uses actual frames from <b id="pbProjTagInline">current project</b></span>
-        </div>
-      </div>
-
-      <!-- Speed controls (simplified) -->
+      <!-- 1) Main controls -->
       <div class="panel">
-        <h3><span>سرعة العرض · Frame Rate</span> <span class="badge">LIVE</span></h3>
+        <h3><span>⏯ التحكم الرئيسي · Main Controls</span> <span class="badge">LIVE</span></h3>
+
         <div class="f">
-          <label>السرعة · Speed (fps) — كل ما قلّ الرقم كان الفيديو أبطأ وأكثر سينمائية</label>
+          <label>① سرعة العرض · Speed (fps)</label>
           <input type="range" id="pFpsExt" min="2" max="24" step="0.5">
           <div class="rv" id="pFpsExtV"></div>
+          <div class="fs">كل ما قلّ الرقم كان الفيديو أبطأ وأكثر سينمائية · Lower = slower &amp; more cinematic</div>
         </div>
-        <div class="f" style="margin-top:14px">
-          <label>مدة التوقف عند كل مرحلة · Stage Pause (seconds)</label>
+
+        <div class="f" style="margin-top:16px">
+          <label>② مدة التوقف عند كل مرحلة · Stage Pause (seconds)</label>
           <input type="range" id="pPauseExt" min="0" max="15" step="0.5">
           <div class="rv" id="pPauseExtV"></div>
+          <div class="fs">0 = بدون توقف · الفيلم يمر مباشرة · 0 = no pause, film runs straight through</div>
         </div>
-        <div class="frow" style="margin-top:8px">
+
+        <div class="frow" style="margin-top:14px">
           <div>
-            <div class="fl">تشغيل تلقائي · Autoplay on load</div>
-            <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر تشغيل</div>
+            <div class="fl">③ تشغيل تلقائي عند فتح الموقع · Autoplay on load</div>
+            <div class="fs">إيقافه يجعل الفيلم يبدأ متوقفًا حتى يضغط الزائر «تشغيل»</div>
           </div>
           <label class="switch"><input type="checkbox" id="pAuto"><i></i></label>
         </div>
@@ -594,22 +575,46 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
           <button class="btn ghost" onclick="pbPreset(4,8)">بطيء سينمائي · Slow</button>
           <button class="btn ghost" onclick="pbPreset(9,5)">افتراضي · Default</button>
           <button class="btn ghost" onclick="pbPreset(16,3)">سريع · Fast</button>
-          <button class="btn ghost" onclick="window.open('index.html')">جرّب على الموقع ↗</button>
         </div>
+        <div class="fs" style="margin-top:10px">الملخص أدناه يتحدث تلقائيًا مع السلايدر — اضغط «حفظ ونشر» ليظهر على الموقع.</div>
       </div>
 
-      <!-- Film length breakdown -->
-      <div class="panel">
-        <h3>مدة الفيلم · Film Length <span class="badge" id="pbTotal">—</span></h3>
+      <!-- 2) Film length summary -->
+      <div class="panel" style="padding:18px 24px">
+        <h3 style="margin-bottom:12px">⏱ مدة الفيلم · Film Length <span class="badge" id="pbTotal">—</span></h3>
         <div class="krow"><span>عدد الإطارات · Frames</span><b id="pbExtFrames">0</b></div>
         <div class="krow"><span>السرعة · Speed</span><b id="pbFpsBadge2">9 fps</b></div>
         <div class="krow"><span>زمن العرض · Playback time</span><b id="pbExtT">—</b></div>
         <div class="krow"><span>عدد التوقفات · Pauses (<span id="pbPauseCount">0</span>)</span><b id="pbPauseT">—</b></div>
         <div class="krow" style="font-weight:600"><span>إجمالي مدة الفيلم · Total</span><b id="pbLoopTotal">—</b></div>
       </div>
+
+      <!-- 3) Live preview (actual frames of the current project) -->
+      <div class="panel" style="background:linear-gradient(180deg,#fff,#FAFAF7)">
+        <h3><span>🎬 المعاينة الحية · Live Preview</span> <span class="badge" id="pbProjTag">—</span></h3>
+        <div style="position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/7">
+          <canvas id="pbCanvas" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></canvas>
+          <div id="pbPlayhead" style="position:absolute;top:0;bottom:0;width:3px;background:#BFA76A;box-shadow:0 0 14px #BFA76A;left:0;pointer-events:none"></div>
+          <div id="pbStageMarkers" style="position:absolute;bottom:0;left:0;right:0;height:18px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:flex-end;pointer-events:none"></div>
+          <div style="position:absolute;top:10px;left:10px;display:flex;gap:6px;align-items:center">
+            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px)" id="pbTimeNow">0:00</span>
+            <span style="background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:600;padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px);opacity:.7" id="pbTimeTotal">/ 0:00</span>
+          </div>
+          <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px;align-items:center">
+            <span style="background:#BFA76A;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:100px" id="pbFpsBadge">9 fps</span>
+          </div>
+          <div id="pbPauseBadges" style="position:absolute;inset:0;pointer-events:none"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
+          <button class="btn sm" id="pbPreviewBtn" onclick="pbPreviewToggle()">▶ Play Preview · تشغيل</button>
+          <button class="btn sm ghost" onclick="pbPreviewReset()">↺ Reset · إعادة</button>
+          <span style="font-size:11px;color:var(--tx3)">تعرض إطارات المشروع الحالي الفعلية · uses actual frames from <b id="pbProjTagInline">current project</b> — <b id="pbExtFrames2" style="color:var(--blue)">0</b> إطاراً</span>
+          <button class="btn sm ghost" style="margin-left:auto" onclick="window.open('index.html')">جرّب على الموقع ↗</button>
+        </div>
+      </div>
     </div>
 
-    <!-- ========== UI ========== -->
+<!-- ========== UI ========== -->
     <div class="page" id="p-ui">
       <h1 class="pt">UI · تخصيص الواجهة</h1>
       <div class="ps">الهوية ومظهر الزجاج السائل للموقع العام</div>
@@ -739,7 +744,8 @@ function enter(){
   boot();
 }
 document.getElementById('logout').onclick=()=>{sessionStorage.removeItem(SESSION);location.reload()};
-/* auto-login if coming from hidden gate (3 logo clicks or Ctrl+Shift+A on index) */
+/* auto-login if coming from hidden gate (3 logo clicks or Ctrl+Shift+A on index)
+   — the gate sets a simple flag; no plaintext password is stored in sessionStorage */
 (function(){
   const gateOk=sessionStorage.getItem('aura.gate.ok');
   if(gateOk){
@@ -919,6 +925,7 @@ function updateUnsavedBadge(){
 ['pFpsExt','pPauseExt'].forEach(id=>document.getElementById(id).addEventListener('input',updPb));
 /* ---------- playback: live preview tied to actual frames ---------- */
 let pbFrames=[];          /* array of image URLs (actual sequence) */
+let pbUsingDefault=false; /* true when preview uses the project's default frames */
 let pbStages=[];          /* array of {from,to,color,name} */
 let pbUsingDefault=false; /* true when preview uses the project's default frames */
 let pbPlaying=false;
@@ -975,6 +982,8 @@ function pbLoadFrames(){
   if(inlineTag)inlineTag.textContent=PROJ.project?.title||PROJ.id||'current project';
   const extFramesEl=document.getElementById('pbExtFrames');
   if(extFramesEl)extFramesEl.textContent=pbFrames.length;
+  const extFrames2=document.getElementById('pbExtFrames2');
+  if(extFrames2)extFrames2.textContent=pbFrames.length;
   const pauseCountEl=document.getElementById('pbPauseCount');
   if(pauseCountEl)pauseCountEl.textContent=pbStages.length;
   const pn=document.getElementById('pbProjName');
@@ -1234,7 +1243,9 @@ function resetAll(){
 
 /* ---------------- frames grid (drag reorder) ---------------- */
 function buildFrames(){
-  const g=document.getElementById('framesGrid');g.innerHTML='';
+  /* the standalone frames editor page was removed from the admin UI — keep this
+     function safe so legacy calls (e.g. assembleSequenceFromStages) never throw */
+  const g=document.getElementById('framesGrid');if(!g)return;g.innerHTML='';
   const imgs=PROJ.sequence.images||[];
   const count=imgs.length>0?imgs.length:PROJ.sequence.count;
   document.getElementById('seqCount').textContent=count;
@@ -1243,7 +1254,7 @@ function buildFrames(){
   for(let n=1;n<=count;n++){
     const d=document.createElement('div');d.className='frame';d.draggable=true;d.dataset.n=n;
     const src=useCustom?imgs[n-1]:('assets/seq/thumbs/frame'+String(n).padStart(3,'0')+'.webp');
-    d.innerHTML=`<img loading="lazy" src="${src}" onerror="this.style.opacity=0.2">
+    d.innerHTML=`<img loading="lazy" src="${escAttr(safeUrl(src))}" onerror="this.style.opacity=0.2">
       <span class="n">${String(n).padStart(3,'0')}</span><span class="q" title="Quality check passed"></span>
       <div class="ops">
       <button onclick="replaceFrame(${n})">Replace · استبدال</button>
@@ -1384,10 +1395,10 @@ function buildStages(){
     const imgCount=s.images.length;
     const r=document.createElement('div');r.className='stage-row';r.draggable=true;r.dataset.idx=i;
     r.innerHTML='<span class="drag">⋮⋮</span>'+
-      '<input type="text" value="'+(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="'+(isAr?'اسم المرحلة':'Stage name')+'">'+
-      '<input type="text" value="'+(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="'+(isAr?'عربي':'AR')+'">'+
+      '<input type="text" value="'+escAttr(s.name||'')+'" data-i="'+i+'" data-k="name" placeholder="'+(isAr?'اسم المرحلة':'Stage name')+'">'+
+      '<input type="text" value="'+escAttr(s.ar||'')+'" data-i="'+i+'" data-k="ar" dir="rtl" style="font-family:var(--font-ar);width:80px" placeholder="'+(isAr?'عربي':'AR')+'">'+
       '<span class="range">from <input type="number" value="'+(s.from||1)+'" data-i="'+i+'" data-k="from" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"> to <input type="number" value="'+(s.to||1)+'" data-i="'+i+'" data-k="to" style="width:50px;background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--tx);padding:2px 4px"></span>'+
-      '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+(s.icon||'◆')+'</span>'+
+      '<span class="sw-color"><input type="color" value="'+(s.color||'#BFA76A')+'" data-i="'+i+'" data-k="color" style="width:26px;height:26px;border:none;background:none;cursor:pointer">'+escAttr(s.icon||'◆')+'</span>'+
       '<button class="btn sm ghost" onclick="toggleStageImages('+i+')" style="position:relative">🖼 <span style="font-size:10px">'+imgCount+'</span></button>'+
       '<button class="btn sm ghost" onclick="togglePausePoints('+i+')" style="position:relative">⏸ '+(isAr?'التوقفات':'Pauses')+' <span style="font-size:10px;font-weight:700;background:rgba(191,167,106,.22);color:var(--gold-2);padding:1px 8px;border-radius:100px">'+(s.pausePoints?s.pausePoints.length:0)+'</span></button>'+
       '<button class="btn sm danger" onclick="deleteStage('+i+')">✕</button>';
@@ -1416,12 +1427,36 @@ function buildStages(){
       else PROJ.stages[+i][k]=e.target.value;
     }
   });
-  /* assemble + add buttons */
+  /* --- تسلسل الفيديو: ملخّص بسيط + زر الدمج (بدل الأزرار المربكة) --- */
+  const seqPanel=document.createElement('div');
+  seqPanel.style.cssText='margin-top:16px;padding:16px;background:var(--panel2);border:1px solid var(--brd);border-radius:14px';
+  const stageImgs=PROJ.stages.filter(st=>(st.images&&st.images.length>0));
+  const totalImgs=stageImgs.reduce((a,st)=>a+st.images.length,0);
+  const seqLen=(PROJ.sequence&&PROJ.sequence.images)?PROJ.sequence.images.length:0;
+  const usingDefault=!(PROJ.sequence&&PROJ.sequence.images&&PROJ.sequence.images.length>0);
+  seqPanel.innerHTML=
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">'+
+      '<b style="font-size:13px">🎞 تسلسل الفيديو · Video Sequence</b>'+
+      '<span class="badge" style="font-size:10px;font-weight:700;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px">'+
+        (usingDefault?(isAr?'افتراضي · 97 إطاراً (assets/seq)':'Default · 97 frames (assets/seq)'):(isAr?'مخصص · '+seqLen+' صورة':'Custom · '+seqLen+' images'))+
+      '</span>'+
+    '</div>'+
+    '<div style="font-size:11.5px;color:var(--tx3);margin:8px 0 12px;line-height:1.7">'+
+      (isAr?
+        'الصور التي ترفعها من زر 🖼 داخل كل مرحلة تُجمع تلقائياً بالترتيب لتشكّل فيديو المشروع، وتُحسب أرقام المراحل (from/to) بنفسها. بدون صور، يعرض الموقع الإطارات الافتراضية الـ97.':
+        'Images you upload via the 🖼 button inside each stage are joined in order to form the project film, and stage numbers (from/to) are computed automatically. With no images the site shows the default 97 frames.')+
+    '</div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'+
+      '<button class="btn" id="assembleBtn" '+(totalImgs===0?'disabled style="opacity:.5;cursor:not-allowed" title="'+(isAr?'ارفع صوراً لمرحلة أولاً':'Upload stage images first')+'"':'')+'>🧩 '+(isAr?'دمج صور المراحل في الفيديو':'Assemble stage images into film')+'</button>'+
+      '<span style="font-size:11.5px;color:var(--tx3)">'+(isAr?'مراحل فيها صور: ':'Stages with images: ')+stageImgs.length+' / '+PROJ.stages.length+' — '+(isAr?'إجمالي: ':'total: ')+totalImgs+(isAr?' صورة':' images')+'</span>'+
+    '</div>';
+  const ab=seqPanel.querySelector('#assembleBtn');
+  if(ab)ab.onclick=()=>assembleSequenceFromStages(false);
+  p.appendChild(seqPanel);
+  /* add stage */
   const btnRow=document.createElement('div');
-  btnRow.style.cssText='display:flex;gap:10px;margin-top:14px;flex-wrap:wrap';
-  btnRow.innerHTML=
-    '<button class="btn sm" onclick="assembleSequenceFromStages()">'+(isAr?'🔧 دمج الصور في الفيديو':'🔧 Assemble Sequence from Stages')+'</button>'+
-    '<button class="btn sm ghost" onclick="addStage()">+ '+(isAr?'إضافة مرحلة':'Add Stage')+'</button>';
+  btnRow.style.cssText='display:flex;gap:10px;margin-top:12px';
+  btnRow.innerHTML='<button class="btn sm ghost" onclick="addStage()">+ '+(isAr?'إضافة مرحلة':'Add Stage')+'</button>';
   p.appendChild(btnRow);
 }
 function toggleStageImages(i){
@@ -1879,9 +1914,10 @@ function saveExperiences(){
   toast('Experiences saved · تم حفظ التجارب');
 }
 
-/* ---------------- gallery manager ---------------- */
+/* ---------------- gallery manager (section removed from UI — guarded) ---------------- */
+function hasEl(id){return !!document.getElementById(id);}
 function buildGalleryTabs(){
-  const tabs=document.getElementById('galTabs');tabs.innerHTML='';
+  const tabs=document.getElementById('galTabs');if(!tabs)return;tabs.innerHTML='';
   PROJ.stages.forEach((s,i)=>{
     const t=document.createElement('div');t.className='gtab'+(i===0?' on':'');t.textContent=s.name;
     t.onclick=()=>{document.querySelectorAll('.gtab').forEach(x=>x.classList.remove('on'));t.classList.add('on');fillGal(s.id)};
@@ -1890,7 +1926,7 @@ function buildGalleryTabs(){
   fillGal(PROJ.stages[0].id);
 }
 function fillGal(id){
-  const g=document.getElementById('galGrid');g.innerHTML='';
+  const g=document.getElementById('galGrid');if(!g)return;g.innerHTML='';
   for(let i=1;i<=8;i++){
     const d=document.createElement('div');d.className='gimg';
     d.innerHTML=`<img loading="lazy" src="assets/gallery/${id}-${String(i).padStart(2,'0')}-t.webp">
@@ -1901,6 +1937,7 @@ function fillGal(id){
 
 /* ---------------- materials ---------------- */
 function buildMaterials(){
+  if(!document.getElementById('matPanel'))return;
   const mats=[
     ['Travertine Navona','Stone','Marmi KW','86 KD/m²','#dccdb0'],
     ['C40 SR Concrete','Concrete','Gulf RMC','42 KD/m³','#9aa0a6'],
@@ -1912,13 +1949,13 @@ function buildMaterials(){
   const p=document.getElementById('matPanel');
   p.innerHTML='<h3>Library — المكتبة (6 materials)</h3>'+mats.map(m=>`
     <div class="act"><span class="t"><span class="mat-chip" style="display:inline-block;width:22px;height:22px;border-radius:7px;background:${m[4]}"></span></span>
-    <div><b>${m[0]}</b> — ${m[1]} — ${m[2]}</div>
-    <span class="tag blue">${m[3]}</span></div>`).join('');
+    <div><b>${escAttr(m[0])}</b> — ${escAttr(m[1])} — ${escAttr(m[2])}</div>
+    <span class="tag blue">${escAttr(m[3])}</span></div>`).join('');
 }
 
 /* ---------------- heatmap ---------------- */
 function buildHeat(){
-  const h=document.getElementById('heat');h.innerHTML='';
+  const h=document.getElementById('heat');if(!h)return;h.innerHTML='';
   for(let i=0;i<96;i++){
     const stageEdge=[16,32,48,64,80,96].some(e=>Math.abs(i-e)<3);
     const v=stageEdge? .55+Math.random()*.45 : .08+Math.random()*.3;
@@ -1929,6 +1966,7 @@ function buildHeat(){
 /* ---------------- interior management ---------------- */
 function buildInterior(){
   if(!PROJ.interior)return;
+  if(!document.getElementById('themeTabs'))return;
   // theme tabs
   const tt=document.getElementById('themeTabs');tt.innerHTML='';
   PROJ.interior.themes.forEach(th=>{
@@ -1941,30 +1979,34 @@ function buildInterior(){
     tt.appendChild(t);
   });
   // room rows
-  const rr=document.getElementById('roomRows');rr.innerHTML='';
-  document.getElementById('roomCount').textContent=PROJ.interior.rooms.length;
+  const rr=document.getElementById('roomRows');if(!rr)return;rr.innerHTML='';
+  const rc=document.getElementById('roomCount');if(rc)rc.textContent=PROJ.interior.rooms.length;
   PROJ.interior.rooms.forEach((r,i)=>{
     const d=document.createElement('div');d.className='stage-row';
     d.style.gridTemplateColumns='34px 1fr 90px 110px 110px auto';
     d.innerHTML=`<span class="drag">⋮⋮</span>
-      <input type="text" value="${r.name}" data-ri="${i}">
-      <span class="range">${r.area}</span>
+      <input type="text" value="${escAttr(r.name)}" data-ri="${i}">
+      <span class="range">${escAttr(r.area)}</span>
       <span class="range">${r.seq?r.seq+' frames':'no sequence'}</span>
       <span class="tag ${r.interactive?'green':'amber'}" style="justify-self:start">${r.interactive?'LIVE':'PENDING'}</span>
-      <button class="btn sm ghost" onclick="toast('${r.name} — sequence upload (demo)')">Sequence</button>`;
+      <button class="btn sm ghost" data-room-seq="1">Sequence</button>`;
     rr.appendChild(d);
   });
   rr.addEventListener('input',e=>{
     const i=e.target.dataset.ri;
     if(i!==undefined)PROJ.interior.rooms[i].name=e.target.value;
   });
+  rr.addEventListener('click',e=>{
+    const b=e.target.closest('[data-room-seq]');
+    if(b){const i=+b.parentNode.dataset.ri;const rm=PROJ.interior.rooms[i];toast((rm?rm.name:'Room')+' — sequence upload (demo) · رفع تسلسل');}
+  });
   // furniture rows
-  const fr=document.getElementById('furnRows');fr.innerHTML='';
+  const fr=document.getElementById('furnRows');if(!fr)return;fr.innerHTML='';
   Object.entries(PROJ.interior.furniture).forEach(([room,items])=>{
     items.forEach(f=>{
       const d=document.createElement('div');d.className='act';
-      d.innerHTML=`<span class="t">${room}</span><div><b>${f.name}</b> — ${f.brand} · ${(f.material||'').split('·')[0]}</div>
-        <span class="tag blue">${f.price||'—'}</span>`;
+      d.innerHTML=`<span class="t">${escAttr(room)}</span><div><b>${escAttr(f.name)}</b> — ${escAttr(f.brand)} · ${escAttr((f.material||'').split('·')[0])}</div>
+        <span class="tag blue">${escAttr(f.price)||'—'}</span>`;
       fr.appendChild(d);
     });
   });
@@ -1978,7 +2020,9 @@ var hsBAId='design'; /* current BA item for beforeAfter mode */
 var hsGalleryId='excavation'; /* current gallery stage for gallery mode */
 
 function hsInit(){
-  const tabs=document.getElementById('hsTabs');tabs.innerHTML='';
+  const tabs=document.getElementById('hsTabs');if(!tabs)return;tabs.innerHTML='';
+  const img=document.getElementById('hsImg');
+  if(img&&!img.dataset.fbk){img.onerror=()=>{img.dataset.fbk='1';img.src='assets/villa-clean.webp';};}
   /* mode tabs: rooms + sequence + beforeAfter + gallery */
   const modes=[
     {id:'rooms',label:'الغرف · Rooms'},
@@ -1996,17 +2040,25 @@ function hsInit(){
 
   /* sub-tabs based on mode */
   if(hsMode==='rooms'){
-    if(!PROJ.interior)return;
-    hsRoom=hsRoom||'living';
+    if(!PROJ.interior){PROJ.interior=PROJ.interior||{themes:[],rooms:[],furniture:{},theme:'modern-minimal'};}
+    const rooms=PROJ.interior.rooms||[];
+    const interactive=rooms.filter(r=>r.interactive);
+    const targets=interactive.length?interactive:rooms;
+    if(!targets.length){
+      if(document.getElementById('hsImg'))document.getElementById('hsImg').src='assets/villa-clean.webp';
+      hsRender();return;
+    }
+    hsRoom=rooms.find(r=>r.id===hsRoom)?hsRoom:targets[0].id;
     if(typeof HS_LAST==='undefined'||!HS_LAST)window.HS_LAST={living:31,kitchen:31,master:31,bath:16};
-    PROJ.interior.rooms.filter(r=>r.interactive).forEach((r,i)=>{
+    targets.forEach((r,i)=>{
       const t=document.createElement('div');
       t.className='gtab'+(r.id===hsRoom?' on':'');
       t.textContent=r.name+' · '+r.ar;
       t.onclick=()=>{hsRoom=r.id;hsSel=-1;hsInit();};
       tabs.appendChild(t);
     });
-    document.getElementById('hsImg').src=`assets/rooms/seq/${hsRoom}/f${String(HS_LAST[hsRoom]).padStart(2,'0')}.webp`;
+    const seqN=HS_LAST[hsRoom]||1;
+    document.getElementById('hsImg').src=`assets/rooms/seq/${hsRoom}/f${String(seqN).padStart(2,'0')}.webp`;
   } else if(hsMode==='sequence'){
     /* frame input + slider */
     PROJ.stages.forEach(s=>{
@@ -2048,6 +2100,8 @@ function hsInit(){
 function hsSpots(){
   PROJ.hotspots=PROJ.hotspots||{};
   if(hsMode==='rooms'){
+    PROJ.interior=PROJ.interior||{furniture:{}};
+    PROJ.interior.furniture=PROJ.interior.furniture||{};
     PROJ.interior.furniture[hsRoom]=PROJ.interior.furniture[hsRoom]||[];
     return PROJ.interior.furniture[hsRoom];
   } else if(hsMode==='sequence'){
@@ -2067,10 +2121,10 @@ function hsSpots(){
   return [];
 }
 function hsRender(){
-  const st=document.getElementById('hsStage');
+  const st=document.getElementById('hsStage');if(!st)return;
   st.querySelectorAll('.hsdot').forEach(e=>e.remove());
   const spots=hsSpots();
-  document.getElementById('hsCount').textContent=spots.length;
+  const hc=document.getElementById('hsCount');if(hc)hc.textContent=spots.length;
   spots.forEach((f,i)=>{
     const d=document.createElement('div');d.className='hsdot';
     d.style.cssText=`position:absolute;left:${f.x}%;top:${f.y}%;width:26px;height:26px;margin:-13px;
@@ -2082,12 +2136,12 @@ function hsRender(){
     d.onpointerdown=e=>{e.stopPropagation();hsDrag=i;hsSel=i;hsFill();hsRender();};
     st.appendChild(d);
   });
-  const list=document.getElementById('hsList');
-  list.innerHTML=spots.length?'':'<div style="font-size:12px;color:var(--tx3)">No spots yet — click on the image · لا توجد نقاط، انقر على الصورة</div>';
+  const list=document.getElementById('hsList');if(!list)return;
+  list.innerHTML=spots.length?'':'<div style="font-size:12px;color:var(--tx3)">لا توجد نقاط — انقر على الصورة لإضافة نقطة · No spots yet — click the image to add one</div>';
   spots.forEach((f,i)=>{
     const row=document.createElement('div');row.className='act';row.style.cursor='pointer';
-    row.innerHTML=`<span class="t">#${i+1}</span><div><b>${f.name||'(unnamed)'}</b>${f.nameAr?' · <span style="font-family:var(--font-ar)">'+f.nameAr+'</span>':''} — ${f.brand||'—'} · x:${Math.round(f.x)}% y:${Math.round(f.y)}%</div>
-      <span class="tag blue">${f.price||'—'}</span>`;
+    row.innerHTML=`<span class="t">#${i+1}</span><div><b>${escAttr(f.name)||'(unnamed)'}</b>${f.nameAr?' · <span style="font-family:var(--font-ar)">'+escAttr(f.nameAr)+'</span>':''} — ${escAttr(f.brand)||'—'} · x:${Math.round(f.x)}% y:${Math.round(f.y)}%</div>
+      <span class="tag blue">${escAttr(f.price)||'—'}</span>`;
     row.onclick=()=>{hsSel=i;hsFill();hsRender();};
     list.appendChild(row);
   });
@@ -2116,13 +2170,20 @@ function hsDelete(){
   hsSpots().splice(hsSel,1);hsSel=-1;hsFill();hsRender();
   toast('Spot deleted · تم حذف النقطة');
 }
+function hsClearAll(){
+  if(!confirm('حذف كل نقاط هذا القسم؟ Delete ALL spots in this section?'))return;
+  const spots=hsSpots();
+  if(spots&&spots.length)spots.length=0;
+  hsSel=-1;hsFill();hsRender();
+  toast('All spots cleared · تم حذف النقاط');
+}
 function hsSave(){
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveHotspots(PROJ.id,PROJ.hotspots||{});
   toast('Hotspots published · تم النشر');
 }
 (function hsWire(){
-  const st=document.getElementById('hsStage');
+  const st=document.getElementById('hsStage');if(!st)return;
   st.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('hsdot'))return;
     const r=st.getBoundingClientRect();
@@ -2138,7 +2199,7 @@ function hsSave(){
     const f=hsSpots()[hsDrag];if(!f)return;
     f.x=+Math.min(98,Math.max(2,(e.clientX-r.left)/r.width*100)).toFixed(1);
     f.y=+Math.min(98,Math.max(2,(e.clientY-r.top)/r.height*100)).toFixed(1);
-    document.getElementById('hsPos').textContent=`x: ${Math.round(f.x)}% y: ${Math.round(f.y)}%`;
+    const hp=document.getElementById('hsPos');if(hp)hp.textContent=`x: ${Math.round(f.x)}% y: ${Math.round(f.y)}%`;
     hsRender();
   });
   addEventListener('pointerup',()=>hsDrag=-1);
@@ -2150,25 +2211,35 @@ function saveInterior(){AURA.save(CFG);toast('Interior published · تم نشر 
    PROJECTS MANAGER
    ============================================================ */
 function buildProjectManager(){
-  _pmOrder=CFG.projects.map(p=>p.id);
+  /* المشروع الافتراضي ثابت في أول القائمة (يظهر أولاً على الموقع) */
+  const order=[...CFG.projects].sort((a,b)=>(
+    a.id===CFG.currentProjectId?-1:(b.id===CFG.currentProjectId?1:0)
+  ));
+  _pmOrder=order.map(p=>p.id);
   const list=$('pmList');list.innerHTML='';
   $('pmCount').textContent=CFG.projects.length;
-  CFG.projects.forEach(p=>{
+  /* subtitle: clarify which project is shown on the site */
+  const defProj=CFG.projects.find(x=>x.id===CFG.currentProjectId);
+  const subEl=$('projSub');
+  if(subEl)subEl.textContent=(AURA_I18N.lang==='ar'?'المشروع الافتراضي (يظهر على الموقع): ':'Default project (shown on the site): ')+(defProj?(defProj.project&&defProj.project.title)||defProj.id:'—');
+  order.forEach(p=>{
     const isDefault=p.id===CFG.currentProjectId;
+    const isEditing=p.id===PROJ.id;
     const stat=p.status||'concept';
     const statLbl=stat==='completed'?'Completed · مكتمل':stat==='in-progress'?'In Progress · قيد التنفيذ':'Concept · تصور';
     const statCls=stat==='completed'?'green':stat==='in-progress'?'amber':'blue';
     const row=document.createElement('div');row.className='stage-row';
     row.style.gridTemplateColumns='34px 50px 1fr 130px 130px 110px 110px';
+    if(isEditing)row.style.boxShadow='inset 0 0 0 1.5px var(--gold)';
     row.draggable=true;row.dataset.id=p.id;
     row.innerHTML=`
-      <span class="drag">⋮⋮</span>
-      <img src="${p.cover||'assets/villa-clean.webp'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
-      <input type="text" value="${p.project?.title||p.id}" data-id="${p.id}" data-k="title">
-      <span class="range">${p.project?.location||'—'}</span>
-      <span class="range">${p.project?.year||'—'}</span>
+      <span class="drag">${isEditing?'●':(isDefault?'📌':'⋮⋮')}</span>
+      <img src="${escAttr(safeUrl(p.cover))||'assets/villa-clean.webp'}" alt="" style="width:34px;height:34px;border-radius:8px;object-fit:cover">
+      <input type="text" value="${escAttr(p.project?.title||p.id)}" data-id="${escAttr(p.id)}" data-k="title">
+      <span class="range">${escAttr(p.project?.location||'—')}</span>
+      <span class="range">${escAttr(p.project?.year||'—')}</span>
       <span class="tag ${statCls}" style="justify-self:start">${statLbl}</span>
-      ${isDefault?'<span class="tag green" style="justify-self:start">DEFAULT</span>':'<button class="btn sm ghost" onclick="pmSetDefault(\''+p.id+'\')">Set Default</button>'}`;
+      ${isDefault?'<span class="tag green" style="justify-self:start">DEFAULT</span>':'<button class="btn sm ghost" data-set-default="1">Set Default</button>'}`;
     row.addEventListener('dragstart',()=>row.classList.add('dragging'));
     row.addEventListener('dragend',()=>row.classList.remove('dragging'));
     row.addEventListener('dragover',e=>{
@@ -2182,6 +2253,9 @@ function buildProjectManager(){
       if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
       pmEdit(p.id);
     });
+    /* Set Default — read id from dataset (no inline JS string injection) */
+    const sd=row.querySelector('[data-set-default]');
+    if(sd)sd.onclick=()=>{pmSetDefault(p.id);};
     list.appendChild(row);
   });
   /* wire title edits */
@@ -2354,13 +2428,13 @@ function buildWidgets(){
     <h3><span>Edit Widget · تحرير الويدجت</span> <span class="badge">${_wCur}</span></h3>
     <div class="grid2">
       <div class="f"><label>Widget ID · معرّف</label><input type="text" id="wId" value="${_wCur}" disabled></div>
-      <div class="f"><label>Kicker · النص الصغير</label><input type="text" id="wKicker" value="${w.kicker||''}"></div>
-      <div class="f"><label>Title (EN) · العنوان</label><input type="text" id="wTitle" value="${w.title||''}"></div>
-      <div class="f"><label>العنوان (AR)</label><input type="text" id="wTitleAr" value="${w.titleAr||''}" dir="rtl" style="font-family:var(--font-ar)"></div>
+      <div class="f"><label>Kicker · النص الصغير</label><input type="text" id="wKicker" value="${escAttr(w.kicker||'')}"></div>
+      <div class="f"><label>Title (EN) · العنوان</label><input type="text" id="wTitle" value="${escAttr(w.title||'')}"></div>
+      <div class="f"><label>العنوان (AR)</label><input type="text" id="wTitleAr" value="${escAttr(w.titleAr||'')}" dir="rtl" style="font-family:var(--font-ar)"></div>
     </div>
     <div class="grid2" style="margin-top:14px">
-      <div class="f"><label>Description (EN) · الوصف</label><textarea id="wDesc" rows="2">${w.desc||''}</textarea></div>
-      <div class="f"><label>الوصف · Description (AR)</label><textarea id="wDescAr" rows="2" dir="rtl" style="font-family:var(--font-ar)">${w.descAr||''}</textarea></div>
+      <div class="f"><label>Description (EN) · الوصف</label><textarea id="wDesc" rows="2">${escapeHtml(w.desc||'')}</textarea></div>
+      <div class="f"><label>الوصف · Description (AR)</label><textarea id="wDescAr" rows="2" dir="rtl" style="font-family:var(--font-ar)">${escapeHtml(w.descAr||'')}</textarea></div>
     </div>
     <h3 style="margin-top:20px">Gallery · معرض الصور <span class="badge">${(w.gallery||[]).length}</span></h3>
     <div class="gal-grid" id="wGalGrid"></div>
@@ -2390,7 +2464,7 @@ function buildWidgets(){
   const gg=$('wGalGrid');
   (w.gallery||[]).forEach((src,i)=>{
     const d=document.createElement('div');d.className='gimg';
-    d.innerHTML=`<img src="${src}" alt="" style="object-fit:cover;aspect-ratio:4/3"><button class="del" onclick="removeWidgetImage(${i})">✕</button>`;
+    d.innerHTML=`<img src="${escAttr(safeUrl(src))}" alt="" style="object-fit:cover;aspect-ratio:4/3"><button class="del" onclick="removeWidgetImage(${i})">✕</button>`;
     gg.appendChild(d);
   });
   /* fill widget sequence */
@@ -2402,7 +2476,7 @@ function buildWidgets(){
   if($('wSeqInterval')) $('wSeqInterval').value=wSeq.interval||3500;
   (wSeq.images||[]).forEach((src,i)=>{
     const d=document.createElement('div');d.className='gimg';
-    d.innerHTML=`<img src="${src}" alt="" style="object-fit:cover;aspect-ratio:4/3"><span style="position:absolute; top:4px; left:4px; font-size:9px; background:rgba(0,0,0,.6); color:#fff; padding:2px 6px; border-radius:100px">#${i+1}</span><button class="del" onclick="removeWidgetSeqImage(${i})">✕</button>`;
+    d.innerHTML=`<img src="${escAttr(safeUrl(src))}" alt="" style="object-fit:cover;aspect-ratio:4/3"><span style="position:absolute; top:4px; left:4px; font-size:9px; background:rgba(0,0,0,.6); color:#fff; padding:2px 6px; border-radius:100px">#${i+1}</span><button class="del" onclick="removeWidgetSeqImage(${i})">✕</button>`;
     seqGrid.appendChild(d);
   });
   /* wire sequence controls */
@@ -2424,9 +2498,9 @@ function buildWidgets(){
     const d=document.createElement('div');d.className='stage-row';
     d.style.gridTemplateColumns='1fr 1fr 2fr 90px';
     d.innerHTML=`
-      <input type="text" value="${b[0]||''}" data-bi="${i}" data-bk="0" placeholder="Label EN · عنوان إنجليزي">
-      <input type="text" value="${b[1]||''}" data-bi="${i}" data-bk="1" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
-      <input type="text" value="${b[2]||''}" data-bi="${i}" data-bk="2" placeholder="Detail · تفاصيل">
+      <input type="text" value="${escAttr(b[0]||'')}" data-bi="${i}" data-bk="0" placeholder="Label EN · عنوان إنجليزي">
+      <input type="text" value="${escAttr(b[1]||'')}" data-bi="${i}" data-bk="1" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${escAttr(b[2]||'')}" data-bi="${i}" data-bk="2" placeholder="Detail · تفاصيل">
       <button class="btn sm danger" onclick="removeWidgetBullet(${i})">✕</button>`;
     wb.appendChild(d);
   });
@@ -2550,10 +2624,10 @@ function buildBAEditor(){
     row.style.gridTemplateColumns='34px 1fr 1fr 1fr 1fr 90px';
     row.innerHTML=`
       <span class="drag">⋮⋮</span>
-      <input type="text" value="${it.label||''}" data-bai="${i}" data-k="label" placeholder="Label EN · عنوان إنجليزي">
-      <input type="text" value="${it.labelAr||''}" data-bai="${i}" data-k="labelAr" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
-      <input type="text" value="${it.before||''}" data-bai="${i}" data-k="before" placeholder="Before image URL · رابط الصورة قبل">
-      <input type="text" value="${it.after||''}" data-bai="${i}" data-k="after" placeholder="After image URL · رابط الصورة بعد">
+      <input type="text" value="${escAttr(it.label||'')}" data-bai="${i}" data-k="label" placeholder="Label EN · عنوان إنجليزي">
+      <input type="text" value="${escAttr(it.labelAr||'')}" data-bai="${i}" data-k="labelAr" placeholder="Label AR · عنوان عربي" dir="rtl" style="font-family:var(--font-ar)">
+      <input type="text" value="${escAttr(it.before||'')}" data-bai="${i}" data-k="before" placeholder="Before image URL · رابط الصورة قبل">
+      <input type="text" value="${escAttr(it.after||'')}" data-bai="${i}" data-k="after" placeholder="After image URL · رابط الصورة بعد">
       <button class="btn sm ghost" onclick="previewBA(${i})">Preview · معاينة</button>`;
     panel.appendChild(row);
   });
@@ -2565,16 +2639,16 @@ function buildBAEditor(){
   const pv=document.createElement('div');pv.style.cssText='margin-top:18px;padding:14px;background:var(--panel2);border-radius:14px;border:1px solid var(--brd)';
   pv.innerHTML=`<h3 style="margin:0 0 10px">Preview · معاينة</h3>
     <div id="baPreview" style="position:relative;width:100%;aspect-ratio:1408/768;border-radius:10px;overflow:hidden;background:#000">
-      <img id="baPvBefore" src="${items[0]?.before||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-      <img id="baPvAfter" src="${items[0]?.after||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 0 0 50%)">
+      <img id="baPvBefore" src="${escAttr(safeUrl(items[0]?.before||''))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <img id="baPvAfter" src="${escAttr(safeUrl(items[0]?.after||''))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 0 0 50%)">
       <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#000;padding:6px 12px;border-radius:100px;font-size:11px;font-weight:700">BEFORE ◂ ▸ AFTER</div>
     </div>`;
   panel.appendChild(pv);
 }
 function previewBA(i){
   const it=PROJ.beforeAfter[i];if(!it)return;
-  $('baPvBefore').src=it.before||'';
-  $('baPvAfter').src=it.after||'';
+  $('baPvBefore').src=safeUrl(it.before)||'';
+  $('baPvAfter').src=safeUrl(it.after)||'';
 }
 function saveBA(){AURA.save(CFG);toast('Before/After published · تم نشر قبل وبعد')}
 
@@ -2630,8 +2704,8 @@ function scRenderClients(){
   CFG.siteContent.clients.forEach((cl,i)=>{
     const d=document.createElement('div');d.className='stage-row';d.style.gridTemplateColumns='50px 1fr 70px 70px';
     const hasLogo=cl.logo&&cl.logo.length>10;
-    d.innerHTML=`<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:url('${hasLogo?cl.logo:''}') center/contain no-repeat;background-color:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:16px">${hasLogo?'':(cl.icon||'◆')}</div>
-      <input type="text" value="${cl.name}" data-cn="${i}" placeholder="Client name · اسم العميل" style="background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%">
+    d.innerHTML=`<div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--brd);background:url('${hasLogo?escAttr(safeUrl(cl.logo)):''}') center/contain no-repeat;background-color:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--tx3);font-size:16px">${hasLogo?'':escAttr(cl.icon||'◆')}</div>
+      <input type="text" value="${escAttr(cl.name)}" data-cn="${i}" placeholder="Client name · اسم العميل" style="background:transparent;border:none;color:var(--tx);font-size:13px;font-weight:600;outline:none;width:100%">
       <button class="btn sm ghost" onclick="scUploadLogo(${i})">Logo · شعار</button>
       <button class="btn sm danger" onclick="scDelClient(${i})">✕</button>`;
     list.appendChild(d);
@@ -2694,7 +2768,13 @@ async function loadInquiries(){
   /* try Supabase first */
   if(window.AURA_DB && AURA_DB.isReady()){
     try{
-      _inquiriesCache=await AURA_DB.loadInquiries();
+      const rows=await AURA_DB.loadInquiries();
+      /* normalize Supabase rows (created_at/project_type/source) to the UI shape (date/project/widget) */
+      _inquiriesCache=(rows||[]).map(r=>({
+        id:r.id, date:r.created_at, name:r.name, phone:r.phone,
+        company:r.company||'', msg:r.message||'',
+        project:r.project_type||'', widget:r.source||'', status:r.status||'new'
+      }));
       return _inquiriesCache;
     }catch(e){console.warn('[Admin] Supabase inquiries failed, using localStorage',e);}
   }

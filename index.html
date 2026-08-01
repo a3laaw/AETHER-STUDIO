@@ -612,6 +612,7 @@ footer p .ar{font-family:var(--font-ar)}
       <div class="scrub" id="scrub"><div class="fill" id="scrubFill"></div><div class="knob" id="scrubKnob"></div></div>
       <div class="pb-ticks" id="pbTicks"></div>
     </div>
+    <button class="pbtn ghostb" id="pbTour" title="Full tour · جولة كاملة">🎬</button>
     <button class="pbtn" id="pbPlay" title="Pause">❚❚</button>
   </div>
 </section>
@@ -1025,6 +1026,7 @@ function evictCache(g){
   for(const k in cache){if(!near.has(+k.split(':')[1]))delete cache[k];}
 }
 const cv=$('cine'),ctx=cv.getContext('2d');
+let _rszT=null;
 function fitCanvas(){cv.width=innerWidth;cv.height=innerHeight;}
 fitCanvas();
 addEventListener('resize',()=>{clearTimeout(_rszT);_rszT=setTimeout(fitCanvas,150);},{passive:true});
@@ -1482,6 +1484,23 @@ $('modalClose').onclick=closeModal;
 $('mClose2').onclick=closeModal;
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
 addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetails();}});
+/* playback keyboard commands: Space = play/pause, ←/→ = scrub (organized with the playbar) */
+addEventListener('keydown',e=>{
+  const tag=(e.target&&e.target.tagName)||'';
+  if(tag==='INPUT'||tag==='TEXTAREA'||(e.target&&e.target.isContentEditable))return;
+  if($('modal').classList.contains('on')||$('detailsView').classList.contains('on'))return;
+  if(e.key===' '||e.code==='Space'){
+    e.preventDefault();
+    const b=$('pbPlay');if(b&&b.onclick)b.click();
+  } else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    e.preventDefault();
+    clearTimeout(holdT);pauseHold=false;
+    hideOverlayWidget();$('pauseBadge').classList.remove('show');
+    stopWidgetSequence();_stagePauseTriggered.clear();
+    const step=Math.max(1,Math.round(TOTAL*0.02));
+    target=current=Math.min(TOTAL,Math.max(1,current+(e.key==='ArrowRight'?step:-step)));
+  }
+});
 
 /* ---------- Details View (full-screen white overlay) ---------- */
 function openDetailsView(w){
@@ -1912,7 +1931,7 @@ function openExp360(){
       const thumb=p.img||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 10%22><rect fill=%22%23222%22 width=%2216%22 height=%2210%22/><text x=%228%22 y=%226%22 fill=%22%23fff%22 font-size=%221.4%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>360</text></svg>';
       const isEmbed=!!p.embed;
       const badge=isEmbed?'<span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:100px;backdrop-filter:blur(6px)">🔗 Embed</span>':'';
-      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+thumb+'" alt="'+(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
+      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+escAttr(safeUrl(thumb))+'" alt="'+esc(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+esc(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
     }).join('')+'</div>'+
     '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
   dv.classList.add('on');document.body.style.overflow='hidden';
@@ -1928,16 +1947,16 @@ function loadPano(i){
     if(yt)src='https://www.youtube.com/embed/'+yt[1];
     const vm=src.match(/vimeo\.com\/(\d+)/);
     if(vm)src='https://player.vimeo.com/video/'+vm[1];
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+esc(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
       '<div style="position:relative;width:100%;height:70vh;overflow:hidden;border-radius:14px;background:#000">'+
-        '<iframe src="'+src+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
+        '<iframe src="'+escAttr(safeUrl(src))+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
       '</div>'+
       '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
     return;
   }
   /* image pano → drag viewer */
   $('dvContent').innerHTML='<div style="position:relative;width:100%;height:60vh;overflow:hidden;border-radius:14px;cursor:grab;background:#000" id="panoWrap">'+
-    '<img src="'+p.img+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
+    '<img src="'+escAttr(safeUrl(p.img))+'" alt="" id="panoImg" style="position:absolute;top:0;height:100%;pointer-events:none">'+
     '<div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:#fff;background:rgba(0,0,0,.5);padding:8px 18px;border-radius:100px;backdrop-filter:blur(8px)">'+(isAr?'اسحب للنظر حولك':'Drag to look')+'</div></div>'+
     '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
   /* drag to look */
@@ -1968,9 +1987,9 @@ function openExpWalk(){
     }else if(vm){
       videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
     }else{
-      videoHTML='<video src="'+src+'" poster="'+(walk.img||'')+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
+      videoHTML='<video src="'+escAttr(safeUrl(src))+'" poster="'+escAttr(safeUrl(walk.img||''))+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
     }
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+title+'</h2>'+(walk.desc?'<p class="dv-sub">'+walk.desc+'</p>':'')+'</div></div>'+
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
       videoHTML+
       '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
     dv.classList.add('on');document.body.style.overflow='hidden';
@@ -1979,7 +1998,7 @@ function openExpWalk(){
   /* fallback: legacy pano image drag view */
   loadPano(0);
   const img=document.querySelector('[id=panoImg]');
-  if(img){img.src=walk.img;}
+  if(img){img.src=safeUrl(walk.img);}
 }
 function openExpBA(){
   const exp=PROJ.experiences||{};
@@ -1988,10 +2007,10 @@ function openExpBA(){
   const dv=$('detailsView');
   let baPos=50,baIdx=0;
   $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⇆</div><div><div class="dv-eyebrow">'+(isAr?'قبل / بعد':'BEFORE / AFTER')+'</div><h2>'+(isAr?'مقارنة تفاعلية':'Interactive Comparison')+'</h2></div></div>'+
-    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+(isAr?(b.labelAr||b.label):b.label)+'</button>').join('')+'</div>'+
+    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+esc(isAr?(b.labelAr||b.label):b.label)+'</button>').join('')+'</div>'+
     '<div id="baSlider" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;cursor:ew-resize;background:#000">'+
-      '<img id="baAfter" src="'+ba[0].after+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
-      '<img id="baBefore" src="'+ba[0].before+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
+      '<img id="baAfter" src="'+escAttr(safeUrl(ba[0].after))+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
+      '<img id="baBefore" src="'+escAttr(safeUrl(ba[0].before))+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
       '<div id="baHandle" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.4)"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:100px;padding:6px 10px;font-size:11px;font-weight:700">↔</div></div>'+
       '<span style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'قبل':'BEFORE')+'</span>'+
       '<span style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px">'+(isAr?'بعد':'AFTER')+'</span>'+
@@ -2009,7 +2028,7 @@ function openExpBA(){
   window._baSelect=function(i){
     baIdx=i;
     ba.forEach((b,j)=>{const t=$('baTab'+j);if(t){t.style.border='1px solid '+(j===i?'#BFA76A':'rgba(0,0,0,.1)');t.style.background=(j===i?'#BFA76A':'transparent');t.style.color=(j===i?'#fff':'#6E7079');}});
-    before.src=ba[i].before;$('baAfter').src=ba[i].after;
+    before.src=safeUrl(ba[i].before);$('baAfter').src=safeUrl(ba[i].after);
     setBA(slider.getBoundingClientRect().left+slider.getBoundingClientRect().width/2);
   };
 }
