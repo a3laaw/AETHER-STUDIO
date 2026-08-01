@@ -2614,6 +2614,7 @@ function saveInterior(){AURA.save(CFG);toast('Interior published · تم نشر 
    PROJECTS MANAGER
    ============================================================ */
 function buildProjectManager(){
+  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
   /* المشروع الافتراضي ثابت في أول القائمة (يظهر أولاً على الموقع) */
   const order=[...CFG.projects].sort((a,b)=>(
     a.id===CFG.currentProjectId?-1:(b.id===CFG.currentProjectId?1:0)
