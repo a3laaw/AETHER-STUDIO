@@ -277,7 +277,15 @@ html[dir="rtl"] #services .s-head h2{font-family:var(--font-ar)}
 .svc-journey-track::before{content:"";position:absolute;left:0;right:0;top:62px;height:3px;background:linear-gradient(90deg,transparent,var(--border-2) 8%,var(--border-2) 92%,transparent);z-index:0}
 .svc-journey-track::-webkit-scrollbar{height:6px}
 .svc-journey-track::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px}
-.svc-stage{flex:0 0 300px;scroll-snap-align:start;background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px 18px 20px;cursor:pointer;transition:.35s cubic-bezier(.3,.7,.3,1);position:relative;box-shadow:0 4px 16px -8px rgba(0,0,0,.06)}
+.svc-stage{flex:0 0 300px;scroll-snap-align:start;background:#fff;border:1px solid var(--border);border-radius:18px;padding:0 0 20px;cursor:pointer;transition:.35s cubic-bezier(.3,.7,.3,1);position:relative;box-shadow:0 4px 16px -8px rgba(0,0,0,.06);overflow:hidden}
+.svc-stage .ss-preview{width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;background:#1A1A1C;margin-bottom:14px}
+.svc-stage .ss-preview img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease,opacity .3s;opacity:0}
+.svc-stage .ss-preview img.loaded{opacity:1}
+.svc-stage .ss-preview::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.6) 100%);pointer-events:none}
+.svc-stage .ss-preview .ss-play-hint{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;font-size:9px;font-weight:600;padding:3px 8px;border-radius:100px;backdrop-filter:blur(4px);pointer-events:none;opacity:0;transition:.3s}
+.svc-stage:hover .ss-play-hint{opacity:1}
+.svc-stage:hover .ss-preview img{transform:scale(1.08)}
+.svc-stage .ss-icon,.svc-stage .ss-num,.svc-stage h4,.svc-stage .ss-ar,.svc-stage p,.svc-stage .ss-metric,.svc-stage .ss-go{padding-left:18px;padding-right:18px}
 .svc-stage:hover{transform:translateY(-4px);box-shadow:0 20px 50px -16px rgba(191,167,106,.3);border-color:rgba(191,167,106,.4)}
 .svc-stage.on{background:linear-gradient(180deg,#fff 0%,#FAF7EE 100%);border-color:rgba(191,167,106,.5);box-shadow:0 20px 50px -16px rgba(191,167,106,.4)}
 .svc-stage .ss-icon{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:rgba(0,0,0,.04);color:var(--gold);transition:.3s}
@@ -697,7 +705,8 @@ footer p .ar{font-family:var(--font-ar)}
       <span class="s-journey-hint" id="svcJourneyHint">اسحب لاستعراض المراحل · Drag to explore</span>
     </div>
     <div class="svc-journey-track" id="svcJourneyTrack">
-      <div class="svc-stage" data-svc="design" data-wid="design">
+      <div class="svc-stage" data-svc="design" data-wid="design" data-stage-idx="0">
+        <div class="ss-preview" data-preview-stage="0"><img alt="" loading="lazy"></div>
         <div class="ss-icon">◉</div>
         <div class="ss-num">01 · STAGE</div>
         <h4>Design</h4>
@@ -706,7 +715,8 @@ footer p .ar{font-family:var(--font-ar)}
         <div class="ss-metric"><span class="m-v">12+</span><span class="m-l">خيارات تصميمية</span></div>
         <span class="ss-go">التفاصيل ←</span>
       </div>
-      <div class="svc-stage" data-svc="execution" data-wid="execution">
+      <div class="svc-stage" data-svc="execution" data-wid="execution" data-stage-idx="1">
+        <div class="ss-preview" data-preview-stage="1"><img alt="" loading="lazy"></div>
         <div class="ss-icon">▦</div>
         <div class="ss-num">02 · STAGE</div>
         <h4>Execution</h4>
@@ -715,7 +725,8 @@ footer p .ar{font-family:var(--font-ar)}
         <div class="ss-metric"><span class="m-v">±2mm</span><span class="m-l">دقة الليزر</span></div>
         <span class="ss-go">التفاصيل ←</span>
       </div>
-      <div class="svc-stage" data-svc="finishing" data-wid="finishing">
+      <div class="svc-stage" data-svc="finishing" data-wid="finishing" data-stage-idx="2">
+        <div class="ss-preview" data-preview-stage="2"><img alt="" loading="lazy"></div>
         <div class="ss-icon">◨</div>
         <div class="ss-num">03 · STAGE</div>
         <h4>Finishing</h4>
@@ -724,7 +735,8 @@ footer p .ar{font-family:var(--font-ar)}
         <div class="ss-metric"><span class="m-v">24/24</span><span class="m-l">دفعات مفحوصة</span></div>
         <span class="ss-go">التفاصيل ←</span>
       </div>
-      <div class="svc-stage" data-svc="management" data-wid="management">
+      <div class="svc-stage" data-svc="management" data-wid="management" data-stage-idx="3">
+        <div class="ss-preview" data-preview-stage="3"><img alt="" loading="lazy"></div>
         <div class="ss-icon">▤</div>
         <div class="ss-num">04 · STAGE</div>
         <h4>Project Management</h4>
@@ -1883,6 +1895,73 @@ function applySiteContent(){
 applySiteContent();
 applySEO();
 
+/* ---------- Services: live stage previews (revolutionary UX) ---------- */
+/* Each service card shows a live frame from the project's actual build stage.
+   On hover, it cycles through the stage's frames — a mini-documentary per card.
+   On click, it jumps the main video to that stage. */
+function initServicePreviews(){
+  const previews=document.querySelectorAll('.ss-preview');
+  if(!previews.length)return;
+  const allImgs=AURA.getAssembledImages?AURA.getAssembledImages(PROJ):[];
+  const stages=PROJ.stages||[];
+  previews.forEach(pv=>{
+    const stageIdx=+pv.dataset.previewStage;
+    const stage=stages[stageIdx];
+    if(!stage||!allImgs.length){
+      /* fallback: use default stage poster */
+      const img=pv.querySelector('img');
+      if(img){img.src='assets/stages/s'+(stageIdx+1)+'-'+(['excavation','foundation','structure','shell','facade','facade','night','night'][stageIdx]||'excavation')+'.webp';img.classList.add('loaded');}
+      return;
+    }
+    const from=stage.from||1,to=stage.to||stage.from||1;
+    const frameUrls=[];
+    for(let n=from;n<=to&&n<=allImgs.length;n++){
+      if(allImgs[n-1])frameUrls.push(allImgs[n-1]);
+    }
+    if(!frameUrls.length)return;
+    const img=pv.querySelector('img');
+    /* load middle frame first */
+    const mid=Math.floor(frameUrls.length/2);
+    img.src=frameUrls[mid];
+    img.classList.add('loaded');
+    /* add play hint */
+    const hint=document.createElement('span');
+    hint.className='ss-play-hint';
+    hint.textContent=isAr?'▶ تشغيل':'▶ Play';
+    pv.appendChild(hint);
+    /* hover → cycle frames */
+    let hoverTimer=null,frameIdx=mid;
+    const card=pv.closest('.svc-stage');
+    if(!card)return;
+    card.addEventListener('mouseenter',()=>{
+      if(frameUrls.length<2)return;
+      hoverTimer=setInterval(()=>{
+        frameIdx=(frameIdx+1)%frameUrls.length;
+        img.src=frameUrls[frameIdx];
+      },600);
+    });
+    card.addEventListener('mouseleave',()=>{
+      if(hoverTimer){clearInterval(hoverTimer);hoverTimer=null;}
+      frameIdx=mid;
+      img.src=frameUrls[mid];
+    });
+    /* click → jump main video to this stage */
+    card.addEventListener('click',e=>{
+      if(e.target.closest('.ss-go')||e.target.closest('a'))return;
+      /* scroll to hero + jump to stage start */
+      $('hero').scrollIntoView({behavior:'smooth'});
+      setTimeout(()=>{
+        clearTimeout(holdT);pauseHold=false;
+        hideOverlayWidget();$('pauseBadge').classList.remove('show');
+        stopWidgetSequence();_stagePauseTriggered.clear();
+        target=current=stage.from||1;
+        toast(isAr?('▶ '+stage.ar||stage.name):'▶ '+stage.name);
+      },500);
+    });
+  });
+}
+initServicePreviews();
+
 /* ---------- sync: when admin saves, site updates automatically ---------- */
 function applyPlayback(){
   const pb=PROJ.playback||{fpsExt:9,pauseExplore:5};
@@ -1910,6 +1989,7 @@ function applyAllFromStorage(){
   buildPlaybar();
   buildWidgets();
   updateExpButtons();
+  if(typeof initServicePreviews==='function')initServicePreviews();
   /* update hero title */
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */
