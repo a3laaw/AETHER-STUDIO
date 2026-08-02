@@ -1133,7 +1133,7 @@ function updateExpButtons(){
   const wrap=$('expButtons');
   /* show button only if project has data for it */
   const has360=panos.some(p=>p.img||p.embed);
-  const hasWalk=walk.video||walk.img||(walk.photoWalk&&walk.photoWalk.length>=2)||(walk.scenes&&walk.scenes.length);
+  const hasWalk=(walk.photoWalk&&walk.photoWalk.length>=2)||(walk.scenes&&walk.scenes.length);
   /* BA: show if at least one entry has at least 2 frames (or legacy before+after) */
   const hasBA=ba.some(b=>{
     if(b.frames&&Array.isArray(b.frames)){
@@ -2343,12 +2343,12 @@ function openExpWalk(){
   const walk=exp.walkthrough||{};
   const photoWalkScenes=(walk.photoWalk&&walk.photoWalk.length>=2)?walk.photoWalk:null;
   const scenes=(walk.scenes&&walk.scenes.length)?walk.scenes:null;
-  if(!photoWalkScenes&&!scenes&&!walk.video&&!walk.img){
-    toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;
+  if(!photoWalkScenes&&!scenes){
+    toast(isAr?'لا توجد جولة حرة — استخدم صور المراحل أو ارفع صور':'No walkthrough — use stage images or upload');return;
   }
   const title=walk.title||(isAr?'جولة حرة':'Free Walkthrough');
 
-  /* Photo Walk mode */
+  /* Photo Walk mode — images + mouse only, no video */
   if(photoWalkScenes && window.AURA && AURA.PhotoWalk){
     openExpOverlay('🚶 '+title, ()=>{
       const ov=$('expOverlay');
@@ -2361,7 +2361,7 @@ function openExpWalk(){
     return;
   }
 
-  /* Walk3D mode */
+  /* Walk3D mode — panorama navigation with mouse */
   if(scenes && window.AURA && AURA.Walk3D){
     openExpOverlay('◎ '+title, ()=>{
       const ov=$('expOverlay');
@@ -2389,34 +2389,8 @@ function openExpWalk(){
     return;
   }
 
-  /* Video mode */
-  if(walk.video){
-    let src=walk.video;
-    const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-    const vm=src.match(/vimeo\.com\/(\d+)/);
-    let videoHTML='';
-    if(yt){
-      videoHTML='<iframe src="https://www.youtube.com/embed/'+yt[1]+'" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
-    }else if(vm){
-      videoHTML='<iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
-    }else{
-      videoHTML='<video src="'+escAttr(safeUrl(src))+'" poster="'+escAttr(safeUrl(walk.img||''))+'" controls playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000"></video>';
-    }
-    openExpOverlay('▶ '+title, ()=>{
-      const ov=$('expOverlay');
-      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
-      ov.innerHTML=videoHTML;
-    });
-    return;
-  }
-  /* fallback: single image */
-  if(walk.img){
-    openExpOverlay('▶ '+title, ()=>{
-      const ov=$('expOverlay');
-      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
-      ov.innerHTML='<img src="'+escAttr(safeUrl(walk.img))+'" style="width:100%;height:100%;object-fit:cover">';
-    });
-  }
+  /* No video fallback — if no PhotoWalk or Walk3D, show message */
+  toast(isAr?'لا توجد جولة حرة — ارفع صور من لوحة التحكم':'No walkthrough — upload images from admin');
 }
 
 function openExpBA(){

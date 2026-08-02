@@ -429,28 +429,13 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         <span style="background:rgba(191,167,106,.14);color:var(--gold-2);font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid rgba(191,167,106,.3)">📁 <span id="expwalkProj">—</span></span>
         <button class="btn sm ghost" onclick="go('projects')" style="margin-inline-start:auto">← تبديل المشروع</button>
       </div>
+      <!-- Walkthrough settings (title + description only — no video) -->
       <div class="panel">
-        <h3><span>الفيديو · Video</span></h3>
-        <div class="exp-upload">
-          <div class="eu-label">▶ ملف الفيديو · Video File</div>
-          <div class="eu-preview" id="walkVideoPreview"></div>
-          <div class="eu-url">
-            <input type="text" id="expWalkVideo" placeholder="رابط فيديو مباشر (mp4 / webm / YouTube)" dir="ltr">
-            <button class="btn sm" onclick="expUploadVideo()">رفع · Upload</button>
-            <input type="file" id="expWalkVideoFile" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'expWalkVideo')">
-          </div>
-        </div>
-        <div class="grid2" style="margin-top:14px">
+        <h3><span>إعدادات الجولة · Walkthrough Settings</span></h3>
+        <div class="grid2">
           <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
-          <div class="f"><label>صورة الغلاف · Poster Image (Optional)</label>
-            <div style="display:flex;gap:8px">
-              <input type="text" id="expWalkImg" style="flex:1">
-              <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
-              <input type="file" id="expWalkImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'expWalkImg')">
-            </div>
-          </div>
+          <div class="f"><label>وصف الجولة (AR)</label><input type="text" id="expWalkDesc" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك"></div>
         </div>
-        <div class="f" style="margin-top:14px"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك · انقر الأبواب للتنقل"></textarea></div>
       </div>
       <!-- 3D Walk Scenes -->
       <div class="panel">
