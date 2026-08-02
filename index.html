@@ -614,9 +614,9 @@ footer p .ar{font-family:var(--font-ar)}
   <div id="heroFade"></div>
   <!-- Experience overlay: replaces the main video canvas when active -->
   <div id="expOverlay" style="position:absolute;inset:0;z-index:8;display:none;background:#000"></div>
-  <div id="expBar" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:15;display:none;align-items:center;gap:10px;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);padding:8px 16px;border-radius:100px">
-    <span id="expBarTitle" style="color:#fff;font-size:13px;font-weight:700">—</span>
-    <button onclick="closeExpOverlay()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px">✕</button>
+  <div id="expBar" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:15;display:none;align-items:center;gap:12px;background:rgba(0,0,0,.75);backdrop-filter:blur(16px);padding:10px 20px;border-radius:100px;border:1px solid rgba(255,255,255,.15)">
+    <span id="expBarTitle" style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap">—</span>
+    <button onclick="closeExpOverlay()" style="background:#BFA76A;border:none;color:#fff;padding:8px 16px;border-radius:100px;cursor:pointer;font-size:12px;font-weight:700;transition:.3s;font-family:inherit;white-space:nowrap">← رجوع للفيديو · Back to Video</button>
   </div>
 
   <div class="hero-copy" id="heroCopy">
@@ -1133,7 +1133,7 @@ function updateExpButtons(){
   const wrap=$('expButtons');
   /* show button only if project has data for it */
   const has360=panos.some(p=>p.img||p.embed);
-  const hasWalk=walk.video||walk.img;
+  const hasWalk=walk.video||walk.img||(walk.photoWalk&&walk.photoWalk.length>=2)||(walk.scenes&&walk.scenes.length);
   /* BA: show if at least one entry has at least 2 frames (or legacy before+after) */
   const hasBA=ba.some(b=>{
     if(b.frames&&Array.isArray(b.frames)){
@@ -1666,8 +1666,11 @@ addEventListener('keydown',e=>{
   if(tag==='INPUT'||tag==='TEXTAREA'||(e.target&&e.target.isContentEditable))return;
   if($('modal').classList.contains('on')||$('detailsView').classList.contains('on'))return;
   if(e.key===' '||e.code==='Space'){
+    if(_expActive){e.preventDefault();closeExpOverlay();return;}
     e.preventDefault();
     const b=$('pbPlay');if(b&&b.onclick)b.click();
+  } else if(e.key==='Escape'&&_expActive){
+    e.preventDefault();closeExpOverlay();return;
   } else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
     e.preventDefault();
     clearTimeout(holdT);pauseHold=false;
@@ -2283,18 +2286,20 @@ function openExp360(){
   const panos=exp.panos||[];
   if(!panos.length){toast(isAr?'لا توجد بانوراما متاحة':'No panoramas available');return;}
   if(panos.length===1){ loadPano(0); return; }
-  /* multiple rooms → show room picker in the overlay */
-  openExpOverlay(isAr?'جولة 360° · اختر غرفة':'360° Tour · Select Room', ()=>{
+  /* multiple rooms → show ALL rooms in a scrollable grid */
+  openExpOverlay(isAr?'جولة 360° · '+panos.length+' غرف':'360° Tour · '+panos.length+' Rooms', ()=>{
     const ov=$('expOverlay');
-    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.92);overflow-y:auto;padding:60px 20px';
-    let html='<div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:10px">'+(isAr?'اختر غرفة للاستكشاف':'Select a room to explore')+'</div>';
-    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;max-width:800px;width:100%">';
+    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:rgba(0,0,0,.95);overflow-y:auto;padding:60px 20px 40px';
+    let html='<div style="color:#fff;font-size:20px;font-weight:700;margin-bottom:20px;text-align:center">'+(isAr?'اختر غرفة للاستكشاف':'Select a room to explore')+'</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:900px;width:100%;margin:0 auto">';
     panos.forEach((p,i)=>{
       const thumb=p.img||'';
       const isEmbed=!!p.embed;
-      html+='<div onclick="loadPano('+i+')" style="cursor:pointer;border-radius:14px;overflow:hidden;background:#1A1A1C;transition:.3s;border:2px solid transparent" onmouseover="this.style.borderColor=\'#BFA76A\'" onmouseout="this.style.borderColor=\'transparent\'">'+
-        '<div style="aspect-ratio:16/9;overflow:hidden">'+(thumb?'<img src="'+escAttr(safeUrl(thumb))+'" style="width:100%;height:100%;object-fit:cover">':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#666;font-size:30px">⟲</div>')+'</div>'+
-        '<div style="padding:10px 14px"><b style="color:#fff;font-size:13px">'+esc(isAr?(p.roomAr||p.room):p.room)+'</b>'+(isEmbed?'<span style="color:#BFA76A;font-size:10px;margin-inline-start:6px">🔗 Embed</span>':'')+'</div>'+
+      const roomLabel=isAr?(p.roomAr||p.room||('غرفة '+(i+1))):(p.room||('Room '+(i+1)));
+      html+='<div onclick="loadPano('+i+')" style="cursor:pointer;border-radius:14px;overflow:hidden;background:#1A1A1C;transition:.3s;border:2px solid transparent" onmouseover="this.style.borderColor=\'#BFA76A\';this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.borderColor=\'transparent\';this.style.transform=\'\'">'+
+        '<div style="aspect-ratio:16/9;overflow:hidden;position:relative">'+(thumb?'<img src="'+escAttr(safeUrl(thumb))+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#666;font-size:36px">⟲</div>')+
+        '<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:20px 14px 10px"><b style="color:#fff;font-size:14px">'+esc(roomLabel)+'</b>'+(isEmbed?'<span style="color:#BFA76A;font-size:10px;margin-inline-start:6px">🔗</span>':'')+'</div>'+
+        '</div>'+
       '</div>';
     });
     html+='</div>';
