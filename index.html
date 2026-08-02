@@ -935,6 +935,8 @@ footer p .ar{font-family:var(--font-ar)}
 <script src="js/supabase.js"></script>
 <script src="js/depth-360.js"></script>
 <script src="js/walk3d.js"></script>
+<script src="js/pano-stitcher.js"></script>
+<script src="js/photo-walk.js"></script>
 <script>
 /* ============================================================
    AURA STUDIO — Single-structure cinematic experience
@@ -2287,13 +2289,32 @@ function loadPano(i){
 function openExpWalk(){
   const exp=PROJ.experiences||{};
   const walk=exp.walkthrough||{};
-  /* Walk3D takes priority if scenes are defined */
+  /* Photo Walk takes priority if defined (flat images → interactive walk) */
+  const photoWalkScenes = (walk.photoWalk && walk.photoWalk.length >= 2) ? walk.photoWalk : null;
+  /* Walk3D scenes (panorama navigation) */
   const scenes=(walk.scenes && walk.scenes.length)? walk.scenes : null;
-  if(!scenes && !walk.video && !walk.img){
+  if(!photoWalkScenes && !scenes && !walk.video && !walk.img){
     toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;
   }
   const dv=$('detailsView');
-  const title=walk.title||(isAr?'جولة حرة في المشروع · مشي 3D':'Free Walkthrough · 3D Walk');
+  const title=walk.title||(isAr?'جولة حرة في المشروع':'Free Walkthrough');
+
+  /* Photo Walk mode: flat images with mouse-driven pan/zoom */
+  if(photoWalkScenes && window.AURA && AURA.PhotoWalk){
+    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🚶</div><div><div class="dv-eyebrow">'+(isAr?'جولة بالصور · Photo Walk':'PHOTO WALK · INTERACTIVE')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
+      '<div id="pwBox" style="width:100%;margin-bottom:14px"></div>'+
+      '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
+    dv.classList.add('on');document.body.style.overflow='hidden';
+    setTimeout(()=>{
+      AURA.PhotoWalk.mount($('pwBox'), {
+        scenes: photoWalkScenes,
+        height: '65vh',
+        onClose: ()=>{}
+      });
+    },60);
+    return;
+  }
+
   /* Walk3D mode: immersive panorama navigation */
   if(scenes && window.AURA && AURA.Walk3D){
     $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">◎</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة · 3D Walk':'FREE WALKTHROUGH · 3D WALK')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+

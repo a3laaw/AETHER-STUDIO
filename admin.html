@@ -388,6 +388,28 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="page" id="p-exp360">
       <h1 class="pt">جولة 360° · 360° Tour</h1>
       <div class="ps">ارفع صورة بانورامية لكل غرفة، أو الصق رابط جولة جاهزة (Matterport / Kuula / Pano2VR). يمكنك أيضاً رفع خريطة عمق (depth map) لتفعيل العرض ثلاثي الأبعاد.</div>
+
+      <!-- Pano Stitcher: convert flat images to panorama -->
+      <div class="panel" style="background:linear-gradient(135deg,#fff,#FAFAF7);border:2px dashed var(--gold)">
+        <h3><span>🔬 تحويل صور مسطحة إلى بانوراما · Pano Stitcher</span> <span class="badge" style="background:rgba(191,167,106,.2);color:var(--gold-2)">NEW</span></h3>
+        <div class="ps" style="margin-bottom:14px;font-size:12px;color:var(--tx3)">ارفع 2-8 صور أفقية متتابعة (زي صور الموبايل لما تلف حول نفسك) والكود هيدمجها في بانوراما عريضة واحدة.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn" onclick="$('panoStitchFile').click()">📸 اختر صور للدمع · Select Images</button>
+          <input type="file" id="panoStitchFile" multiple accept="image/*" style="display:none" onchange="handlePanoStitch(this)">
+          <span id="panoStitchStatus" style="font-size:11px;color:var(--tx3)"></span>
+        </div>
+        <div id="panoStitchPreview" style="margin-top:14px;display:none">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">معاينة البانوراما · Preview</div>
+          <div style="border-radius:12px;overflow:hidden;border:1px solid var(--brd);max-height:200px;overflow-y:hidden">
+            <img id="panoStitchImg" style="width:100%;display:block" alt="">
+          </div>
+          <div class="btnrow" style="margin-top:10px">
+            <button class="btn sm" onclick="panoStitchSave()">💾 حفظ كغرفة جديدة · Save as Room</button>
+            <button class="btn sm ghost" onclick="panoStitchReset()">↺ إعادة · Reset</button>
+          </div>
+        </div>
+      </div>
+
       <div class="panel">
         <h3><span>الغرف · Rooms</span> <span class="badge" id="exp360Count">0</span></h3>
         <div id="exp360List"></div>
@@ -437,6 +459,23 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       </div>
       <div class="btnrow">
         <button class="btn" onclick="saveExperiences()">حفظ · Save</button>
+      </div>
+
+      <!-- Photo Walk: create walkthrough from flat images -->
+      <div class="panel" style="margin-top:20px;background:linear-gradient(135deg,#fff,#FAFAF7);border:2px dashed var(--gold)">
+        <h3><span>🚶 جولة بالصور · Photo Walk</span> <span class="badge" style="background:rgba(191,167,106,.2);color:var(--gold-2)">NEW</span></h3>
+        <div class="ps" style="margin-bottom:14px;font-size:12px;color:var(--tx3)">اختر صور من المراحل المرفوعة أو ارفع صور جديدة — الكود هيحولها لجولة تفاعلية تتحرك مع الماوس (بدون فيديو).</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+          <button class="btn" onclick="photoWalkFromStages()">📦 استخدم صور المراحل · From Stages</button>
+          <button class="btn ghost" onclick="$('photoWalkFile').click()">📸 ارفع صور · Upload Images</button>
+          <input type="file" id="photoWalkFile" multiple accept="image/*" style="display:none" onchange="handlePhotoWalkUpload(this)">
+          <button class="btn sm ghost" onclick="photoWalkPreview()">▶ معاينة الجولة · Preview</button>
+        </div>
+        <div id="photoWalkScenes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px"></div>
+        <div class="btnrow" style="margin-top:10px">
+          <button class="btn sm" onclick="photoWalkSave()">💾 حفظ الجولة · Save Walk</button>
+          <button class="btn sm ghost" onclick="photoWalkClear()">↺ مسح · Clear</button>
+        </div>
       </div>
     </div>
 
@@ -750,6 +789,8 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
 <script src="js/cms.js"></script>
 <script src="js/supabase.js"></script>
+<script src="js/pano-stitcher.js"></script>
+<script src="js/photo-walk.js"></script>
 <script>
 /* global error catch — surface any JS error to the user */
 window.addEventListener('error',e=>{
@@ -2289,6 +2330,170 @@ async function handleVideoUpload(input,targetId){
     toast('Video uploaded ✓ · تم رفع الفيديو');
   }catch(e){toast(e.message||'Upload failed');}
   input.value='';
+}
+
+/* ============================================================
+   PANO STITCHER — convert flat images to panorama
+   ============================================================ */
+let _panoStitchResult = null;
+async function handlePanoStitch(input){
+  const files = input.files;
+  if(!files || files.length < 2){
+    toast('اختر صورتين على الأقل · Select at least 2 images');
+    return;
+  }
+  const status = $('panoStitchStatus');
+  if(status) status.textContent = 'جاري الدمج... · Stitching...';
+  try{
+    const dataUrl = await AURA.PanoStitcher.fromFiles(files, { overlap: 0.15, feather: 40, height: 768 });
+    if(!dataUrl){ toast('فشل الدمج · Stitching failed'); return; }
+    _panoStitchResult = dataUrl;
+    const prev = $('panoStitchPreview');
+    const img = $('panoStitchImg');
+    if(prev) prev.style.display = 'block';
+    if(img) img.src = dataUrl;
+    if(status) status.textContent = '✓ تم الدمج · Stitched successfully';
+    toast('تم دمج الصور في بانوراما ✓');
+  }catch(e){
+    if(status) status.textContent = '❌ ' + e.message;
+    toast('فشل: ' + e.message);
+  }
+  input.value = '';
+}
+function panoStitchSave(){
+  if(!_panoStitchResult){ toast('لا توجد بانوراما · No panorama'); return; }
+  PROJ.experiences = PROJ.experiences || { panos:[], walkthrough:{}, beforeAfter:[] };
+  PROJ.experiences.panos = PROJ.experiences.panos || [];
+  const isAr = (typeof AURA_I18N !== 'undefined' && AURA_I18N.lang === 'ar');
+  PROJ.experiences.panos.push({
+    room: isAr ? 'غرفة من بانوراما' : 'Stitched Room',
+    roomAr: 'غرفة من بانوراما',
+    img: _panoStitchResult,
+    embed: ''
+  });
+  AURA.save(CFG);
+  if(window.AURA_DB) AURA_DB.saveProject(PROJ);
+  buildExperiences();
+  panoStitchReset();
+  toast('تم حفظ البانوراما كغرفة جديدة ✓');
+}
+function panoStitchReset(){
+  _panoStitchResult = null;
+  const prev = $('panoStitchPreview');
+  if(prev) prev.style.display = 'none';
+  const status = $('panoStitchStatus');
+  if(status) status.textContent = '';
+}
+
+/* ============================================================
+   PHOTO WALK — create interactive walkthrough from flat images
+   ============================================================ */
+let _photoWalkScenes = [];
+function photoWalkFromStages(){
+  const allImgs = AURA.getAssembledImages ? AURA.getAssembledImages(PROJ) : [];
+  if(!allImgs.length){ toast('لا توجد صور مراحل · No stage images'); return; }
+  /* take every Nth frame to create a walkthrough (max 12 scenes) */
+  const maxScenes = Math.min(12, allImgs.length);
+  const step = Math.max(1, Math.floor(allImgs.length / maxScenes));
+  _photoWalkScenes = [];
+  for(let i = 0; i < allImgs.length && _photoWalkScenes.length < maxScenes; i += step){
+    const stage = PROJ.stages.find(s => (i+1) >= s.from && (i+1) <= s.to);
+    _photoWalkScenes.push({
+      id: 'scene-' + i,
+      img: allImgs[i],
+      title: stage ? stage.name : 'Frame ' + (i+1),
+      titleAr: stage ? (stage.ar || stage.name) : 'إطار ' + (i+1)
+    });
+  }
+  renderPhotoWalkScenes();
+  toast('تم تحميل ' + _photoWalkScenes.length + ' مشهد من المراحل');
+}
+async function handlePhotoWalkUpload(input){
+  const files = Array.from(input.files).filter(f => f.type.startsWith('image/'));
+  if(!files.length) return;
+  toast('جاري رفع ' + files.length + ' صور...');
+  for(const file of files){
+    let url;
+    const uploader = AURA_DB.uploadMedia || AURA_DB.uploadImage;
+    if(window.AURA_DB && AURA_DB.isReady()){
+      try{ url = await uploader(file, 'photowalk-' + PROJ.id); }catch(e){}
+    }
+    if(!url){
+      url = await new Promise(res => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxW = 1408; let w = img.width, h = img.height;
+            if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            res(canvas.toDataURL('image/jpeg', 0.85));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    _photoWalkScenes.push({
+      id: 'scene-' + Date.now() + '-' + _photoWalkScenes.length,
+      img: url,
+      title: 'Scene ' + (_photoWalkScenes.length + 1),
+      titleAr: 'مشهد ' + (_photoWalkScenes.length + 1)
+    });
+  }
+  renderPhotoWalkScenes();
+  toast(files.length + ' صور مرفوعة ✓');
+  input.value = '';
+}
+function renderPhotoWalkScenes(){
+  const grid = $('photoWalkScenes');
+  if(!grid) return;
+  grid.innerHTML = '';
+  _photoWalkScenes.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--brd);aspect-ratio:16/9;cursor:pointer';
+    d.innerHTML = '<img src="' + escAttr(safeUrl(s.img)) + '" style="width:100%;height:100%;object-fit:cover" loading="lazy">' +
+      '<span style="position:absolute;top:3px;left:3px;font-size:9px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:1px 6px;border-radius:100px">' + (i+1) + '</span>' +
+      '<button class="btn sm danger" style="position:absolute;top:3px;right:3px;padding:2px 6px;font-size:9px" onclick="photoWalkRemove(' + i + ')">✕</button>';
+    grid.appendChild(d);
+  });
+}
+function photoWalkRemove(i){
+  _photoWalkScenes.splice(i, 1);
+  renderPhotoWalkScenes();
+}
+function photoWalkClear(){
+  _photoWalkScenes = [];
+  renderPhotoWalkScenes();
+}
+function photoWalkPreview(){
+  if(_photoWalkScenes.length < 2){ toast('تحتاج صورتين على الأقل · Need at least 2 scenes'); return; }
+  const dv = document.createElement('div');
+  dv.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;padding:40px';
+  dv.id = 'photoWalkPreviewOverlay';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'width:100%;max-width:1000px';
+  dv.appendChild(inner);
+  document.body.appendChild(dv);
+  dv.onclick = (e) => { if(e.target === dv) dv.remove(); };
+  if(window.AURA && AURA.PhotoWalk){
+    AURA.PhotoWalk.mount(inner, {
+      scenes: _photoWalkScenes,
+      height: '60vh',
+      onClose: () => dv.remove()
+    });
+  }
+}
+function photoWalkSave(){
+  if(_photoWalkScenes.length < 2){ toast('تحتاج صورتين على الأقل · Need at least 2 scenes'); return; }
+  PROJ.experiences = PROJ.experiences || {};
+  PROJ.experiences.walkthrough = PROJ.experiences.walkthrough || {};
+  PROJ.experiences.walkthrough.photoWalk = _photoWalkScenes.map(s => ({ id: s.id, img: s.img, title: s.title, titleAr: s.titleAr }));
+  AURA.save(CFG);
+  if(window.AURA_DB) AURA_DB.saveProject(PROJ);
+  toast('تم حفظ جولة الصور ✓ · Photo Walk saved');
 }
 
 function saveExperiences(){
