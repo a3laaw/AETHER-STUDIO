@@ -1443,16 +1443,8 @@ function deleteFrame(n){
   toast('Frame '+n+' deleted');
 }
 
-/* dropzone — upload multiple images as sequence */
-const dz=document.getElementById('dz');
-dz.onclick=()=>dzInput.click();
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('hover')});
-dz.addEventListener('dragleave',()=>dz.classList.remove('hover'));
-dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('hover');
-  handleFrameUpload(e.dataTransfer.files);
-});
-dzInput.addEventListener('change',()=>handleFrameUpload(dzInput.files));
-
+/* dropzone — removed (Sequence tab was deleted). Kept handleFrameUpload
+   as a no-op stub for backwards compat in case any caller remains. */
 async function handleFrameUpload(fileList){
   const files=Array.from(fileList).filter(f=>f.type.startsWith('image/'));
   if(!files.length)return;
@@ -2705,8 +2697,17 @@ function pmEdit(id){
   try{hsInit();}catch(e){}
   try{buildWidgets();}catch(e){}
   try{buildBAEditor();}catch(e){}
-  /* refresh playback preview with new project's frames */
-  try{pbLoadFrames();updPb();}catch(e){}
+  /* refresh playback preview + sliders with new project's settings */
+  try{
+    const pb=PROJ.playback||{};
+    const fpsEl=document.getElementById('pFpsExt');
+    const pauseEl=document.getElementById('pPauseExt');
+    const autoEl=document.getElementById('pAuto');
+    if(fpsEl)fpsEl.value=pb.fpsExt||9;
+    if(pauseEl)pauseEl.value=pb.pauseExplore||5;
+    if(autoEl)autoEl.checked=pb.autoplay!==false;
+    pbLoadFrames();updPb();
+  }catch(e){}
   /* switch to first internal tab */
   pmTab('identity');
   const t=$('pmEditorTitle');
@@ -3229,6 +3230,7 @@ async function buildInquiries(){
   });
 }
 function escapeHtml(s){return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));}
+const esc=escapeHtml; /* alias used in buildExperiences */
 function escAttr(s){return escapeHtml(s).replace(/`/g,'&#96;');}
 function safeUrl(u){
   const s=String(u||'').trim();
@@ -3361,9 +3363,9 @@ function clearInquiries(){
     saveInquiries([]);buildInquiries();toast('All inquiries cleared · تم مسح كل الطلبات');
   }
 }
-function exportInquiries(){
-  const all=loadInquiries();
-  if(!all.length){toast('No inquiries to export · لا توجد طلبات للتصدير');return;}
+async function exportInquiries(){
+  const all=await loadInquiries();
+  if(!all||!all.length){toast('No inquiries to export · لا توجد طلبات للتصدير');return;}
   const header=['Date','Name','Phone','Project','Service','Message','Status'];
   const rows=all.map(i=>[i.date,i.name||'',i.phone||'',i.project||'',i.widget||'',(i.msg||'').replace(/"/g,'""'),i.status||'new']);
   const csv=[header,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
