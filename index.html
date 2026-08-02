@@ -2270,6 +2270,7 @@ function openExpOverlay(title, buildFn){
 
 function closeExpOverlay(){
   $('expOverlay').style.display='none';
+  $('expOverlay').style.position='absolute';
   $('expOverlay').innerHTML='';
   $('expBar').style.display='none';
   $('heroCopy').style.opacity='';
@@ -2289,7 +2290,8 @@ function openExp360(){
   /* multiple rooms → show ALL rooms in a scrollable grid */
   openExpOverlay(isAr?'جولة 360° · '+panos.length+' غرف':'360° Tour · '+panos.length+' Rooms', ()=>{
     const ov=$('expOverlay');
-    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:rgba(0,0,0,.95);overflow-y:auto;padding:60px 20px 40px';
+    /* use fixed positioning to escape hero's overflow:hidden */
+    ov.style.cssText='position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;background:rgba(0,0,0,.95);overflow-y:auto;padding:60px 20px 40px';
     let html='<div style="color:#fff;font-size:20px;font-weight:700;margin-bottom:20px;text-align:center">'+(isAr?'اختر غرفة للاستكشاف':'Select a room to explore')+'</div>';
     html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;max-width:900px;width:100%;margin:0 auto">';
     panos.forEach((p,i)=>{
@@ -2312,7 +2314,7 @@ function loadPano(i){
   const roomName=isAr?(p.roomAr||p.room):p.room;
   openExpOverlay('⟲ '+roomName, ()=>{
     const ov=$('expOverlay');
-    ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
+    ov.style.cssText='position:fixed;inset:0;z-index:8;display:block;background:#000';
     /* if embed URL → render in iframe */
     if(p.embed){
       let src=p.embed;
@@ -2352,8 +2354,9 @@ function openExpWalk(){
   if(photoWalkScenes && window.AURA && AURA.PhotoWalk){
     openExpOverlay('🚶 '+title, ()=>{
       const ov=$('expOverlay');
-      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
-      ov.innerHTML='<div id="pwBox" style="width:100%;height:100%"></div>';
+      /* fixed positioning to fill entire viewport for mouse interaction */
+      ov.style.cssText='position:fixed;inset:0;z-index:8;display:block;background:#000;pointer-events:auto';
+      ov.innerHTML='<div id="pwBox" style="width:100vw;height:100vh;overflow:hidden"></div>';
       setTimeout(()=>{
         AURA.PhotoWalk.mount($('pwBox'),{scenes:photoWalkScenes,height:'100%',onClose:()=>{}});
       },50);
@@ -2365,7 +2368,7 @@ function openExpWalk(){
   if(scenes && window.AURA && AURA.Walk3D){
     openExpOverlay('◎ '+title, ()=>{
       const ov=$('expOverlay');
-      ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:#000';
+      ov.style.cssText='position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;background:#000';
       ov.innerHTML='<div id="w3dBox" style="flex:1;width:100%"></div>'+
         '<div style="display:flex;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:thin" id="w3dMap"></div>';
       setTimeout(()=>{
@@ -2407,7 +2410,7 @@ function openExpBA(){
   let baIdx=0, baFrameIdx=0;
   openExpOverlay(isAr?'قبل / بعد · تطور':'Before / After · Evolution', ()=>{
     const ov=$('expOverlay');
-    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:#000;padding:50px 20px 20px';
+    ov.style.cssText='position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;background:#000;padding:50px 20px 20px';
     let html='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center" id="baTabs">'+
       ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(255,255,255,.2)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#000':'#fff')+';font-family:inherit">'+esc(isAr?(b.labelAr||b.label):b.label||'Evolution')+'</button>').join('')+
     '</div>';
