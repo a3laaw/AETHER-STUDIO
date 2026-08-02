@@ -2089,11 +2089,15 @@ function expAdd360(){
   PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
   PROJ.experiences.panos=PROJ.experiences.panos||[];
   PROJ.experiences.panos.push({room:'New Room',roomAr:'غرفة جديدة',img:'',embed:''});
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   buildExperiences();
 }
 function expDel360(i){
   if(!confirm('Delete this 360° room? · حذف هذه الغرفة؟'))return;
   PROJ.experiences.panos.splice(i,1);
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   buildExperiences();
 }
 function expAddBA(){
@@ -2108,6 +2112,8 @@ function expAddBA(){
       {url:'',label:'End',labelAr:'النهاية'}
     ]
   });
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   buildExperiences();
 }
 function expAddBAFrame(){
@@ -2144,6 +2150,8 @@ async function handleBAFrameUpload(input,i,fi){
     const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
     const url=await uploader(file,'ba-'+PROJ.id+'-'+i+'-'+fi);
     PROJ.experiences.beforeAfter[i].frames[fi].url=url;
+    AURA.save(CFG);
+    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
     buildExperiences();
     toast('Frame uploaded ✓');
   }catch(e){toast(e.message||'Upload failed');}
@@ -2152,6 +2160,8 @@ async function handleBAFrameUpload(input,i,fi){
 function expDelBA(i){
   if(!confirm('Delete this evolution? · حذف هذا البند؟'))return;
   PROJ.experiences.beforeAfter.splice(i,1);
+  AURA.save(CFG);
+  if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   buildExperiences();
 }
 
@@ -2168,6 +2178,8 @@ async function handlePanoUpload(input,i){
     const url=await uploader(file,'pano-'+PROJ.id);
     PROJ.experiences.panos[i].img=url;
     PROJ.experiences.panos[i].embed='';
+    AURA.save(CFG);
+    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
     buildExperiences();
     toast('Pano uploaded ✓ · تم رفع الصورة');
   }catch(e){toast(e.message||'Upload failed');}
@@ -2185,6 +2197,8 @@ async function handleDepthUpload(input,i){
     const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
     const url=await uploader(file,'depth-'+PROJ.id+'-'+i);
     PROJ.experiences.panos[i].depth=url;
+    AURA.save(CFG);
+    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
     buildExperiences();
     toast('Depth map uploaded ✓ · سيتم تفعيل 3D');
   }catch(e){toast(e.message||'Upload failed');}
@@ -2253,6 +2267,10 @@ async function handleVideoUpload(input,targetId){
     const url=await uploader(file,'walk-'+PROJ.id);
     const target=document.getElementById(targetId);
     if(target){target.value=url;}
+    PROJ.experiences.walkthrough=PROJ.experiences.walkthrough||{};
+    PROJ.experiences.walkthrough.video=url;
+    AURA.save(CFG);
+    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
     updateWalkVideoPreview(url);
     toast('Video uploaded ✓ · تم رفع الفيديو');
   }catch(e){toast(e.message||'Upload failed');}
