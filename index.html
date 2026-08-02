@@ -612,6 +612,12 @@ footer p .ar{font-family:var(--font-ar)}
 <section id="hero">
   <canvas id="cine" width="1408" height="768"></canvas>
   <div id="heroFade"></div>
+  <!-- Experience overlay: replaces the main video canvas when active -->
+  <div id="expOverlay" style="position:absolute;inset:0;z-index:8;display:none;background:#000"></div>
+  <div id="expBar" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:15;display:none;align-items:center;gap:10px;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);padding:8px 16px;border-radius:100px">
+    <span id="expBarTitle" style="color:#fff;font-size:13px;font-weight:700">—</span>
+    <button onclick="closeExpOverlay()" style="background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px">✕</button>
+  </div>
 
   <div class="hero-copy" id="heroCopy">
     <div class="eyebrow"><span class="dot"></span><span id="projTitle">فيلا سولارا</span> · <span class="ar">مشروع تجريبي حي</span><span class="en">Live Demo Project</span></div>
@@ -2233,230 +2239,254 @@ buildBuildTimeline();
 /* ============================================================
    EXPERIENCES: 360°, Walkthrough, Before/After
    ============================================================ */
+/* ============================================================
+   EXPERIENCE OVERLAY — replaces main video canvas
+   Instead of opening a modal, experiences take over the video area
+   ============================================================ */
+let _expActive=false, _expCleanup=null;
+
+function openExpOverlay(title, buildFn){
+  /* pause video + hide canvas, show overlay */
+  playing=false;
+  clearTimeout(holdT);
+  pauseHold=true;
+  hideOverlayWidget();
+  $('pauseBadge').classList.remove('show');
+  $('expOverlay').style.display='block';
+  $('expOverlay').innerHTML='';
+  $('expBar').style.display='flex';
+  $('expBarTitle').textContent=title;
+  $('heroCopy').style.opacity='0';
+  $('glassHud').style.opacity='0';
+  $('glassOverall').style.opacity='0';
+  /* hide playbar + timeline + stage cap */
+  document.querySelectorAll('.playbar, .stage-cap, #buildTimeline, #pauseBadge, #mobileProgress').forEach(el=>el.style.display='none');
+  _expActive=true;
+  if(buildFn) setTimeout(buildFn, 50);
+}
+
+function closeExpOverlay(){
+  $('expOverlay').style.display='none';
+  $('expOverlay').innerHTML='';
+  $('expBar').style.display='none';
+  $('heroCopy').style.opacity='';
+  $('glassHud').style.opacity='';
+  $('glassOverall').style.opacity='';
+  document.querySelectorAll('.playbar, .stage-cap, #buildTimeline, #pauseBadge, #mobileProgress').forEach(el=>el.style.display='');
+  _expActive=false;
+  playing=true; pauseHold=false;
+  $('pbPlay').textContent='❚❚';
+}
+
 function openExp360(){
   const exp=PROJ.experiences||{};
   const panos=exp.panos||[];
   if(!panos.length){toast(isAr?'لا توجد بانوراما متاحة':'No panoramas available');return;}
-  /* build 360° viewer in details view */
-  const dv=$('detailsView');
-  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⟲</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+(isAr?'استكشف الغرف':'Explore Rooms')+'</h2><p class="dv-sub">'+(isAr?'اسحب للنظر حولك · أو افتح جولة جاهزة':'Drag to look around · or open a hosted tour')+'</p></div></div>'+
-    '<div class="dv-rooms-grid" style="grid-template-columns:1fr">'+panos.map((p,i)=>{
-      const thumb=p.img||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 10%22><rect fill=%22%23222%22 width=%2216%22 height=%2210%22/><text x=%228%22 y=%226%22 fill=%22%23fff%22 font-size=%221.4%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>360</text></svg>';
+  if(panos.length===1){ loadPano(0); return; }
+  /* multiple rooms → show room picker in the overlay */
+  openExpOverlay(isAr?'جولة 360° · اختر غرفة':'360° Tour · Select Room', ()=>{
+    const ov=$('expOverlay');
+    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.92);overflow-y:auto;padding:60px 20px';
+    let html='<div style="color:#fff;font-size:18px;font-weight:700;margin-bottom:10px">'+(isAr?'اختر غرفة للاستكشاف':'Select a room to explore')+'</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;max-width:800px;width:100%">';
+    panos.forEach((p,i)=>{
+      const thumb=p.img||'';
       const isEmbed=!!p.embed;
-      const badge=isEmbed?'<span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:100px;backdrop-filter:blur(6px)">🔗 Embed</span>':'';
-      return '<div class="dv-room" style="cursor:pointer" onclick="loadPano('+i+')"><img src="'+escAttr(safeUrl(thumb))+'" alt="'+esc(p.room||'')+'" loading="lazy" style="aspect-ratio:16/8">'+badge+'<div class="dv-room-info"><b>'+esc(isAr?(p.roomAr||p.room):p.room)+'</b><span>'+(isAr?(isEmbed?'انقر للدخول للجولة':'انقر للدخول'):(isEmbed?'Click to open tour':'Click to enter'))+'</span></div></div>';
-    }).join('')+'</div>'+
-    '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
-  dv.classList.add('on');document.body.style.overflow='hidden';
+      html+='<div onclick="loadPano('+i+')" style="cursor:pointer;border-radius:14px;overflow:hidden;background:#1A1A1C;transition:.3s;border:2px solid transparent" onmouseover="this.style.borderColor=\'#BFA76A\'" onmouseout="this.style.borderColor=\'transparent\'">'+
+        '<div style="aspect-ratio:16/9;overflow:hidden">'+(thumb?'<img src="'+escAttr(safeUrl(thumb))+'" style="width:100%;height:100%;object-fit:cover">':'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#666;font-size:30px">⟲</div>')+'</div>'+
+        '<div style="padding:10px 14px"><b style="color:#fff;font-size:13px">'+esc(isAr?(p.roomAr||p.room):p.room)+'</b>'+(isEmbed?'<span style="color:#BFA76A;font-size:10px;margin-inline-start:6px">🔗 Embed</span>':'')+'</div>'+
+      '</div>';
+    });
+    html+='</div>';
+    ov.innerHTML=html;
+  });
 }
+
 function loadPano(i){
   const p=PROJ.experiences.panos[i];if(!p)return;
-  const dv=$('detailsView');
-  /* if embed URL → render in iframe */
-  if(p.embed){
-    let src=p.embed;
-    /* auto-embed common providers that don't allow raw iframe */
-    const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-    if(yt)src='https://www.youtube.com/embed/'+yt[1];
-    const vm=src.match(/vimeo\.com\/(\d+)/);
-    if(vm)src='https://player.vimeo.com/video/'+vm[1];
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🔗</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360°':'360° TOUR')+'</div><h2>'+esc(isAr?(p.roomAr||p.room):p.room)+'</h2></div></div>'+
-      '<div style="position:relative;width:100%;height:70vh;overflow:hidden;border-radius:14px;background:#000">'+
-        '<iframe src="'+escAttr(safeUrl(src))+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>'+
-      '</div>'+
-      '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
-    return;
-  }
-  /* image pano → use AURA.Depth360 (parallax + optional depth map) */
-  $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">⟲</div><div><div class="dv-eyebrow">'+(isAr?'جولة 360° · Depth 3D':'360° TOUR · Depth 3D')+'</div><h2>'+esc(isAr?(p.roomAr||p.room):p.room)+'</h2><p class="dv-sub">'+(isAr?(p.depth?'صورة + خريطة عمق (3D شبه حقيقي)':'سحب أفقي للصورة') : (p.depth?'Image + depth map (pseudo 3D)':'Drag horizontally to look around'))+'</p></div></div>'+
-    '<div id="panoContainer" style="width:100%;height:62vh"></div>'+
-    '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="openExp360()">'+(isAr?'← رجوع للغرف':'← Back to rooms')+'</button></div>';
-  setTimeout(()=>{
-    if(window.AURA && AURA.Depth360){
-      AURA.Depth360.mount($('panoContainer'), {
-        img: p.img,
-        depth: p.depth || '',
-        title: isAr ? (p.roomAr||p.room) : p.room,
-        height: '62vh',
-        hotspots: p.hotspots || []
-      });
-    } else {
-      // graceful fallback if depth-360.js didn't load
-      $('panoContainer').innerHTML='<img src="'+escAttr(safeUrl(p.img))+'" style="width:100%;height:100%;object-fit:cover;border-radius:14px">';
+  const roomName=isAr?(p.roomAr||p.room):p.room;
+  openExpOverlay('⟲ '+roomName, ()=>{
+    const ov=$('expOverlay');
+    ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
+    /* if embed URL → render in iframe */
+    if(p.embed){
+      let src=p.embed;
+      const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+      if(yt)src='https://www.youtube.com/embed/'+yt[1];
+      const vm=src.match(/vimeo\.com\/(\d+)/);
+      if(vm)src='https://player.vimeo.com/video/'+vm[1];
+      ov.innerHTML='<iframe src="'+escAttr(safeUrl(src))+'" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
+      return;
     }
-  }, 60);
+    /* image pano → Depth360 viewer */
+    ov.innerHTML='<div id="panoContainer" style="width:100%;height:100%"></div>';
+    setTimeout(()=>{
+      if(window.AURA && AURA.Depth360){
+        AURA.Depth360.mount($('panoContainer'),{
+          img:p.img, depth:p.depth||'', title:roomName, height:'100%',
+          hotspots:p.hotspots||[]
+        });
+      } else {
+        $('panoContainer').innerHTML='<img src="'+escAttr(safeUrl(p.img))+'" style="width:100%;height:100%;object-fit:cover">';
+      }
+    },50);
+  });
 }
+
 function openExpWalk(){
   const exp=PROJ.experiences||{};
   const walk=exp.walkthrough||{};
-  /* Photo Walk takes priority if defined (flat images → interactive walk) */
-  const photoWalkScenes = (walk.photoWalk && walk.photoWalk.length >= 2) ? walk.photoWalk : null;
-  /* Walk3D scenes (panorama navigation) */
-  const scenes=(walk.scenes && walk.scenes.length)? walk.scenes : null;
-  if(!photoWalkScenes && !scenes && !walk.video && !walk.img){
+  const photoWalkScenes=(walk.photoWalk&&walk.photoWalk.length>=2)?walk.photoWalk:null;
+  const scenes=(walk.scenes&&walk.scenes.length)?walk.scenes:null;
+  if(!photoWalkScenes&&!scenes&&!walk.video&&!walk.img){
     toast(isAr?'لا توجد جولة حرة':'No walkthrough available');return;
   }
-  const dv=$('detailsView');
-  const title=walk.title||(isAr?'جولة حرة في المشروع':'Free Walkthrough');
+  const title=walk.title||(isAr?'جولة حرة':'Free Walkthrough');
 
-  /* Photo Walk mode: flat images with mouse-driven pan/zoom */
+  /* Photo Walk mode */
   if(photoWalkScenes && window.AURA && AURA.PhotoWalk){
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">🚶</div><div><div class="dv-eyebrow">'+(isAr?'جولة بالصور · Photo Walk':'PHOTO WALK · INTERACTIVE')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
-      '<div id="pwBox" style="width:100%;margin-bottom:14px"></div>'+
-      '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
-    dv.classList.add('on');document.body.style.overflow='hidden';
-    setTimeout(()=>{
-      AURA.PhotoWalk.mount($('pwBox'), {
-        scenes: photoWalkScenes,
-        height: '65vh',
-        onClose: ()=>{}
-      });
-    },60);
+    openExpOverlay('🚶 '+title, ()=>{
+      const ov=$('expOverlay');
+      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
+      ov.innerHTML='<div id="pwBox" style="width:100%;height:100%"></div>';
+      setTimeout(()=>{
+        AURA.PhotoWalk.mount($('pwBox'),{scenes:photoWalkScenes,height:'100%',onClose:()=>{}});
+      },50);
+    });
     return;
   }
 
-  /* Walk3D mode: immersive panorama navigation */
+  /* Walk3D mode */
   if(scenes && window.AURA && AURA.Walk3D){
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">◎</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة · 3D Walk':'FREE WALKTHROUGH · 3D WALK')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
-      '<div id="w3dBox" style="width:100%;height:68vh;margin-bottom:14px"></div>'+
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px" id="w3dMap"></div>'+
-      '<div class="dv-actions"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
-    dv.classList.add('on');document.body.style.overflow='hidden';
-    setTimeout(()=>{
-      AURA.Walk3D.mount($('w3dBox'), {
-        scenes: scenes,
-        startId: walk.startId || scenes[0].id,
-        onClose: ()=>{}
-      });
-      /* mini map / scene picker */
-      const mapEl=$('w3dMap');
-      if(mapEl){
-        scenes.forEach((s,i)=>{
-          const btn=document.createElement('button');
-          btn.className='gtab';
-          btn.style.cssText='padding:7px 14px;border-radius:100px;font-size:12px;cursor:pointer;background:#fff;border:1px solid rgba(0,0,0,.1);color:#3A3A3E;font-family:inherit';
-          btn.textContent=(isAr?(s.titleAr||s.title):(s.title||s.titleAr))+' '+(i+1);
-          btn.onclick=()=>{ document.querySelectorAll('#w3dMap .gtab').forEach(x=>x.style.background='#fff'); btn.style.background='#1A1A1C'; btn.style.color='#fff'; AURA.Walk3D.mount($('w3dBox'),{scenes:scenes, startId:s.id, onClose:()=>{}}); };
-          mapEl.appendChild(btn);
-        });
-      }
-    }, 80);
+    openExpOverlay('◎ '+title, ()=>{
+      const ov=$('expOverlay');
+      ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:#000';
+      ov.innerHTML='<div id="w3dBox" style="flex:1;width:100%"></div>'+
+        '<div style="display:flex;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:thin" id="w3dMap"></div>';
+      setTimeout(()=>{
+        AURA.Walk3D.mount($('w3dBox'),{scenes:scenes,startId:walk.startId||scenes[0].id,onClose:()=>{}});
+        const mapEl=$('w3dMap');
+        if(mapEl){
+          scenes.forEach((s,i)=>{
+            const btn=document.createElement('button');
+            btn.style.cssText='flex:0 0 auto;padding:6px 12px;border-radius:100px;font-size:11px;cursor:pointer;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:inherit';
+            btn.textContent=(isAr?(s.titleAr||s.title):(s.title||s.titleAr))+' '+(i+1);
+            btn.onclick=()=>{
+              mapEl.querySelectorAll('button').forEach(b=>b.style.background='rgba(255,255,255,.1)');
+              btn.style.background='#BFA76A';
+              AURA.Walk3D.mount($('w3dBox'),{scenes:scenes,startId:s.id,onClose:()=>{}});
+            };
+            mapEl.appendChild(btn);
+          });
+        }
+      },60);
+    });
     return;
   }
-  /* video mode: render <video> */
+
+  /* Video mode */
   if(walk.video){
     let src=walk.video;
     const yt=src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
     const vm=src.match(/vimeo\.com\/(\d+)/);
     let videoHTML='';
     if(yt){
-      videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://www.youtube.com/embed/'+yt[1]+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
+      videoHTML='<iframe src="https://www.youtube.com/embed/'+yt[1]+'" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
     }else if(vm){
-      videoHTML='<div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
+      videoHTML='<iframe src="https://player.vimeo.com/video/'+vm[1]+'" allow="autoplay;fullscreen;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>';
     }else{
-      videoHTML='<video src="'+escAttr(safeUrl(src))+'" poster="'+escAttr(safeUrl(walk.img||''))+'" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;object-fit:cover"></video>';
+      videoHTML='<video src="'+escAttr(safeUrl(src))+'" poster="'+escAttr(safeUrl(walk.img||''))+'" controls playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000"></video>';
     }
-    $('dvContent').innerHTML='<div class="dv-head"><div class="dv-ic">▶</div><div><div class="dv-eyebrow">'+(isAr?'جولة حرة':'FREE WALKTHROUGH')+'</div><h2>'+esc(title)+'</h2>'+(walk.desc?'<p class="dv-sub">'+esc(walk.desc)+'</p>':'')+'</div></div>'+
-      videoHTML+
-      '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
-    dv.classList.add('on');document.body.style.overflow='hidden';
+    openExpOverlay('▶ '+title, ()=>{
+      const ov=$('expOverlay');
+      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
+      ov.innerHTML=videoHTML;
+    });
     return;
   }
-  /* fallback: single panorama drag view */
-  loadPano(0);
-  const img=document.querySelector('[id=panoImg]');
-  if(img){img.src=safeUrl(walk.img);}
+  /* fallback: single image */
+  if(walk.img){
+    openExpOverlay('▶ '+title, ()=>{
+      const ov=$('expOverlay');
+      ov.style.cssText='position:absolute;inset:0;z-index:8;display:block;background:#000';
+      ov.innerHTML='<img src="'+escAttr(safeUrl(walk.img))+'" style="width:100%;height:100%;object-fit:cover">';
+    });
+  }
 }
+
 function openExpBA(){
   const exp=PROJ.experiences||{};
   const raw=exp.beforeAfter||PROJ.beforeAfter||[];
   if(!raw.length){toast(isAr?'لا توجد مقارنات':'No before/after available');return;}
-  /* Normalize — support both {before,after} legacy and {frames:[]} new schema */
   const ba=raw.map(b=>{
-    if(b.frames && Array.isArray(b.frames) && b.frames.length>=2) return b;
+    if(b.frames&&Array.isArray(b.frames)&&b.frames.length>=2) return b;
     const frames=[];
     if(b.before)frames.push({url:b.before,label:'Before',labelAr:'قبل'});
-    if(b.after) frames.push({url:b.after, label:'After', labelAr:'بعد'});
+    if(b.after) frames.push({url:b.after,label:'After',labelAr:'بعد'});
     return {label:b.label,labelAr:b.labelAr,frames};
   });
-  const dv=$('detailsView');
-  let baPos=50,baIdx=0;
-  /* build comparison UI — multi-frame timeline under the slider */
-  $('dvContent').innerHTML=
-    '<div class="dv-head"><div class="dv-ic">⇆</div><div><div class="dv-eyebrow">'+(isAr?'قبل / بعد · تطور':'BEFORE / AFTER · EVOLUTION')+'</div><h2>'+(isAr?'مقارنة تفاعلية متعددة الإطارات':'Interactive Multi-Frame Comparison')+'</h2></div></div>'+
-    '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="baTabs">'+ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:8px 14px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(0,0,0,.1)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#fff':'#6E7079')+';font-family:inherit">'+esc(isAr?(b.labelAr||b.label):b.label||'Evolution')+' <span style="opacity:.7;font-size:10px">· '+(b.frames?b.frames.length:2)+' '+(isAr?'صور':'frames')+'</span></button>').join('')+'</div>'+
-    '<div id="baSlider" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;cursor:ew-resize;background:#000;user-select:none;touch-action:none">'+
+  let baIdx=0, baFrameIdx=0;
+  openExpOverlay(isAr?'قبل / بعد · تطور':'Before / After · Evolution', ()=>{
+    const ov=$('expOverlay');
+    ov.style.cssText='position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;background:#000;padding:50px 20px 20px';
+    let html='<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center" id="baTabs">'+
+      ba.map((b,i)=>'<button onclick="window._baSelect('+i+')" id="baTab'+i+'" style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid '+(i===0?'#BFA76A':'rgba(255,255,255,.2)')+';background:'+(i===0?'#BFA76A':'transparent')+';color:'+(i===0?'#000':'#fff')+';font-family:inherit">'+esc(isAr?(b.labelAr||b.label):b.label||'Evolution')+'</button>').join('')+
+    '</div>';
+    html+='<div id="baSlider" style="position:relative;flex:1;width:100%;max-width:1000px;margin:0 auto;overflow:hidden;cursor:ew-resize;background:#000;touch-action:none;border-radius:12px">'+
       '<img id="baAfter" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'+
       '<img id="baBefore" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)">'+
-      '<div id="baHandle" style="position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.4);pointer-events:none"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:100px;padding:6px 10px;font-size:11px;font-weight:700">↔</div></div>'+
-      '<span id="baBeforeLabel" style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px)">—</span>'+
-      '<span id="baAfterLabel" style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:100px;backdrop-filter:blur(6px)">—</span>'+
-    '</div>'+
-    '<div id="baTimeline" style="display:flex;gap:6px;margin-top:14px;overflow-x:auto;padding:6px 2px"></div>'+
-    '<div style="font-size:11.5px;color:var(--fg-2);margin-top:8px;text-align:center">'+ (isAr?'اسحب على الصورة للمقارنة · أو انقر على الإطارات أسفل الشريط':'Drag on the image to compare · or click frames below')+'</div>'+
-    '<div class="dv-actions" style="margin-top:20px"><button class="dv-back" onclick="closeDetails()">'+(isAr?'← رجوع':'← Back')+'</button></div>';
-  dv.classList.add('on');document.body.style.overflow='hidden';
-  /* drag slider */
-  const slider=$('baSlider');const beforeEl=$('baBefore');const afterEl=$('baAfter');const handle=$('baHandle');
-  let dragging=false;
-  let baFrameIdx=0; /* which frame is on the LEFT side */
-  function setBA(x,frameIdx){
-    const r=slider.getBoundingClientRect();
-    const p=Math.min(.98,Math.max(.02,(x-r.left)/r.width));
-    beforeEl.style.clipPath='inset(0 '+(100-p)+'% 0 0)';
-    handle.style.left=(p*100)+'%';
-    /* at slider position 0 → first frame on left, last on right.
-       at slider position 1 → reverse. Calculate intermediate frame. */
-    const frames=ba[baIdx].frames||[];
-    if(frames.length>=2){
-      const idx=Math.round(p*(frames.length-1));
-      if(idx!==baFrameIdx){
-        baFrameIdx=idx;
-        beforeEl.src=safeUrl(frames[idx].url);
-        afterEl.src=safeUrl(frames[frames.length-1-idx].url);
-        const bl=isAr?frames[idx].labelAr:frames[idx].label;
-        const al=isAr?frames[frames.length-1-idx].labelAr:frames[frames.length-1-idx].label;
-        $('baBeforeLabel').textContent=bl||'#'+(idx+1);
-        $('baAfterLabel').textContent=al||'#'+(frames.length-idx);
-        updateTimeline(idx);
+      '<div id="baHandle" style="position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.5);pointer-events:none"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:100px;padding:6px 12px;font-size:12px;font-weight:700;color:#000">↔</div></div>'+
+      '<span id="baBeforeLabel" style="position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);padding:5px 12px;border-radius:100px;backdrop-filter:blur(6px)">—</span>'+
+      '<span id="baAfterLabel" style="position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);padding:5px 12px;border-radius:100px;backdrop-filter:blur(6px)">—</span>'+
+    '</div>';
+    html+='<div id="baTimeline" style="display:flex;gap:6px;margin-top:12px;overflow-x:auto;padding:4px;justify-content:center"></div>';
+    ov.innerHTML=html;
+    /* setup slider */
+    const slider=$('baSlider'), beforeEl=$('baBefore'), afterEl=$('baAfter'), handle=$('baHandle');
+    let dragging=false;
+    function setBA(x){
+      const r=slider.getBoundingClientRect();
+      const p=Math.min(.98,Math.max(.02,(x-r.left)/r.width));
+      beforeEl.style.clipPath='inset(0 '+(100-p)+'% 0 0)';
+      handle.style.left=(p*100)+'%';
+      const frames=ba[baIdx].frames||[];
+      if(frames.length>=2){
+        const idx=Math.round(p*(frames.length-1));
+        if(idx!==baFrameIdx){
+          baFrameIdx=idx;
+          beforeEl.src=safeUrl(frames[idx].url);
+          afterEl.src=safeUrl(frames[frames.length-1-idx].url);
+          $('baBeforeLabel').textContent=(isAr?frames[idx].labelAr:frames[idx].label)||'#'+(idx+1);
+          $('baAfterLabel').textContent=(isAr?frames[frames.length-1-idx].labelAr:frames[frames.length-1-idx].label)||'#'+(frames.length-idx);
+          updateTimeline(idx);
+        }
       }
     }
-  }
-  function updateTimeline(activeIdx){
-    const tlEl=$('baTimeline');
-    if(!tlEl)return;
-    tlEl.innerHTML='';
-    const frames=ba[baIdx].frames||[];
-    frames.forEach((f,fi)=>{
-      const isActive=fi===activeIdx||fi===(frames.length-1-activeIdx);
-      const div=document.createElement('div');
-      const label=isAr?(f.labelAr||f.label||'#'+(fi+1)):(f.label||f.labelAr||'#'+(fi+1));
-      div.style.cssText='flex:0 0 auto;width:90px;height:64px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid '+(isActive?'#BFA76A':'transparent')+';position:relative;background:#1A1A1C';
-      div.innerHTML=(f.url?'<img src="'+escAttr(safeUrl(f.url))+'" style="width:100%;height:100%;object-fit:cover">':'<div style="color:#888;font-size:10px;display:flex;align-items:center;justify-content:center;height:100%">—</div>')+
-        '<span style="position:absolute;bottom:2px;left:2px;right:2px;font-size:8.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);text-align:center;padding:1px 3px;border-radius:5px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap">'+esc(label)+'</span>';
-      div.onclick=()=>{
-        /* set the slider so this frame is on the LEFT side */
-        const targetP=frames.length>1?fi/(frames.length-1):0;
-        const r=slider.getBoundingClientRect();
-        setBA(r.left+targetP*r.width,fi);
-      };
-      tlEl.appendChild(div);
-    });
-  }
-  slider.addEventListener('pointerdown',e=>{dragging=true;slider.setPointerCapture(e.pointerId);setBA(e.clientX);});
-  slider.addEventListener('pointermove',e=>{if(dragging)setBA(e.clientX);});
-  slider.addEventListener('pointerup',e=>{dragging=false;slider.releasePointerCapture(e.pointerId);});
-  slider.addEventListener('pointercancel',()=>dragging=false);
-  /* tab switching */
-  window._baSelect=function(i){
-    baIdx=i;baFrameIdx=0;
-    ba.forEach((b,j)=>{const t=$('baTab'+j);if(t){t.style.border='1px solid '+(j===i?'#BFA76A':'rgba(0,0,0,.1)');t.style.background=(j===i?'#BFA76A':'transparent');t.style.color=(j===i?'#fff':'#6E7079');}});
-    const r=slider.getBoundingClientRect();
-    setBA(r.left+r.width/2);
-  };
-  /* initial load */
-  const r=slider.getBoundingClientRect();
-  setBA(r.left+r.width/2);
+    function updateTimeline(activeIdx){
+      const tl=$('baTimeline');if(!tl)return;tl.innerHTML='';
+      const frames=ba[baIdx].frames||[];
+      frames.forEach((f,fi)=>{
+        const isActive=fi===activeIdx||fi===(frames.length-1-activeIdx);
+        const label=isAr?(f.labelAr||f.label||'#'+(fi+1)):(f.label||f.labelAr||'#'+(fi+1));
+        const div=document.createElement('div');
+        div.style.cssText='flex:0 0 auto;width:80px;height:56px;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid '+(isActive?'#BFA76A':'transparent')+';position:relative';
+        div.innerHTML=(f.url?'<img src="'+escAttr(safeUrl(f.url))+'" style="width:100%;height:100%;object-fit:cover">':'<div style="color:#666;font-size:10px;display:flex;align-items:center;justify-content:center;height:100%">—</div>')+
+          '<span style="position:absolute;bottom:2px;left:2px;right:2px;font-size:8px;font-weight:700;color:#fff;background:rgba(0,0,0,.7);text-align:center;padding:1px 3px;border-radius:4px">'+esc(label)+'</span>';
+        div.onclick=()=>{ const targetP=frames.length>1?fi/(frames.length-1):0; const r=slider.getBoundingClientRect(); setBA(r.left+targetP*r.width); };
+        tl.appendChild(div);
+      });
+    }
+    slider.addEventListener('pointerdown',e=>{dragging=true;slider.setPointerCapture(e.pointerId);setBA(e.clientX);});
+    slider.addEventListener('pointermove',e=>{if(dragging)setBA(e.clientX);});
+    slider.addEventListener('pointerup',e=>{dragging=false;slider.releasePointerCapture(e.pointerId);});
+    slider.addEventListener('pointercancel',()=>dragging=false);
+    window._baSelect=function(i){
+      baIdx=i;baFrameIdx=0;
+      ba.forEach((b,j)=>{const t=$('baTab'+j);if(t){t.style.border='1px solid '+(j===i?'#BFA76A':'rgba(255,255,255,.2)');t.style.background=(j===i?'#BFA76A':'transparent');t.style.color=(j===i?'#000':'#fff');}});
+      const r=slider.getBoundingClientRect();setBA(r.left+r.width/2);
+    };
+    const r=slider.getBoundingClientRect();setBA(r.left+r.width/2);
+  });
 }
 </script>
 </body>
