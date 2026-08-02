@@ -386,8 +386,11 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== 360° TOUR ========== -->
     <div class="page" id="p-exp360">
-      <h1 class="pt">جولة 360° · 360° Tour</h1>
-      <div class="ps">ارفع صورة بانورامية لكل غرفة، أو الصق رابط جولة جاهزة (Matterport / Kuula / Pano2VR). يمكنك أيضاً رفع خريطة عمق (depth map) لتفعيل العرض ثلاثي الأبعاد.</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h1 class="pt" style="margin:0">جولة 360° · 360° Tour</h1>
+        <span style="background:rgba(191,167,106,.14);color:var(--gold-2);font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid rgba(191,167,106,.3)">📁 <span id="exp360Proj">—</span></span>
+        <button class="btn sm ghost" onclick="go('projects')" style="margin-inline-start:auto">← تبديل المشروع</button>
+      </div>
 
       <!-- Pano Stitcher: convert flat images to panorama -->
       <div class="panel" style="background:linear-gradient(135deg,#fff,#FAFAF7);border:2px dashed var(--gold)">
@@ -421,8 +424,11 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== FREE WALKTHROUGH ========== -->
     <div class="page" id="p-expwalk">
-      <h1 class="pt">جولة حرة · Free Walkthrough</h1>
-      <div class="ps">ارفع ملف فيديو (mp4 / webm) أو الصق رابط فيديو مباشر. أو أنشئ مشاهد 3D للتنقل بين الغرف.</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h1 class="pt" style="margin:0">جولة حرة · Free Walkthrough</h1>
+        <span style="background:rgba(191,167,106,.14);color:var(--gold-2);font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid rgba(191,167,106,.3)">📁 <span id="expwalkProj">—</span></span>
+        <button class="btn sm ghost" onclick="go('projects')" style="margin-inline-start:auto">← تبديل المشروع</button>
+      </div>
       <div class="panel">
         <h3><span>الفيديو · Video</span></h3>
         <div class="exp-upload">
@@ -481,8 +487,11 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
 
     <!-- ========== BEFORE / AFTER ========== -->
     <div class="page" id="p-expba">
-      <h1 class="pt">قبل وبعد · Before/After Evolution</h1>
-      <div class="ps">أنشئ بنود تطور متعددة الإطارات — كل بند يحتوي على عدة صور تظهر على شريط زمني تفاعلي على الموقع.</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h1 class="pt" style="margin:0">قبل وبعد · Before/After Evolution</h1>
+        <span style="background:rgba(191,167,106,.14);color:var(--gold-2);font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;border:1px solid rgba(191,167,106,.3)">📁 <span id="expbaProj">—</span></span>
+        <button class="btn sm ghost" onclick="go('projects')" style="margin-inline-start:auto">← تبديل المشروع</button>
+      </div>
       <div class="panel">
         <h3><span>بنود التطور · Evolution Items</span> <span class="badge" id="expBACount">0</span></h3>
         <div id="expBAList"></div>
@@ -959,8 +968,17 @@ function boot(){
     }
     if(p==='exp360'||p==='expwalk'||p==='expba'){
       try{buildExperiences();}catch(e){console.warn('buildExperiences failed:',e);}
+      /* update project indicator on experience pages */
+      updateExpProjectIndicator();
     }
   };
+  function updateExpProjectIndicator(){
+    const name = PROJ?.project?.title || PROJ?.id || '—';
+    ['exp360Proj','expwalkProj','expbaProj'].forEach(id => {
+      const el = $(id);
+      if(el) el.textContent = name;
+    });
+  }
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
   }catch(e){
     console.error('boot() critical error:',e);
