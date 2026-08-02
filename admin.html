@@ -1950,13 +1950,15 @@ function buildExperiences(){
     }
   };
 
-  /* ---------- Walkthrough ---------- */
+  /* ---------- Walkthrough (title + desc + photoWalk loading) ---------- */
   const set=(id,val)=>{const el=$(id);if(el)el.value=val||'';};
-  set('expWalkImg',exp.walkthrough.img);
-  set('expWalkVideo',exp.walkthrough.video);
   set('expWalkTitle',exp.walkthrough.title);
   set('expWalkDesc',exp.walkthrough.desc);
-  updateWalkVideoPreview(exp.walkthrough.video||'');
+  /* load saved photoWalk scenes into the temp array for editing */
+  if(exp.walkthrough.photoWalk && exp.walkthrough.photoWalk.length){
+    _photoWalkScenes = exp.walkthrough.photoWalk.map(s=>({...s}));
+    renderPhotoWalkScenes();
+  }
 
   /* scenes list */
   exp.walkthrough.scenes=exp.walkthrough.scenes||[];
@@ -2128,20 +2130,8 @@ function updateBAPreview(i,side,val){
   const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
   el.innerHTML=val?'<img src="'+val+'" alt="">':'<div class="eu-empty"><span class="ico">'+(side==='before'?'⬅':'➡')+'</span><span>'+(isAr?'ارفع صورة':'Upload image')+'</span></div>';
 }
-function updateWalkVideoPreview(val){
-  const el=$('walkVideoPreview');if(!el)return;
-  const isAr=(typeof AURA_I18N!=='undefined'&&AURA_I18N.lang==='ar');
-  if(!val){
-    el.innerHTML='<div class="eu-empty"><span class="ico">▶</span><span>'+(isAr?'لم يتم اختيار فيديو':'No video selected')+'</span></div>';
-    return;
-  }
-  const isVideoFile=val.startsWith('data:video')||/\.mp4(\?|$)/i.test(val)||/\.webm(\?|$)/i.test(val)||/\.mov(\?|$)/i.test(val);
-  if(isVideoFile){
-    el.innerHTML='<video src="'+val+'" controls muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video>';
-  }else{
-    el.innerHTML='<div class="eu-empty" style="color:var(--blue)"><span class="ico">🔗</span><span>'+(isAr?'رابط فيديو خارجي':'External video URL')+'</span></div>';
-  }
-}
+
+/* dead video functions removed (walkthrough is image-only now) */
 
 function expAdd360(){
   PROJ.experiences=PROJ.experiences||{panos:[],walkthrough:{},beforeAfter:[]};
@@ -2311,29 +2301,7 @@ async function handleBAUpload(input,i,side){
   return handleBAFrameUpload(input,i,fi);
 }
 
-/* upload handler — Walkthrough video */
-function expUploadVideo(){
-  const f=$('expWalkVideoFile');if(f)f.click();
-}
-async function handleVideoUpload(input,targetId){
-  const file=input.files[0];if(!file)return;
-  if(!file.type.startsWith('video/')){toast('Please select a video file · اختر ملف فيديو');return;}
-  const sizeMB=(file.size/1024/1024).toFixed(1);
-  toast('Uploading video ('+sizeMB+'MB) — may take a minute... · جاري الرفع');
-  try{
-    const uploader=AURA_DB.uploadMedia||AURA_DB.uploadImage;
-    const url=await uploader(file,'walk-'+PROJ.id);
-    const target=document.getElementById(targetId);
-    if(target){target.value=url;}
-    PROJ.experiences.walkthrough=PROJ.experiences.walkthrough||{};
-    PROJ.experiences.walkthrough.video=url;
-    AURA.save(CFG);
-    if(window.AURA_DB)AURA_DB.saveProject(PROJ);
-    updateWalkVideoPreview(url);
-    toast('Video uploaded ✓ · تم رفع الفيديو');
-  }catch(e){toast(e.message||'Upload failed');}
-  input.value='';
-}
+/* dead video functions removed (walkthrough is image-only now) */
 
 /* ============================================================
    PANO STITCHER — convert flat images to panorama
@@ -2501,13 +2469,15 @@ function photoWalkSave(){
 
 function saveExperiences(){
   PROJ.experiences=PROJ.experiences||{};
-  /* collect walkthrough fields from the UI (scenes are already in PROJ) */
+  /* collect walkthrough title/desc from UI (scenes + photoWalk already in PROJ) */
   const wt=PROJ.experiences.walkthrough=PROJ.experiences.walkthrough||{};
-  wt.img=$('expWalkImg')?.value||'';
-  wt.video=$('expWalkVideo')?.value||'';
   wt.title=$('expWalkTitle')?.value||'';
   wt.desc=$('expWalkDesc')?.value||'';
   wt.startId=$('expWalkStart')?.value||'';
+  /* save photoWalk scenes from the temp array if populated */
+  if(_photoWalkScenes&&_photoWalkScenes.length>=2){
+    wt.photoWalk=_photoWalkScenes.map(s=>({id:s.id,img:s.img,title:s.title,titleAr:s.titleAr}));
+  }
   AURA.save(CFG);
   if(window.AURA_DB)AURA_DB.saveProject(PROJ);
   toast('Experiences saved · تم حفظ التجارب');
