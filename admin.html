@@ -898,16 +898,14 @@ function boot(){
   safeCall(buildWidgets);safeCall(buildBAEditor);
   safeCall(buildInquiries);safeCall(buildSiteContent);
   try{wireProjTabs();}catch(e){}
-  /* hsInit wires the new Add buttons, but only call it when the user actually
-     opens the Hotspots page (lazy) — it depends on DOM that's only created then. */
-  let _hsInitWired=false;
-  document.querySelectorAll('.mi[data-p]').forEach(m=>{
-    if(m.dataset.p==='hotspots' && !_hsInitWired){
-      _hsInitWired=true;
-      const orig=go;
-      window.go=function(p){ orig(p); if(p==='hotspots'){ try{safeCall(hsInit);}catch(e){} } };
+  /* hsInit is called every time the user opens the Hotspots page */
+  const _origGo=go;
+  window.go=function(p){
+    _origGo(p);
+    if(p==='hotspots'){
+      try{hsInit();}catch(e){console.warn('hsInit failed:',e);}
     }
-  });
+  };
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
   }catch(e){
     console.error('boot() critical error:',e);
@@ -2649,8 +2647,10 @@ var _hsStageWired=false;
 function hsWireStage(){
   const st=document.getElementById('hsStage');
   if(!st)return;
-  if(_hsStageWired)return; /* already wired */
+  if(_hsStageWired)return;
   _hsStageWired=true;
+  /* prevent text selection while interacting */
+  st.style.touchAction='none';
   /* pointerdown on stage: either start dragging existing dot or create new */
   st.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('hsdot'))return; /* dot handles its own */
