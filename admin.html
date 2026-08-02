@@ -2472,8 +2472,8 @@ function buildInterior(){
 /* ---------------- hotspots editor ---------------- */
 var HS_LAST={living:31,kitchen:31,master:31,bath:16};
 var hsRoom='living', hsSel=-1, hsDrag=-1;
-var hsMode='rooms'; /* 'rooms' | 'sequence' | 'beforeAfter' | 'gallery' */
-var hsSeqFrame=5; /* current frame for sequence mode */
+var hsMode='sequence'; /* 'sequence' | 'beforeAfter' */
+var hsSeqFrame=1; /* current frame for sequence mode */
 var hsBAId='design'; /* current BA item for beforeAfter mode */
 var hsGalleryId='excavation'; /* current gallery stage for gallery mode */
 
@@ -2486,12 +2486,10 @@ function hsInit(){
     img.onerror=()=>{if(ph)ph.style.display='flex';img.style.opacity='0.2';};
     if(!img.dataset.fbk){img.onerror=()=>{img.dataset.fbk='1';img.src='assets/villa-clean.webp';};}
   }
-  /* mode tabs: rooms + sequence + beforeAfter + gallery */
+  /* mode tabs: video frames + beforeAfter (simplified) */
   const modes=[
-    {id:'rooms',label:'الغرف · Rooms'},
-    {id:'sequence',label:'الفيديو · Video Frames'},
-    {id:'beforeAfter',label:'قبل/بعد · Before/After'},
-    {id:'gallery',label:'المعارض · Gallery'}
+    {id:'sequence',label:'إطارات الفيديو · Video Frames'},
+    {id:'beforeAfter',label:'قبل/بعد · Before/After'}
   ];
   modes.forEach(m=>{
     const t=document.createElement('div');
@@ -2502,32 +2500,12 @@ function hsInit(){
   });
 
   /* sub-tabs based on mode */
-  if(hsMode==='rooms'){
-    if(!PROJ.interior){PROJ.interior=PROJ.interior||{themes:[],rooms:[],furniture:{},theme:'modern-minimal'};}
-    const rooms=PROJ.interior.rooms||[];
-    const interactive=rooms.filter(r=>r.interactive);
-    const targets=interactive.length?interactive:rooms;
-    if(!targets.length){
-      if(document.getElementById('hsImg'))document.getElementById('hsImg').src='assets/villa-clean.webp';
-      hsRender();return;
-    }
-    hsRoom=rooms.find(r=>r.id===hsRoom)?hsRoom:targets[0].id;
-    if(typeof HS_LAST==='undefined'||!HS_LAST)window.HS_LAST={living:31,kitchen:31,master:31,bath:16};
-    targets.forEach((r,i)=>{
-      const t=document.createElement('div');
-      t.className='gtab'+(r.id===hsRoom?' on':'');
-      t.textContent=r.name+' · '+r.ar;
-      t.onclick=()=>{hsRoom=r.id;hsSel=-1;hsInit();};
-      tabs.appendChild(t);
-    });
-    const seqN=HS_LAST[hsRoom]||1;
-    document.getElementById('hsImg').src=`assets/rooms/seq/${hsRoom}/f${String(seqN).padStart(2,'0')}.webp`;
-  } else if(hsMode==='sequence'){
-    /* frame input + slider */
+  if(hsMode==='sequence'){
+    /* stage quick-jump tabs */
     PROJ.stages.forEach(s=>{
       const t=document.createElement('div');
-      t.className='gtab'+(s.id==='excavation'?' on':'');
-      t.textContent=s.name+' · '+s.ar;
+      t.className='gtab'+(hsSeqFrame>=s.from&&hsSeqFrame<=s.to?' on':'');
+      t.textContent=s.name+' · '+(s.ar||'');
       t.onclick=()=>{
         const frame=Math.round((s.from+s.to)/2);
         hsSeqFrame=frame;
@@ -2536,26 +2514,52 @@ function hsInit(){
       };
       tabs.appendChild(t);
     });
+    /* frame slider */
+    const totalFrames = (PROJ.sequence && PROJ.sequence.count) ? PROJ.sequence.count : (AURA.getAssembledImages ? AURA.getAssembledImages(PROJ).length : 97);
+    const sliderWrap=document.createElement('div');
+    sliderWrap.style.cssText='width:100%;display:flex;gap:12px;align-items:center;margin-top:12px;padding:10px 14px;background:var(--panel2);border-radius:10px;border:1px solid var(--brd)';
+    sliderWrap.innerHTML=`<span style="font-size:11px;font-weight:600;color:var(--tx2);white-space:nowrap">إطار · Frame</span>
+      <input type="range" id="hsFrameSlider" min="1" max="${totalFrames}" value="${hsSeqFrame}" style="flex:1">
+      <span id="hsFrameVal" style="font-size:11px;font-weight:700;min-width:60px;text-align:center">${hsSeqFrame} / ${totalFrames}</span>
+      <input type="number" id="hsFrameInput" min="1" max="${totalFrames}" value="${hsSeqFrame}" style="width:60px;padding:4px 8px;border-radius:8px;border:1px solid var(--brd);font-size:11px">`;
+    tabs.parentNode.insertBefore(sliderWrap, tabs.nextSibling);
+    setTimeout(()=>{
+      const sl=document.getElementById('hsFrameSlider');
+      const num=document.getElementById('hsFrameInput');
+      const val=document.getElementById('hsFrameVal');
+      const updateFrame=(v)=>{
+        hsSeqFrame=Math.min(totalFrames,Math.max(1,parseInt(v)||1));
+        document.getElementById('hsImg').src=AURA.frameSrc(PROJ,hsSeqFrame);
+        if(val)val.textContent=hsSeqFrame+' / '+totalFrames;
+        if(sl&&sl.value!=hsSeqFrame)sl.value=hsSeqFrame;
+        if(num&&num.value!=hsSeqFrame)num.value=hsSeqFrame;
+        hsSel=-1;hsRender();
+      };
+      if(sl)sl.oninput=e=>updateFrame(e.target.value);
+      if(num)num.oninput=e=>updateFrame(e.target.value);
+    },0);
     document.getElementById('hsImg').src=AURA.frameSrc(PROJ,hsSeqFrame);
   } else if(hsMode==='beforeAfter'){
-    PROJ.beforeAfter.forEach(ba=>{
+    const baList=(PROJ.experiences&&PROJ.experiences.beforeAfter)||PROJ.beforeAfter||[];
+    baList.forEach((ba,i)=>{
       const t=document.createElement('div');
-      t.className='gtab'+(ba.id===hsBAId?' on':'');
-      t.textContent=ba.label+' · '+ba.labelAr;
-      t.onclick=()=>{hsBAId=ba.id;document.getElementById('hsImg').src=ba.before;hsSel=-1;hsInit();};
+      t.className='gtab'+(i===0?' on':'');
+      t.textContent=ba.label||ba.labelAr||('Pair '+(i+1));
+      t.onclick=()=>{
+        const frames=ba.frames||[];
+        const beforeUrl=frames.length>0?frames[0].url:(ba.before||'');
+        hsBAId=i;
+        document.getElementById('hsImg').src=beforeUrl;
+        hsSel=-1;hsInit();
+      };
       tabs.appendChild(t);
     });
-    const ba=PROJ.beforeAfter.find(b=>b.id===hsBAId)||PROJ.beforeAfter[0];
-    if(ba)document.getElementById('hsImg').src=ba.before;
-  } else if(hsMode==='gallery'){
-    PROJ.stages.forEach(s=>{
-      const t=document.createElement('div');
-      t.className='gtab'+(s.id===hsGalleryId?' on':'');
-      t.textContent=s.name;
-      t.onclick=()=>{hsGalleryId=s.id;document.getElementById('hsImg').src='assets/gallery/'+s.id+'-07.webp';hsSel=-1;hsInit();};
-      tabs.appendChild(t);
-    });
-    document.getElementById('hsImg').src='assets/gallery/'+hsGalleryId+'-07.webp';
+    const ba=baList[0];
+    if(ba){
+      const frames=ba.frames||[];
+      const beforeUrl=frames.length>0?frames[0].url:(ba.before||'');
+      if(beforeUrl)document.getElementById('hsImg').src=beforeUrl;
+    }
   }
   hsRender();
   hsWireStage(); /* wire pointer events on the stage element */
@@ -2563,24 +2567,16 @@ function hsInit(){
 
 function hsSpots(){
   PROJ.hotspots=PROJ.hotspots||{};
-  if(hsMode==='rooms'){
-    PROJ.interior=PROJ.interior||{};
-    PROJ.interior.furniture=PROJ.interior.furniture||{};
-    PROJ.interior.furniture[hsRoom]=PROJ.interior.furniture[hsRoom]||[];
-    return PROJ.interior.furniture[hsRoom];
-  } else if(hsMode==='sequence'){
+  if(hsMode==='sequence'){
     const key=String(hsSeqFrame);
     PROJ.hotspots.sequence=PROJ.hotspots.sequence||{};
     PROJ.hotspots.sequence[key]=PROJ.hotspots.sequence[key]||[];
     return PROJ.hotspots.sequence[key];
   } else if(hsMode==='beforeAfter'){
     PROJ.hotspots.beforeAfter=PROJ.hotspots.beforeAfter||{};
-    PROJ.hotspots.beforeAfter[hsBAId]=PROJ.hotspots.beforeAfter[hsBAId]||[];
-    return PROJ.hotspots.beforeAfter[hsBAId];
-  } else if(hsMode==='gallery'){
-    PROJ.hotspots.gallery=PROJ.hotspots.gallery||{};
-    PROJ.hotspots.gallery[hsGalleryId]=PROJ.hotspots.gallery[hsGalleryId]||[];
-    return PROJ.hotspots.gallery[hsGalleryId];
+    const key=String(hsBAId||0);
+    PROJ.hotspots.beforeAfter[key]=PROJ.hotspots.beforeAfter[key]||[];
+    return PROJ.hotspots.beforeAfter[key];
   }
   return [];
 }

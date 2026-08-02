@@ -1896,43 +1896,56 @@ applySiteContent();
 applySEO();
 
 /* ---------- Services: live stage previews (revolutionary UX) ---------- */
-/* Each service card shows a live frame from the project's actual build stage.
-   On hover, it cycles through the stage's frames — a mini-documentary per card.
-   On click, it jumps the main video to that stage. */
+/* Build service cards DYNAMICALLY from the project's actual stages.
+   Each stage = a card with live frame preview + hover animation + click to jump.
+   This means: if you add a stage in admin → it appears here automatically. */
 function initServicePreviews(){
-  const previews=document.querySelectorAll('.ss-preview');
-  if(!previews.length)return;
-  const allImgs=AURA.getAssembledImages?AURA.getAssembledImages(PROJ):[];
+  const track=$('svcJourneyTrack');
+  if(!track)return;
   const stages=PROJ.stages||[];
-  previews.forEach(pv=>{
-    const stageIdx=+pv.dataset.previewStage;
-    const stage=stages[stageIdx];
-    if(!stage||!allImgs.length){
-      /* fallback: use default stage poster */
-      const img=pv.querySelector('img');
-      if(img){img.src='assets/stages/s'+(stageIdx+1)+'-'+(['excavation','foundation','structure','shell','facade','facade','night','night'][stageIdx]||'excavation')+'.webp';img.classList.add('loaded');}
-      return;
-    }
+  const allImgs=AURA.getAssembledImages?AURA.getAssembledImages(PROJ):[];
+  /* clear existing static cards */
+  track.innerHTML='';
+  if(!stages.length){
+    track.innerHTML='<div style="padding:40px;text-align:center;color:var(--fg-2)">لا توجد مراحل — أضف مراحل من لوحة التحكم · No stages — add some from admin</div>';
+    return;
+  }
+  stages.forEach((stage,i)=>{
     const from=stage.from||1,to=stage.to||stage.from||1;
     const frameUrls=[];
     for(let n=from;n<=to&&n<=allImgs.length;n++){
       if(allImgs[n-1])frameUrls.push(allImgs[n-1]);
     }
-    if(!frameUrls.length)return;
-    const img=pv.querySelector('img');
-    /* load middle frame first */
-    const mid=Math.floor(frameUrls.length/2);
-    img.src=frameUrls[mid];
-    img.classList.add('loaded');
-    /* add play hint */
-    const hint=document.createElement('span');
-    hint.className='ss-play-hint';
-    hint.textContent=isAr?'▶ تشغيل':'▶ Play';
-    pv.appendChild(hint);
+    const card=document.createElement('div');
+    card.className='svc-stage';
+    card.dataset.svc=stage.id||('stage-'+i);
+    card.dataset.stageIdx=i;
+    card.style.cssText='flex:0 0 300px;scroll-snap-align:start;background:#fff;border:1px solid var(--border);border-radius:18px;padding:0 0 20px;cursor:pointer;transition:.35s;position:relative;box-shadow:0 4px 16px -8px rgba(0,0,0,.06);overflow:hidden';
+    const mid=frameUrls.length?Math.floor(frameUrls.length/2):0;
+    const previewSrc=frameUrls.length?frameUrls[mid]:'assets/villa-clean.webp';
+    card.innerHTML=
+      '<div class="ss-preview"><img alt="" loading="lazy"></div>'+
+      '<div class="ss-icon" style="position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:rgba(0,0,0,.04);color:var(--gold)">'+(stage.icon||'◆')+'</div>'+
+      '<div style="padding:0 18px">'+
+        '<div class="ss-num" style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.18em;margin-bottom:8px">'+String(i+1).padStart(2,'0')+' · STAGE</div>'+
+        '<h4 style="font-size:17px;font-weight:700;color:var(--fg);margin-bottom:4px">'+esc(stage.name||'Stage '+(i+1))+'</h4>'+
+        '<span style="font-family:var(--font-ar);font-size:13px;color:var(--fg-2);font-weight:500;display:block;margin-bottom:8px">'+esc(stage.ar||'')+'</span>'+
+        '<p style="font-size:12.5px;color:var(--fg-2);line-height:1.65;margin-bottom:10px">'+esc(stage.desc||'')+'</p>'+
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'+
+          '<span style="width:10px;height:10px;border-radius:50%;background:'+(stage.color||'#BFA76A')+';flex:none"></span>'+
+          '<span style="font-size:11px;color:var(--fg-2)">من '+from+' إلى '+to+'</span>'+
+        '</div>'+
+        '<span style="font-size:12px;font-weight:700;color:var(--gold)">التفاصيل ←</span>'+
+      '</div>';
+    /* load preview image */
+    const img=card.querySelector('.ss-preview img');
+    if(img){
+      img.src=previewSrc;
+      img.classList.add('loaded');
+      img.onerror=()=>{img.style.opacity='0.3';};
+    }
     /* hover → cycle frames */
     let hoverTimer=null,frameIdx=mid;
-    const card=pv.closest('.svc-stage');
-    if(!card)return;
     card.addEventListener('mouseenter',()=>{
       if(frameUrls.length<2)return;
       hoverTimer=setInterval(()=>{
@@ -1943,21 +1956,20 @@ function initServicePreviews(){
     card.addEventListener('mouseleave',()=>{
       if(hoverTimer){clearInterval(hoverTimer);hoverTimer=null;}
       frameIdx=mid;
-      img.src=frameUrls[mid];
+      if(frameUrls.length)img.src=frameUrls[mid];
     });
-    /* click → jump main video to this stage */
+    /* click → jump to this stage in the video */
     card.addEventListener('click',e=>{
-      if(e.target.closest('.ss-go')||e.target.closest('a'))return;
-      /* scroll to hero + jump to stage start */
       $('hero').scrollIntoView({behavior:'smooth'});
       setTimeout(()=>{
         clearTimeout(holdT);pauseHold=false;
         hideOverlayWidget();$('pauseBadge').classList.remove('show');
         stopWidgetSequence();_stagePauseTriggered.clear();
         target=current=stage.from||1;
-        toast(isAr?('▶ '+stage.ar||stage.name):'▶ '+stage.name);
+        toast(isAr?('▶ '+(stage.ar||stage.name)):'▶ '+(stage.name||'Stage'));
       },500);
     });
+    track.appendChild(card);
   });
 }
 initServicePreviews();
