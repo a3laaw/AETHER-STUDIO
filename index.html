@@ -751,7 +751,7 @@ footer p .ar{font-family:var(--font-ar)}
   <!-- 2) Bento showcase — visual hero + 2 numeric cards -->
   <div class="svc-bento">
     <div class="bento-main" id="svcBentoMain" data-wid="progress">
-      <img id="svcBentoImg" src="assets/stages/s5-facade.webp" alt="AURA Studio">
+      <img id="svcBentoImg" src="" alt="" style="display:none">
       <div class="bm-overlay">
         <div class="bm-eyebrow"><span class="dot"></span>FILM · فيلم المشروع</div>
         <h3 id="svcBentoTitle">شوف الفيلم الحقيقي</h3>
@@ -815,7 +815,7 @@ footer p .ar{font-family:var(--font-ar)}
       </div>
     </div>
     <div class="about-visual">
-      <img src="assets/stages/s7-night.webp" alt="AURA Studio — Villa Solara Night View">
+      <img id="aboutVisualImg" src="" alt="" style="display:none">
     </div>
   </div>
 </section>
@@ -1974,6 +1974,27 @@ function initServicePreviews(){
 }
 initServicePreviews();
 
+/* ---------- Dynamic project images (replace static assets) ---------- */
+function applyProjectImages(){
+  const allImgs=AURA.getAssembledImages?AURA.getAssembledImages(PROJ):[];
+  /* bento image = 70% through the project */
+  const bento=$('svcBentoImg');
+  if(bento&&allImgs.length){
+    const idx=Math.floor(allImgs.length*0.7);
+    bento.src=allImgs[idx]||'';
+    bento.style.display=bento.src?'block':'none';
+    bento.onerror=()=>{bento.style.display='none';};
+  }
+  /* about visual = last frame (night/final) */
+  const about=$('aboutVisualImg');
+  if(about&&allImgs.length){
+    about.src=allImgs[allImgs.length-1]||'';
+    about.style.display=about.src?'block':'none';
+    about.onerror=()=>{about.style.display='none';};
+  }
+}
+applyProjectImages();
+
 /* ---------- sync: when admin saves, site updates automatically ---------- */
 function applyPlayback(){
   const pb=PROJ.playback||{fpsExt:9,pauseExplore:5};
@@ -2002,6 +2023,7 @@ function applyAllFromStorage(){
   buildWidgets();
   updateExpButtons();
   if(typeof initServicePreviews==='function')initServicePreviews();
+  if(typeof applyProjectImages==='function')applyProjectImages();
   /* update hero title */
   $('projTitle').textContent=PROJ.project.title;
   /* update stage caption */
