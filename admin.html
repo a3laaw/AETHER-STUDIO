@@ -262,6 +262,9 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
     <div class="role" id="roleTag">Signed in as Admin</div>
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
     <div class="mi on" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
+    <div class="mi" data-p="exp360"><span class="ic">⟲</span>جولة 360° · 360 Tour</div>
+    <div class="mi" data-p="expwalk"><span class="ic">◎</span>جولة حرة · Walkthrough</div>
+    <div class="mi" data-p="expba"><span class="ic">⇆</span>قبل وبعد · Before/After</div>
     <div class="mi" data-p="widgets"><span class="ic">◫</span>الويدجات · Widgets</div>
     <div class="mi" data-p="hotspots"><span class="ic">◎</span>محرر النقاط · Hotspots</div>
     <div class="mi" data-p="site"><span class="ic">⚙</span>إعدادات الموقع · Site</div>
@@ -320,10 +323,6 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
               <span style="font-size:16px">🏗</span>
               <div><b>المراحل</b><span>Stages</span></div>
             </div>
-            <div class="pm-vtab" data-pt="experiences" onclick="pmTab('experiences')">
-              <span style="font-size:16px">🎬</span>
-              <div><b>تجارب</b><span>Experiences</span></div>
-            </div>
           </div>
 
           <!-- Tab content -->
@@ -375,69 +374,8 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
       <div class="proj-tab" id="pt-gallery" style="display:none"></div>
       <div class="proj-tab" id="pt-interior" style="display:none"></div>
 
-      <!-- Tab: Experiences (360°, Walkthrough, Before/After — per project) -->
-      <div class="proj-tab" id="pt-experiences" style="display:none">
-        <!-- 360° Tour -->
-        <div class="panel">
-          <h3><span>جولة 360° · 360° Tour</span> <span class="badge">لكل غرفة</span></h3>
-          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">ارفع صورة بانورامية (equirectangular) لكل غرفة، أو الصق رابط جولة جاهزة (Matterport / Kuula / Pano2VR)</div>
-          <div id="exp360List"></div>
-          <div class="btnrow">
-            <button class="btn sm ghost" onclick="expAdd360()">+ إضافة غرفة · Add Room</button>
-          </div>
-        </div>
-        <!-- Free Walkthrough — 3D walkthrough editor -->
-        <div class="panel">
-          <h3>
-            <span>جولة حرة 3D · Free Walkthrough 3D</span>
-            <span class="badge" id="expWalkSceneCount">0</span>
-            <span style="font-size:10.5px;font-weight:600;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px;margin-inline-start:8px">مشي تفاعلي</span>
-          </h3>
-          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">
-            كل "مشهد" = صورة بانورامية لنقطة في البيت (غرفة، مدخل، أعلى السلم، سانسير). الزائر يضغط على نقاط ساخنة للمشي من مشهد لآخر. ارفع panorama equirectangular لكل مشهد + اختياري خريطة عمق.
-          </div>
-          <div class="grid2" style="margin-bottom:14px">
-            <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
-            <div class="f"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar);resize:vertical" placeholder="اسحب للنظر حولك · انقر الأبواب والصور للمشي"></textarea></div>
-          </div>
-          <div class="exp-upload" style="margin-bottom:14px">
-            <div class="eu-label">▶ فيديو (اختياري للـ fallback)</div>
-            <div class="eu-preview" id="walkVideoPreview"></div>
-            <div class="eu-url">
-              <input type="text" id="expWalkVideo" placeholder="رابط فيديو مباشر (mp4 / webm / YouTube)" dir="ltr">
-              <button class="btn sm" onclick="expUploadVideo()">رفع · Upload</button>
-              <input type="file" id="expWalkVideoFile" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'expWalkVideo')">
-            </div>
-          </div>
-          <h3 style="font-size:12.5px;margin-top:6px;margin-bottom:10px;display:flex;align-items:center;gap:8px;justify-content:space-between">
-            <span>🗺 مشاهد الجولة · Scenes</span>
-            <button class="btn sm ghost" onclick="expAddWalkScene()">+ إضافة مشهد · Add Scene</button>
-          </h3>
-          <div id="expWalkScenes"></div>
-          <div class="f" style="margin-top:14px">
-            <label>المشهد الابتدائي · Start scene</label>
-            <select id="expWalkStart" style="width:100%;background:var(--panel2);border:1px solid var(--brd);border-radius:11px;padding:11px 13px;font-size:13px;outline:none;font-family:inherit"></select>
-          </div>
-        </div>
-        <!-- Before/After — Evolution (multi-frame sequence) -->
-        <div class="panel">
-          <h3>
-            <span>قبل وبعد · Before/After Evolution</span>
-            <span class="badge" id="expBACount">0</span>
-            <span style="font-size:10.5px;font-weight:600;color:var(--gold-2);background:rgba(191,167,106,.16);padding:4px 10px;border-radius:100px;margin-inline-start:8px">متعدد صور · multi-frame</span>
-          </h3>
-          <div class="ps" style="margin-bottom:14px;color:var(--tx3);font-size:12px">
-            كل بند = تطور متتالي من الحالة الأولى إلى الأخيرة. مثال: التصميم (مخطط → 3D → واقعي) أو التنفيذ (حفر → أساسات → هيكل → تشطيب). <b>الحد الأدنى 2 صور</b>، يمكن إضافة المزيد عبر زر "إضافة مرحلة".</div>
-          <div id="expBAList"></div>
-          <div class="btnrow">
-            <button class="btn sm ghost" onclick="expAddBA()">+ إضافة بند تطور · Add Evolution</button>
-            <button class="btn sm ghost" onclick="expAddBAFrame()">+ إضافة صورة لآخر بند</button>
-          </div>
-        </div>
-        <div class="btnrow">
-          <button class="btn" onclick="saveExperiences()">حفظ · Save</button>
-        </div>
-      </div>
+      <!-- Tab: Experiences removed — now in separate sidebar pages -->
+      <div class="proj-tab" id="pt-experiences" style="display:none"></div>
 
       <div class="proj-tab" id="pt-contact" style="display:none"></div>
 
@@ -445,6 +383,79 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
         </div><!-- /vertical tabs wrapper -->
       </div><!-- /pmEditorSection -->
     </div><!-- /p-projects -->
+
+    <!-- ========== 360° TOUR ========== -->
+    <div class="page" id="p-exp360">
+      <h1 class="pt">جولة 360° · 360° Tour</h1>
+      <div class="ps">ارفع صورة بانورامية لكل غرفة، أو الصق رابط جولة جاهزة (Matterport / Kuula / Pano2VR). يمكنك أيضاً رفع خريطة عمق (depth map) لتفعيل العرض ثلاثي الأبعاد.</div>
+      <div class="panel">
+        <h3><span>الغرف · Rooms</span> <span class="badge" id="exp360Count">0</span></h3>
+        <div id="exp360List"></div>
+        <div class="btnrow">
+          <button class="btn sm ghost" onclick="expAdd360()">+ إضافة غرفة · Add Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FREE WALKTHROUGH ========== -->
+    <div class="page" id="p-expwalk">
+      <h1 class="pt">جولة حرة · Free Walkthrough</h1>
+      <div class="ps">ارفع ملف فيديو (mp4 / webm) أو الصق رابط فيديو مباشر. أو أنشئ مشاهد 3D للتنقل بين الغرف.</div>
+      <div class="panel">
+        <h3><span>الفيديو · Video</span></h3>
+        <div class="exp-upload">
+          <div class="eu-label">▶ ملف الفيديو · Video File</div>
+          <div class="eu-preview" id="walkVideoPreview"></div>
+          <div class="eu-url">
+            <input type="text" id="expWalkVideo" placeholder="رابط فيديو مباشر (mp4 / webm / YouTube)" dir="ltr">
+            <button class="btn sm" onclick="expUploadVideo()">رفع · Upload</button>
+            <input type="file" id="expWalkVideoFile" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'expWalkVideo')">
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="f"><label>عنوان الجولة · Walkthrough Title</label><input type="text" id="expWalkTitle" placeholder="جولة حرة في المشروع"></div>
+          <div class="f"><label>صورة الغلاف · Poster Image (Optional)</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="expWalkImg" style="flex:1">
+              <button class="btn sm ghost" onclick="uploadImage('expWalkImg')">رفع</button>
+              <input type="file" id="expWalkImgFile" accept="image/*" style="display:none" onchange="handleUpload(this,'expWalkImg')">
+            </div>
+          </div>
+        </div>
+        <div class="f" style="margin-top:14px"><label>وصف الجولة (AR)</label><textarea id="expWalkDesc" rows="2" dir="rtl" style="font-family:var(--font-ar)" placeholder="اسحب للنظر حولك · انقر الأبواب للتنقل"></textarea></div>
+      </div>
+      <!-- 3D Walk Scenes -->
+      <div class="panel">
+        <h3><span>مشاهد 3D · Walk3D Scenes</span> <span class="badge" id="walkSceneCount">0</span></h3>
+        <div class="ps" style="font-size:12px;color:var(--tx3);margin-bottom:14px">أنشئ مشاهد للتنقل بين الغرف — كل مشهد = صورة بانورامية + نقاط تنقل للغرف الأخرى</div>
+        <div id="walkSceneList"></div>
+        <div class="btnrow">
+          <button class="btn sm ghost" onclick="expAddWalkScene()">+ إضافة مشهد · Add Scene</button>
+          <span style="font-size:11px;color:var(--tx3)">مشهد البداية:</span>
+          <select id="expWalkStart" style="font-size:12px;padding:6px 10px;border-radius:9px;border:1px solid var(--brd);background:var(--panel2)"></select>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveExperiences()">حفظ · Save</button>
+      </div>
+    </div>
+
+    <!-- ========== BEFORE / AFTER ========== -->
+    <div class="page" id="p-expba">
+      <h1 class="pt">قبل وبعد · Before/After Evolution</h1>
+      <div class="ps">أنشئ بنود تطور متعددة الإطارات — كل بند يحتوي على عدة صور تظهر على شريط زمني تفاعلي على الموقع.</div>
+      <div class="panel">
+        <h3><span>بنود التطور · Evolution Items</span> <span class="badge" id="expBACount">0</span></h3>
+        <div id="expBAList"></div>
+        <div class="btnrow">
+          <button class="btn sm ghost" onclick="expAddBA()">+ إضافة بند تطور · Add Evolution</button>
+          <button class="btn sm ghost" onclick="expAddBAFrame()">+ إضافة صورة لآخر بند · Add Frame</button>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button class="btn" onclick="saveExperiences()">حفظ · Save</button>
+      </div>
+    </div>
 
     <!-- ========== WIDGETS EDITOR (now includes widget content) ========== -->
     <div class="page" id="p-widgets">
@@ -898,12 +909,15 @@ function boot(){
   safeCall(buildWidgets);safeCall(buildBAEditor);
   safeCall(buildInquiries);safeCall(buildSiteContent);
   try{wireProjTabs();}catch(e){}
-  /* hsInit is called every time the user opens the Hotspots page */
+  /* hsInit + buildExperiences are called every time the user opens their pages */
   const _origGo=go;
   window.go=function(p){
     _origGo(p);
     if(p==='hotspots'){
       try{hsInit();}catch(e){console.warn('hsInit failed:',e);}
+    }
+    if(p==='exp360'||p==='expwalk'||p==='expba'){
+      try{buildExperiences();}catch(e){console.warn('buildExperiences failed:',e);}
     }
   };
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
