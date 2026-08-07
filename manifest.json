@@ -1,0 +1,20 @@
+{
+  "name": "AURA Studio — One Continuous Build",
+  "short_name": "AURA Studio",
+  "description": "منصة توثيق وبناء متواصل — من أول حجر حتى آخر غرفة. One continuous living record of your construction project.",
+  "id": "aura-studio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FAFAF7",
+  "theme_color": "#BFA76A",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "productivity", "design"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

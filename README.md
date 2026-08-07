@@ -38,13 +38,17 @@ Recommended viewport: **1440 × 900** or larger. Mobile-first responsive.
 aether-studio/
 ├── index.html          # MAIN ENTRY — cinematic preview + widgets + services
 ├── admin.html          # hidden admin panel (inquiries management)
+├── manifest.json       # PWA — installable app (added 2026-08-07)
+├── sw.js               # Service Worker — offline film + instant 2nd visit (added 2026-08-07)
 ├── js/
-│   └── cms.js          # data model + i18n + project store
+│   ├── cms.js          # data model + i18n + project store
+│   └── supabase.js     # backend client (DB + Storage + fallback)
 ├── assets/
 │   ├── seq/            # 97 exterior scroll frames
 │   ├── stages/         # 7 build-stage posters (s1–s7)
 │   ├── gallery/        # 56 grouped gallery shots
-│   ├── rooms/          # 4 rooms × (shell, finish, complete) + 4 panos + seq
+│   ├── rooms/          # 4 rooms × (shell, finish, complete) + 4 panos + seq (room finish films)
+│   ├── icons/          # PWA app icons (192/180/512)
 │   ├── villa-clean.png, villa-blueprint.png, villa-wireframe.png
 │   └── villa.png, villa-blueprint-alpha.png
 ├── README.md
@@ -53,6 +57,15 @@ aether-studio/
 ```
 
 **That's it.** No `v3-nextjs/`, no duplicate HTML files, no dev tools, no prompt files. One clean, understandable structure.
+
+---
+
+## 📱 PWA (2026-08-07)
+
+- Installable app (`manifest.json` + service worker `sw.js`)
+- The film's 97 frames get cached at runtime → **second visit plays instantly and works offline**
+- An install prompt pill appears once (dismissible) when the browser supports it
+- App icons: `assets/icons/` (192 / 180 / 512)
 
 ---
 

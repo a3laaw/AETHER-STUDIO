@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#BFA76A">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="preload" as="image" href="assets/seq/frame001.webp" fetchpriority="high">
+<script>document.documentElement.classList.add('js');</script>
 <title>AURA — Studio · One Continuous Build</title>
 <meta name="description" content="منصة توثيق وبناء متواصل — من أول حجر حتى آخر غرفة. One continuous living record of your construction project.">
 <style>
@@ -480,6 +485,49 @@ footer p .ar{font-family:var(--font-ar)}
   box-shadow:0 20px 60px rgba(0,0,0,.3)}
 #toast.show{transform:translateX(-50%) translateY(0)}
 
+/* ================= PWA + LOADING + REVEAL + FILMS ================= */
+/* film preload progress bar (top edge) */
+#loadBar{position:fixed;top:0;left:0;right:0;height:3px;z-index:400;pointer-events:none;opacity:1;transition:opacity .8s ease}
+#loadBar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#BFA76A,#E8D9A8);box-shadow:0 0 12px rgba(191,167,106,.7);transition:width .4s ease}
+#loadBar.done{opacity:0}
+
+/* scroll reveal — only when JS is active (html.js), so content is never hidden if JS fails */
+html.js .rv{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+html.js .rv.on{opacity:1;transform:none}
+.rv-d1{transition-delay:.1s}.rv-d2{transition-delay:.2s}.rv-d3{transition-delay:.3s}
+
+/* Ken Burns for static imagery */
+.kb{overflow:hidden}
+.kb .kb-src{animation:kb 24s ease-in-out infinite alternate;will-change:transform}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-1.5%,-2.5%)}}
+@media(prefers-reduced-motion:reduce){.kb .kb-src{animation:none}html.js .rv{transition:none;opacity:1;transform:none}}
+
+/* contact form error state */
+.f-msg.err{color:#C0392B;background:rgba(192,57,43,.06)}
+
+/* room finish-film players (details view) */
+.dv-sec{margin:28px 0 12px;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.dv-films{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.dv-film{border:1px solid var(--border-2);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 24px -14px rgba(0,0,0,.14)}
+.dv-film-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.dv-film-top b{font-size:13px}
+.dv-film-play{background:var(--gold);border:none;color:#fff;font-weight:700;font-size:11px;padding:7px 14px;border-radius:100px;cursor:pointer;transition:.3s;font-family:inherit;white-space:nowrap}
+.dv-film-play:hover{filter:brightness(1.06)}
+.dv-film-play.playing{background:#1A1A1C}
+.dv-film-stage{position:relative;aspect-ratio:16/9;background:#111;overflow:hidden}
+.dv-film-stage img{width:100%;height:100%;object-fit:cover;display:block}
+.dv-film-n{position:absolute;bottom:8px;right:8px;font-size:10px;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:100px;font-family:var(--font);font-variant-numeric:tabular-nums}
+.dv-film-timeline{height:3px;background:rgba(0,0,0,.07)}
+.dv-film-timeline i{display:block;height:100%;width:0%;background:var(--gold);transition:width .12s linear}
+
+/* PWA install pill */
+#installPill{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(24px);z-index:330;display:none;align-items:center;gap:10px;
+  background:#1A1A1C;color:#fff;padding:10px 16px;border-radius:100px;font-size:12.5px;font-weight:600;box-shadow:0 20px 60px rgba(0,0,0,.35);transition:transform .45s ease;max-width:92vw}
+#installPill.show{transform:translateX(-50%) translateY(0)}
+#installPill button{background:var(--gold);color:#fff;border:none;font-weight:700;font-size:11.5px;padding:8px 16px;border-radius:100px;cursor:pointer;font-family:inherit}
+#installPill .ip-x{background:transparent;color:#fff;padding:6px 10px;opacity:.7}
+#installPill .ip-x:hover{opacity:1}
+
 /* ================= HIDDEN ADMIN GATE ================= */
 #adminGate{display:none}
 
@@ -588,6 +636,7 @@ footer p .ar{font-family:var(--font-ar)}
 </style>
 </head>
 <body>
+<div id="loadBar"><i></i></div>
 
 <!-- ================= UNIFIED TOP BAR (logo + projects + nav) ================= -->
 <header id="topBar">
@@ -688,7 +737,7 @@ footer p .ar{font-family:var(--font-ar)}
 
 <!-- ================= SERVICES — REVOLUTIONARY DESIGN ================= -->
 <section id="services" class="white-section">
-  <div class="w-head s-head">
+  <div class="w-head s-head rv">
     <div class="eyebrow"><span class="pulse"></span>خدماتنا · What We Do</div>
     <h2>أربع رحلات… فيلم واحد متواصل لمشروعك</h2>
     <p>من التصميم إلى التسليم — أربع خدمات متكاملة تجعل مشروعك شفافًا للعميل وللإدارة. اسحب لتستكشف، أو انقر على كل بطاقة لتفتح البيانات الحية.</p>
@@ -749,9 +798,9 @@ footer p .ar{font-family:var(--font-ar)}
   </div>
 
   <!-- 2) Bento showcase — visual hero + 2 numeric cards -->
-  <div class="svc-bento">
-    <div class="bento-main" id="svcBentoMain" data-wid="progress">
-      <img id="svcBentoImg" src="" alt="" style="display:none">
+  <div class="svc-bento rv rv-d1">
+    <div class="bento-main kb" id="svcBentoMain" data-wid="progress">
+      <img id="svcBentoImg" class="kb-src" src="" alt="" style="display:none">
       <div class="bm-overlay">
         <div class="bm-eyebrow"><span class="dot"></span>FILM · فيلم المشروع</div>
         <h3 id="svcBentoTitle">شوف الفيلم الحقيقي</h3>
@@ -798,11 +847,11 @@ footer p .ar{font-family:var(--font-ar)}
 
 <!-- ================= ABOUT US (white) ================= -->
 <section id="about" class="white-section">
-  <div class="w-head">
+  <div class="w-head rv">
     <div class="w-eyebrow">من نحن · About Us</div>
     <h2>نحوّل كل مشروع إلى فيلم متواصل</h2>
   </div>
-  <div class="about-grid">
+  <div class="about-grid rv rv-d1">
     <div class="about-text">
       <h3>منصة واحدة، من أول حجر حتى آخر غرفة.</h3>
       <p>في AURA Studio نؤمن بأن كل مشروع بناء يستحق أن يُروى كقصة واحدة متواصلة — لا كملفات متناثرة وتقارير شهرية مملة. لذلك بنينا منصة تجمع التوثيق البصري الحي، لوحات التحكم الذكية، والجولات التفاعلية في مكان واحد.</p>
@@ -814,32 +863,32 @@ footer p .ar{font-family:var(--font-ar)}
         <div class="stat"><div class="v">97</div><div class="l">إطار لكل مشروع</div></div>
       </div>
     </div>
-    <div class="about-visual">
-      <img id="aboutVisualImg" src="" alt="" style="display:none">
+    <div class="about-visual kb">
+      <img id="aboutVisualImg" class="kb-src" src="" alt="" style="display:none">
     </div>
   </div>
 </section>
 
 <!-- ================= OUR CLIENTS (white) ================= -->
 <section id="clients" class="white-section">
-  <div class="w-head">
+  <div class="w-head rv">
     <div class="w-eyebrow">عملاؤنا · Our Clients</div>
     <h2>ثقة رواد البناء في الخليج</h2>
     <p>نفخر بشراكاتنا مع نخبة من المطورين والمقاولين وشركات التشطيب في الكويت والمنطقة.</p>
   </div>
-  <div class="clients-marquee">
+  <div class="clients-marquee rv rv-d1">
     <div class="clients-track" id="clientsTrack"></div>
   </div>
 </section>
 
 <!-- ================= CONTACT US (white) ================= -->
 <section id="contact" class="white-section">
-  <div class="w-head">
+  <div class="w-head rv">
     <div class="w-eyebrow">تواصل معنا · Contact Us</div>
     <h2>ابدأ بمشروع تجريبي خلال أسبوعين</h2>
     <p>اكتب بياناتك وسنتواصل معك خلال 24 ساعة لتحديد موعد العرض التجريبي على مشروعك.</p>
   </div>
-  <div class="contact-grid">
+  <div class="contact-grid rv rv-d1">
     <div class="contact-info">
       <h3>نحن هنا للإجابة على كل أسئلتك.</h3>
       <p>سواء كنت مطورًا عقاريًا، مقاولًا رئيسيًا، أو شركة تشطيبات — فريق AURA Studio جاهز لمساعدتك على تحويل مشروعك القادم إلى فيلم متواصل.</p>
@@ -878,6 +927,10 @@ footer p .ar{font-family:var(--font-ar)}
       <div class="f-group">
         <label for="cMsg">رسالتك · Message</label>
         <textarea id="cMsg" placeholder="أخبرنا عن مشروعك..."></textarea>
+      </div>
+      <div class="f-group" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true">
+        <label for="cWebsite">Website</label>
+        <input type="text" id="cWebsite" tabindex="-1" autocomplete="off">
       </div>
       <button type="submit" class="submit">أرسل الطلب · Submit →</button>
       <div class="f-msg" id="contactMsg">✓ تم استلام طلبك. سنتواصل معك خلال 24 ساعة.</div>
@@ -1150,7 +1203,7 @@ function buildTimeline(){
     {type:'ext',count:count,src:n=>AURA.frameSrc(PROJ,n)}
   ];
   let off=0;SEGS.forEach(s=>{s.start=off+1;off+=s.count;s.end=off;});
-  TOTAL=off;cache={};
+  TOTAL=off;cache={};loadTotal=Math.max(1,TOTAL);showLoadBar();
   /* also update stage from/to ranges to match assembled count */
   if(allImgs.length>0 && PROJ.stages){
     let offset=0;
@@ -1164,12 +1217,26 @@ function buildTimeline(){
     });
   }
 }
+let loadedCount=0, loadTotal=1, _loadShown=false;
 function loadF(si,n){
   const key=si+':'+n;
   if(cache[key])return Promise.resolve();
   return new Promise(res=>{const im=new Image();
-    im.onload=()=>{cache[key]=im;res()};im.onerror=()=>res();
+    im.onload=()=>{cache[key]=im;loadedCount++;updateLoadBar();res()};im.onerror=()=>res();
     im.src=SEGS[si].src(n);});
+}
+/* thin gold progress bar showing how much of the film is decoded */
+function updateLoadBar(){
+  const bar=document.getElementById('loadBar');if(!bar)return;
+  const i=bar.querySelector('i');
+  const pct=Math.min(100,Math.round(loadedCount/loadTotal*100));
+  i.style.width=pct+'%';
+  if(pct>=100){bar.classList.add('done');setTimeout(()=>{bar.style.display='none';},2500);}
+}
+function showLoadBar(){
+  const bar=document.getElementById('loadBar');if(!bar)return;
+  loadedCount=0;bar.style.display='';bar.classList.remove('done');
+  bar.querySelector('i').style.width='0%';
 }
 function segOf(g){for(let i=0;i<SEGS.length;i++)if(g<=SEGS[i].end)return i;return SEGS.length-1;}
 function preload(g,r=10){for(let d=0;d<=r;d++)[g+d,g-d].forEach(x=>{if(x<1||x>TOTAL)return;const si=segOf(x);loadF(si,x-SEGS[si].start+1);});}
@@ -1699,9 +1766,22 @@ function openDetailsView(w){
       <div class="dv-ba-imgs"><img src="${escAttr(safeUrl(p.before))}" alt="before"><img src="${escAttr(safeUrl(p.after))}" alt="after"></div></div>`).join('')}</div>`;
   } else if(w.id==='rooms'){
     const rooms=PROJ.interior.rooms.filter(r=>r.interactive);
-    extraHTML=`<div class="dv-rooms-grid">${rooms.map(r=>`
+    const cards=rooms.map(r=>`
       <div class="dv-room"><img src="${escAttr(safeUrl('assets/rooms/'+r.id+'-complete.webp'))}" alt="${escAttr(r.name)}" loading="lazy">
-      <div class="dv-room-info"><b>${esc(T(r.name,r.ar))}</b><span>${esc(r.area)} · ${esc(r.height)}</span></div></div>`).join('')}</div>`;
+      <div class="dv-room-info"><b>${esc(T(r.name,r.ar))}</b><span>${esc(r.area)} · ${esc(r.height)}</span></div></div>`).join('');
+    /* room finish-film players — replay the room's construction from assets/rooms/seq/<id>/fNN */
+    const films=rooms.filter(r=>r.seq>0).map(r=>{
+      const n=+r.seq||1;
+      return `<div class="dv-film" data-room="${escAttr(r.id)}" data-n="${n}">
+        <div class="dv-film-top"><b>🎬 ${esc(T(r.name,r.ar))}</b>
+        <button class="dv-film-play" onclick="toggleRoomFilm(this)">▶ ${isAr?'شغّل فيلم التشطيب':'Play finish film'}</button></div>
+        <div class="dv-film-stage"><img src="${escAttr(safeUrl(roomFilmSrc(r.id,1,n)))}" alt="${escAttr(r.name)}" loading="lazy">
+        <span class="dv-film-n">01/${String(n).padStart(2,'0')}</span></div>
+        <div class="dv-film-timeline"><i></i></div>
+      </div>`;
+    }).join('');
+    extraHTML=`<div class="dv-rooms-grid">${cards}</div>`;
+    if(films)extraHTML+=`<h3 class="dv-sec">${isAr?'فيلم التشطيب · شاهد الغرفة تُبنى':'Finish film — watch the room get built'}</h3><div class="dv-films">${films}</div>`;
   } else if(w.id==='structural'||w.id==='materials'||w.id==='schedule'||w.id==='cost'||w.id==='qa'){
     const data={
       structural:[['السلامة الإنشائية','99%','Integrity'],['مسار الأحمال','Optimal','Load path'],['الترخيم','L/540','Deflection'],['الأساسات','Cured','Foundation']],
@@ -1731,6 +1811,102 @@ function openDetailsView(w){
   document.body.style.overflow='hidden';
 }
 function closeDetails(){$('detailsView').classList.remove('on');document.body.style.overflow='';}
+
+/* ---------- Room finish-film players ---------- */
+function roomFilmSrc(id,idx,n){
+  return 'assets/rooms/seq/'+id+'/f'+String(idx).padStart(3,'0')+'.webp';
+}
+const _roomFilmTimers={};
+function toggleRoomFilm(btn){
+  const box=btn.closest('.dv-film');if(!box)return;
+  const room=box.dataset.room,n=Math.max(1,+box.dataset.n||1);
+  const img=box.querySelector('.dv-film-stage img');
+  const lbl=box.querySelector('.dv-film-n');
+  const tl=box.querySelector('.dv-film-timeline i');
+  if(_roomFilmTimers[room]){
+    clearInterval(_roomFilmTimers[room]);delete _roomFilmTimers[room];
+    btn.textContent=isAr?'▶ شغّل فيلم التشطيب':'▶ Play finish film';
+    btn.classList.remove('playing');
+    return;
+  }
+  let i=1;
+  btn.textContent=isAr?'⏸ إيقاف':'⏸ Pause';
+  btn.classList.add('playing');
+  _roomFilmTimers[room]=setInterval(()=>{
+    i=i>=n?1:i+1;
+    img.src=roomFilmSrc(room,i,n);
+    lbl.textContent=String(i).padStart(2,'0')+'/'+String(n).padStart(2,'0');
+    if(tl)tl.style.width=(i/n*100)+'%';
+  },140);
+}
+
+/* ---------- Fullscreen toggle for experience overlay ---------- */
+function toggleExpFullscreen(){
+  if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
+  else if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    toast(isAr?'متصفحك لا يدعم ملء الشاشة':'Fullscreen not supported');
+  }
+}
+
+/* ---------- PWA: service worker + install prompt ---------- */
+let deferredPrompt=null;
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  if(!localStorage.getItem('aura.pwa.dismissed')){
+    setTimeout(()=>{
+      if(deferredPrompt){
+        const pill=document.getElementById('installPill');
+        if(pill){
+          document.getElementById('installPillTxt').textContent=isAr?'📲 ثبّت AURA Studio على جهازك':'📲 Install AURA Studio on your device';
+          pill.style.display='flex';
+          requestAnimationFrame(()=>pill.classList.add('show'));
+        }
+      }
+    },9000);
+  }
+});
+window.addEventListener('appinstalled',()=>{dismissInstall();toast(isAr?'✓ تم تثبيت التطبيق':'✓ App installed');});
+function installPWA(){
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;}
+  dismissInstall();
+}
+function dismissInstall(){
+  const pill=document.getElementById('installPill');
+  if(pill){pill.classList.remove('show');setTimeout(()=>{pill.style.display='none';},500);}
+  try{localStorage.setItem('aura.pwa.dismissed','1');}catch(err){}
+}
+
+/* ---------- Scroll reveal + animated counters (about stats) ---------- */
+(function(){
+  if(!('IntersectionObserver' in window))return;
+  const io=new IntersectionObserver(es=>es.forEach(en=>{
+    if(en.isIntersecting){en.target.classList.add('on');io.unobserve(en.target);}
+  }),{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+  /* count up numbers like "2+" / "12+" / "97" when visible */
+  const cio=new IntersectionObserver(es=>es.forEach(en=>{
+    if(!en.isIntersecting)return;
+    cio.unobserve(en.target);
+    const el=en.target;
+    const m=el.textContent.match(/^([\d.]+)(.*)$/);
+    if(!m)return;
+    const target=parseFloat(m[0]),suffix=m[1],dur=1300,t0=performance.now();
+    if(!isFinite(target))return;
+    (function tick(t){
+      const p=Math.min(1,(t-t0)/dur);
+      const e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(target*e)+suffix;
+      if(p<1)requestAnimationFrame(tick);
+    })(t0);
+  }),{threshold:.4});
+  document.querySelectorAll('.about-stats .v').forEach(el=>cio.observe(el));
+})();
 
 /* also wire services cards / journey / bento / quicklinks to open modals */
 (function wireServices(){
@@ -2107,8 +2283,35 @@ document.querySelectorAll('a[href="#cta"]').forEach(a=>a.onclick=()=>toast(isAr?
 /* ---------- contact form ---------- */
 $('contactForm').addEventListener('submit',async e=>{
   e.preventDefault();
+  /* honeypot — bots fill hidden fields; silently accept without saving */
+  const hp=$('cWebsite');
+  if(hp&&hp.value.trim()){
+    $('contactMsg').textContent=isAr?'✓ تم إرسال طلبك':'✓ Request sent';
+    $('contactMsg').classList.add('show');
+    $('contactForm').reset();
+    setTimeout(()=>$('contactMsg').classList.remove('show'),6000);
+    return;
+  }
   const name=$('cName').value.trim(),phone=$('cPhone').value.trim(),company=$('cCompany').value.trim(),msg=$('cMsg').value.trim();
   if(!name||!phone){toast(isAr?'اكتب اسمك ورقم هاتفك':'Please enter name and phone');return;}
+  /* phone validation — international digits with optional +, spaces, dashes, parens */
+  if(!/^\+?[0-9][0-9 ()-]{6,16}$/.test(phone)){
+    toast(isAr?'رقم الهاتف غير صحيح — تحقق من الصيغة (مثال: +965 9999 8888)':'Invalid phone number — e.g. +965 9999 8888');
+    return;
+  }
+  /* rate limit — max 3 submissions per 30 minutes per browser */
+  const now=Date.now();
+  let inqLog=[];try{inqLog=JSON.parse(localStorage.getItem('aura.inq.log')||'[]');}catch(err){}
+  inqLog=inqLog.filter(t=>now-t<30*60*1000);
+  if(inqLog.length>=3){
+    const m=$('contactMsg');
+    m.textContent=isAr?'⚠ وصلت للحد الأقصى من الطلبات — حاول بعد 30 دقيقة':'⚠ Too many requests — please try again in 30 minutes';
+    m.classList.add('show','err');
+    setTimeout(()=>m.classList.remove('show'),8000);
+    return;
+  }
+  inqLog.push(now);
+  try{localStorage.setItem('aura.inq.log',JSON.stringify(inqLog));}catch(err){}
   const inq={id:'inq-'+Date.now(),date:new Date().toISOString(),name,phone,company,msg,status:'new',source:'contact-section'};
   /* save to Supabase (primary) + localStorage (backup) */
   if(window.AURA_DB){
@@ -2469,7 +2672,13 @@ function openExpBA(){
 <div id="expOverlay" style="position:fixed;inset:0;z-index:50;display:none;background:#000"></div>
 <div id="expBar" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:51;display:none;align-items:center;gap:12px;background:rgba(0,0,0,.75);backdrop-filter:blur(16px);padding:10px 20px;border-radius:100px;border:1px solid rgba(255,255,255,.15)">
   <span id="expBarTitle" style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap">—</span>
+  <button onclick="toggleExpFullscreen()" title="ملء الشاشة · Fullscreen" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 12px;border-radius:100px;cursor:pointer;font-size:12px;font-weight:700;transition:.3s;font-family:inherit;white-space:nowrap">⛶</button>
   <button onclick="closeExpOverlay()" style="background:#BFA76A;border:none;color:#fff;padding:8px 16px;border-radius:100px;cursor:pointer;font-size:12px;font-weight:700;transition:.3s;font-family:inherit;white-space:nowrap">← رجوع للفيديو · Back to Video</button>
+</div>
+<div id="installPill" role="dialog" aria-label="Install app">
+  <span id="installPillTxt">📲 ثبّت AURA Studio على جهازك</span>
+  <button id="installPillBtn" onclick="installPWA()">تثبيت · Install</button>
+  <button class="ip-x" onclick="dismissInstall()" aria-label="Close">✕</button>
 </div>
 </body>
 </html>
