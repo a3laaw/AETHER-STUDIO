@@ -49,6 +49,9 @@ aside .logo{font-weight:700;letter-spacing:.3em;font-size:15px;padding:0;margin:
 aside .logo b{color:var(--gold)}
 aside .role{font-size:10.5px;color:var(--tx3);padding:0;margin:0 4px 0 0;flex:none}
 aside .lang-btn{width:auto;margin:0;padding:7px 12px;font-size:11.5px;flex:none}
+aside .supa-chip{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;padding:4px 11px;border-radius:100px;letter-spacing:.02em;white-space:nowrap}
+aside .supa-chip.on{color:#1e7d3a;background:rgba(111,173,127,.14);border:1px solid rgba(111,173,127,.4)}
+aside .supa-chip.off{color:#8a6d1a;background:rgba(191,167,106,.12);border:1px solid rgba(191,167,106,.35)}
 .mi{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:100px;font-size:12.5px;font-weight:600;color:var(--tx2);
   cursor:pointer;transition:.25s;flex:none;white-space:nowrap;border:1px solid transparent}
 .mi:hover{background:rgba(0,0,0,.05);color:var(--tx);border-color:var(--brd)}
@@ -260,6 +263,7 @@ h1.pt{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
   <aside>
     <div class="logo">AU<b>R</b>A</div>
     <div class="role" id="roleTag">Signed in as Admin</div>
+    <div class="supa-chip off" id="supaStatus" title="حالة التخزين · Storage status">⬤ …</div>
     <button class="lang-btn" onclick="AURA_I18N.toggle()">🌐 <span class="langLbl">العربية</span></button>
     <div class="mi on" data-p="projects"><span class="ic">▤</span>إدارة المشاريع · Projects</div>
     <div class="mi" data-p="exp360"><span class="ic">⟲</span>جولة 360° · 360 Tour</div>
@@ -842,10 +846,14 @@ async function tryLogin(){
        when the owner created a matching user (RLS requires an authenticated session). */
     if(window.AURA_DB&&AURA_DB.isReady()&&window.sb&&window.sb.auth){
       window.sb.auth.signInWithPassword({email:email||'admin@aura.studio',password:pass})
-        .then(res=>{ if(res.error) console.warn('[AURA] Supabase auth skipped:',res.error.message); })
+        .then(res=>{
+          if(res.error) console.warn('[AURA] Supabase auth skipped:',res.error.message);
+          setTimeout(updateSupaStatus,1200);
+        })
         .catch(e=>console.warn('[AURA] Supabase auth unavailable:',e.message));
     }
     enter();
+    setTimeout(updateSupaStatus,500);
   } else {
     _loginFails++;
     if(_loginFails>=5){_loginFails=0;_loginLock=now+60000;}
@@ -854,6 +862,21 @@ async function tryLogin(){
 }
 document.getElementById('lBtn').onclick=tryLogin;
 document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+/* live storage-status chip: Supabase session vs localStorage fallback */
+function updateSupaStatus(){
+  const el=$('supaStatus');if(!el)return;
+  const set=(cls,txt)=>{el.className='supa-chip '+cls;el.textContent='⬤ '+txt;el.title=txt;};
+  if(!window.AURA_DB||!window.sb||typeof AURA_DB.isReady!=='function'||!AURA_DB.isReady()){
+    set('off','localStorage');
+    return;
+  }
+  try{
+    window.sb.auth.getSession().then(({data})=>{
+      if(data&&data.session)set('on','Supabase متصل · Online');
+      else set('off','localStorage · بدون تسجيل');
+    }).catch(()=>set('off','localStorage'));
+  }catch(e){set('off','localStorage');}
+}
 function enter(){
   const s=JSON.parse(sessionStorage.getItem(SESSION)||'null');
   if(!s)return;
@@ -965,6 +988,7 @@ function boot(){
     });
   }
   const dFrames=$('dFrames');if(dFrames)dFrames.textContent=PROJ.sequence.count||'—';
+  setTimeout(updateSupaStatus,600);
   }catch(e){
     console.error('boot() critical error:',e);
     toast('Boot error: '+e.message);
